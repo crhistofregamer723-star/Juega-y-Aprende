@@ -216,6 +216,17 @@ body #menu:before{text-align:center}
 .rk-msg{text-align:center;color:var(--mute);margin:8px auto;max-width:46ch}
 #eRank{text-align:center;min-height:1.5em;font-size:13px;margin:0 auto}
 
+/* Pantallas táctiles: respuesta rápida al toque y menos carga gráfica */
+button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#gl{touch-action:pan-y}
+@media (hover:none){
+  .pcard:hover:not(.flip) .in{transform:none}
+  .qcard,.opt,.mode{transition-property:border-color,background,box-shadow}
+}
+@media (pointer:coarse){
+  .stat,.btn,.mode,.panel,.qcard,.opt,.login-wrap,.action-menu{backdrop-filter:none;-webkit-backdrop-filter:none}
+  .btn,.chip,.opt,.mode,.pcard,.subject-pick{min-height:44px}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -1044,7 +1055,7 @@ function initGL(){
   if(!window.THREE){document.body.classList.add('nogl');return}
   var T=THREE,canvas=$('#gl'),r;
   try{r=new T.WebGLRenderer({canvas:canvas,antialias:true,alpha:true})}catch(e){document.body.classList.add('nogl');return}
-  r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  var coarse=matchMedia('(pointer:coarse)').matches;r.setPixelRatio(Math.min(window.devicePixelRatio||1,coarse?1.25:2));
   var scene=new T.Scene();scene.fog=new T.FogExp2(0x050205,.03);
   var cam=new T.PerspectiveCamera(55,1,.1,200);cam.position.set(0,0,10);
   scene.add(new T.AmbientLight(0xb06a98,.9));
@@ -1103,15 +1114,15 @@ function initGL(){
 
   var pal=[0xff4fa3,0xff8cc6,0xff2d87,0xffb3d9,0xd6197a],floaters=[];
   var geos=[new T.TetrahedronGeometry(.5),new T.BoxGeometry(.6,.6,.6),new T.OctahedronGeometry(.5),new T.TorusGeometry(.4,.12,8,20)];
-  for(var f=0;f<46;f++){
+  for(var f=0;f<(coarse?20:46);f++){
     var fm=new T.Mesh(geos[f%4],new T.MeshStandardMaterial({color:pal[f%5],metalness:.4,roughness:.35,flatShading:true,transparent:true,opacity:.85}));
     var rad=9+Math.random()*16,a=Math.random()*6.283,y=(Math.random()-.5)*18;
     fm.position.set(Math.cos(a)*rad,y,Math.sin(a)*rad-8);
     fm.userData={sx:(Math.random()-.5)*.02,sy:(Math.random()-.5)*.02,ph:Math.random()*6,by:y};
     scene.add(fm);floaters.push(fm);
   }
-  var sp=new Float32Array(1600*3);
-  for(var s=0;s<1600;s++){var rr=30+Math.random()*70,th=Math.random()*6.283,ph=Math.acos(2*Math.random()-1);sp[s*3]=rr*Math.sin(ph)*Math.cos(th);sp[s*3+1]=rr*Math.sin(ph)*Math.sin(th);sp[s*3+2]=rr*Math.cos(ph)}
+  var NS=coarse?700:1600,sp=new Float32Array(NS*3);
+  for(var s=0;s<NS;s++){var rr=30+Math.random()*70,th=Math.random()*6.283,ph=Math.acos(2*Math.random()-1);sp[s*3]=rr*Math.sin(ph)*Math.cos(th);sp[s*3+1]=rr*Math.sin(ph)*Math.sin(th);sp[s*3+2]=rr*Math.cos(ph)}
   var sg=new T.BufferGeometry();sg.setAttribute('position',new T.BufferAttribute(sp,3));
   var stars=new T.Points(sg,new T.PointsMaterial({color:0xffc2e0,size:.22,transparent:true,opacity:.8,depthWrite:false}));scene.add(stars);
 
@@ -1152,7 +1163,7 @@ function initGL(){
     mv.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(mv,cam);
     if(ray.intersectObject(core).length){var c=pal[Math.floor(Math.random()*pal.length)];GL.color(c);GL.burst(c,120);spin.y+=.12;sfx.flip()}
   });
-  addEventListener('pointerup',function(){drag=false});
+  addEventListener('pointerup',function(){drag=false});addEventListener('pointercancel',function(){drag=false});
   addEventListener('pointermove',function(e){
     mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;
     if(drag){spin.y+=(e.clientX-lx)*.0009;spin.x+=(e.clientY-ly)*.0009;lx=e.clientX;ly=e.clientY}
@@ -1601,7 +1612,7 @@ function finish(){
   $('#eStreak').textContent=G.maxStreak;$('#eTime').textContent=Math.floor(G.elapsed)+' s';
   show('end');
   var rk=$('#eRank');rk.textContent='';
-  if(rec&&G.score>0&&rkOn()&&rkName()){
+  if(G.score>0&&rkOn()&&rkName()){
     rk.textContent='Enviando tu puntaje al ranking global…';
     var sA=area,sM=G.mode,sP=G.score;
     rkSubmit(sA,sM,sP).then(function(ok){rk.textContent=ok?'Puntaje enviado al ranking global.':'No se pudo enviar el puntaje al ranking.'});
