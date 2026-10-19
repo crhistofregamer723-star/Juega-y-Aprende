@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Juega y Aprende</title>
+<style>[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Concepto: arena de preguntas flotando en un espacio 3D. Un cristal central reacciona a cada respuesta; la interfaz son paneles de vidrio que se inclinan con el cursor. Look único oscuro, elegido a propósito. */
+:root{
+  --bg:#050205; --bg2:#1a0614; --panel:rgba(26,8,20,.8); --panel2:rgba(46,12,34,.86);
+  --line:rgba(255,79,163,.3); --ink:#fff0f7; --mute:#dba6c2;
+  --acc:#ff4fa3; --ok:#6dffb0; --bad:#ff5d5d; --warn:#ffa6d2; --pink:#ff8cc6;
+  --disp:'Unbounded',system-ui,sans-serif; --body:'Manrope',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);
+  padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+body.nogl{background:radial-gradient(900px 600px at 80% 20%,#5c0a3a 0,transparent 60%),radial-gradient(700px 500px at 10% 90%,#3a0830 0,transparent 60%),var(--bg)}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none;cursor:grab}
+#gl:active{cursor:grabbing}
+#app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;gap:20px;padding-block:18px 40px;pointer-events:none;max-width:1180px;margin:0 auto}
+button,input,.panel,.qcard,.mode,.pcard,.chips,.stat{pointer-events:auto}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.top-back{margin-right:0;border-color:var(--acc);box-shadow:0 0 18px color-mix(in srgb,var(--acc) 16%,transparent)}
+.brand{order:0;margin-right:auto}
+header.top .tools{margin-left:0}
+@media(max-width:560px){.top-back{padding:8px 10px}.brand{font-size:13px}header.top{gap:8px}}
+.brand{font:700 18px/1 var(--disp);letter-spacing:.04em;display:flex;align-items:center;gap:10px;margin:0}
+.brand i{width:14px;height:14px;background:var(--acc);display:inline-block;transform:rotate(45deg);box-shadow:0 0 14px var(--acc);transition:background .4s,box-shadow .4s}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;position:relative}
+.action-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:20;min-width:220px;padding:10px;display:grid;gap:8px;background:rgba(18,5,14,.97);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 50px #0008;backdrop-filter:blur(18px)}
+.action-menu[hidden]{display:none!important}
+.action-menu .btn{text-align:left;width:100%}
+.language-control{display:grid;gap:7px;padding:4px 2px;color:var(--mute);font-size:12px}.language-options{display:grid;grid-template-columns:1fr 1fr;gap:6px}.language-options .btn{font-size:12px;padding:8px 7px;text-align:center}.language-options .btn[aria-pressed="true"]{border-color:var(--acc);background:rgba(255,79,163,.2);color:var(--ink)}
+.screen-back{display:inline-flex;align-items:center;gap:8px;margin-bottom:8px}
+.screen-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:520px){.action-menu{right:0;max-width:calc(100vw - 32px)}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-size:13px;color:var(--mute);backdrop-filter:blur(8px);font-variant-numeric:tabular-nums}
+.stat b{color:var(--ink);font-family:var(--disp);font-weight:500;margin-left:6px}
+.btn{font:600 14px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer;backdrop-filter:blur(8px);transition:border-color .2s,background .2s,transform .15s}
+.btn:hover{border-color:var(--acc);background:var(--panel2)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--acc);color:#1a0010;border-color:var(--acc);font-weight:800}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+section{display:flex;flex-direction:column;gap:18px;max-width:660px;width:100%}
+h1,h2{font-family:var(--disp);font-weight:700;margin:0;text-wrap:balance;line-height:1.15}
+h1{font-size:clamp(26px,5vw,40px)}
+h2{font-size:clamp(20px,3.4vw,28px)}
+.lead{color:var(--mute);margin:0;max-width:52ch}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:600 13px var(--body);color:var(--mute);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;transition:all .2s}
+.chip:hover{color:var(--ink);border-color:var(--acc)}
+.chip[aria-pressed="true"]{background:var(--acc);color:#1a0010;border-color:var(--acc);font-weight:800}
+.label{font:600 11px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mode{--c:var(--acc);text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;color:var(--ink);font:inherit;backdrop-filter:blur(8px);transition:border-color .2s,box-shadow .25s,transform .12s;display:flex;flex-direction:column;gap:6px;min-width:0}
+.mode:hover{border-color:var(--c);box-shadow:0 0 26px -6px var(--c)}
+.mode.wide{grid-column:1/-1}
+.mode h3{font:500 15px var(--disp);margin:0;color:var(--c)}
+.mode p{margin:0;font-size:13px;color:var(--mute)}
+.mode small{font-size:12px;color:var(--ink);opacity:.8;font-variant-numeric:tabular-nums}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;backdrop-filter:blur(10px)}
+.status{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--mute)}
+.status b{color:var(--ink);font-variant-numeric:tabular-nums}
+.bar{flex:1;min-width:120px;height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--acc),var(--pink));border-radius:99px;transition:width .15s linear}
+.bar.low i{background:var(--bad)}
+.qcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,4vw,30px);backdrop-filter:blur(12px);transition:transform .12s ease-out;box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+.qcard .cat{font:600 11px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:10px;display:block}
+.qcard .q{font:700 clamp(18px,3.2vw,24px)/1.3 var(--disp);margin:0;text-wrap:balance;overflow-wrap:anywhere}
+.qcard .sub{margin:10px 0 0;color:var(--mute);font-size:14px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;font:600 15px/1.3 var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;backdrop-filter:blur(8px);transition:transform .12s ease-out,border-color .2s,background .2s;min-width:0;overflow-wrap:anywhere}
+.opt kbd{flex:none;font:500 12px var(--disp);width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:rgba(255,255,255,.08);color:var(--mute)}
+.opt:hover:not([disabled]){border-color:var(--acc)}
+.opt.ok{background:rgba(109,255,176,.16);border-color:var(--ok)}
+.opt.bad{background:rgba(255,93,93,.16);border-color:var(--bad);animation:shake .35s}
+.opt.gone{opacity:.15;pointer-events:none}
+.opt[disabled]{cursor:default}
+.opt.vf{justify-content:center;font:700 18px var(--disp);padding:22px}
+@keyframes shake{20%{transform:translateX(-8px)}50%{transform:translateX(8px)}80%{transform:translateX(-4px)}}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row .grow{flex:1;min-width:0}
+input[type=text]{font:600 16px var(--body);color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:13px 14px;width:100%;min-width:0}
+input[type=text]:focus{border-color:var(--acc);outline:none;box-shadow:0 0 0 3px rgba(255,79,163,.25)}
+.fb{min-height:24px;font-weight:700;margin:0}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;perspective:1000px}
+.pcard{position:relative;aspect-ratio:1/1.05;cursor:pointer;border:0;background:none;padding:0;color:inherit;font:inherit}
+.pcard .in{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.3,1.3,.5,1)}
+.pcard.flip .in{transform:rotateY(180deg)}
+.pcard:hover:not(.flip) .in{transform:rotateY(-14deg) rotateX(8deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;display:grid;place-items:center;padding:8px;text-align:center;border:1px solid var(--line)}
+.face.back{background:linear-gradient(135deg,#3a0828,#b01f6a);font:700 26px var(--disp);color:rgba(255,255,255,.5)}
+.face.front{transform:rotateY(180deg);background:var(--panel2);font:700 clamp(11px,1.7vw,15px)/1.25 var(--body);overflow-wrap:anywhere;hyphens:auto}
+.pcard.done .face.front{background:rgba(109,255,176,.2);border-color:var(--ok)}
+.pcard.no .face.front{border-color:var(--bad);background:rgba(255,93,93,.2)}
+.big{font:700 clamp(40px,9vw,72px)/1 var(--disp);color:var(--acc);font-variant-numeric:tabular-nums}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.grid3 .panel{text-align:center;padding:12px}
+.grid3 b{display:block;font:500 22px var(--disp)}
+.grid3 span{font-size:12px;color:var(--mute)}
+.form{display:grid;gap:10px}
+.form label{font-size:12px;color:var(--mute);display:grid;gap:4px}
+.clist{display:grid;gap:8px;max-height:220px;overflow:auto}
+.clist div{display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:13px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.05)}
+.clist span{min-width:0;overflow-wrap:anywhere}
+.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--panel2);border:1px solid var(--acc);border-radius:12px;padding:10px 18px;font-weight:600;opacity:0;transition:all .3s;z-index:5;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.qtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.badge{font:700 11px var(--body);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:99px;padding:3px 10px;color:var(--mute);white-space:nowrap}
+.badge.timed{color:var(--warn);border-color:var(--warn)}
+.ctx{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.ctx p{margin:0;max-width:62ch}
+.ctx.good{border-color:var(--ok)}
+.ctx.bad{border-color:var(--bad)}
+.mrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.btn.sm{padding:6px 12px;font-size:13px}
+.mode{cursor:pointer}
+.login-wrap{width:min(100%,520px);margin:auto;padding:clamp(22px,5vw,38px);background:var(--panel);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(14px);box-shadow:0 24px 80px #0007}
+.login-wrap .form{margin-top:20px}
+.login-wrap input{font:600 16px var(--body);color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:13px 14px;width:100%;min-width:0}
+.login-wrap label{font-size:12px;color:var(--mute);display:grid;gap:5px}
+.subject-picks{display:grid;grid-template-columns:1fr;gap:12px;margin-top:20px}
+.subject-pick{display:flex;align-items:center;gap:14px;text-align:left;padding:17px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--ink);cursor:pointer;font:inherit}
+.subject-pick:hover{border-color:var(--acc);transform:translateY(-1px)}
+.subject-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:#ffffff10;font-size:23px;flex:none}
+.subject-pick strong{display:block;font-family:var(--disp);font-size:14px}
+.subject-pick small{color:var(--mute);font-size:12px}
+@media (min-width:520px){.subject-picks{grid-template-columns:repeat(3,minmax(0,1fr))}.subject-pick{align-items:flex-start;flex-direction:column}}
+.mode small.saved{color:var(--ok);font-weight:700}
+@media (max-width:560px){
+  .opts,.modes{grid-template-columns:1fr}
+  .pgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .brand{font-size:15px}
+}
+
+/* Temas por asignatura: todos en negro y rosado, con matices distintos. */
+body.theme-mat{background:radial-gradient(900px 600px at 85% 8%,#5c0a3a 0,transparent 62%),radial-gradient(700px 500px at 8% 90%,#2e0620 0,transparent 60%),#050205}
+body.theme-prog{background:radial-gradient(850px 600px at 85% 10%,#6a0a50 0,transparent 60%),radial-gradient(700px 500px at 8% 90%,#2a0630 0,transparent 60%),#050205}
+body.theme-ing{background:radial-gradient(850px 600px at 85% 10%,#6a1038 0,transparent 60%),radial-gradient(700px 500px at 8% 90%,#38081e 0,transparent 60%),#070205}
+body:after{content:'';position:fixed;z-index:0;pointer-events:none;right:-3vw;bottom:-6vh;width:min(42vw,520px);height:min(42vw,520px);border-radius:50%;opacity:.14;filter:blur(.2px);background:radial-gradient(circle at center,transparent 0 42%,var(--acc) 42.3% 42.7%,transparent 43%),radial-gradient(circle at center,transparent 0 58%,var(--acc) 58.2% 58.5%,transparent 58.8%)}
+body.theme-mat:before,body.theme-prog:before,body.theme-ing:before{position:fixed;z-index:0;pointer-events:none;right:3vw;top:22vh;opacity:.09;font:700 clamp(28px,6vw,76px)/1.6 var(--disp);white-space:pre-wrap;max-width:40vw;text-align:right}
+body.theme-mat:before{content:'∑  π  √\A x²  ∫  Δ'}
+body.theme-prog:before{content:'{ }  </>\A 0101 1010'}
+body.theme-ing:before{content:'A B C\A HELLO!'}
+body.theme-mat #menu:before,body.theme-prog #menu:before,body.theme-ing #menu:before{display:block;white-space:pre-wrap;font:700 clamp(25px,5vw,42px)/1.25 var(--disp);letter-spacing:.06em;border:1px solid var(--line);border-radius:18px;padding:18px 22px;margin-bottom:2px;box-shadow:inset 0 0 35px #ffffff08,0 14px 45px #0003}
+body.theme-mat #menu:before{content:'∑   π   √   x²\A LABORATORIO DE MATEMÁTICAS';color:#ff8cc6;background:linear-gradient(120deg,#12030dee,#3a0a28dd);text-shadow:0 0 22px #ff4fa3}
+body.theme-prog #menu:before{content:'{ }   </>   01\A LABORATORIO DE PROGRAMACIÓN';color:#ff6fb5;background:linear-gradient(120deg,#0c020aee,#42082fdd);text-shadow:0 0 22px #ff2d87}
+body.theme-ing #menu:before{content:'A B C   ✦   Hello!\A LABORATORIO DE INGLÉS';color:#ffb3d9;background:linear-gradient(120deg,#10030aee,#3e0a26dd);text-shadow:0 0 22px #ff6fb5}
+body.theme-mat .mode,body.theme-prog .mode,body.theme-ing .mode{background:linear-gradient(145deg,#2a0a1edd,#10030cdd)}
+body.theme-prog .qcard,body.theme-prog .panel{border-radius:8px}
+body.theme-ing .qcard,body.theme-ing .panel{border-radius:22px}
+body.theme-mat .subject-icon,body.theme-prog .subject-icon,body.theme-ing .subject-icon{color:#ff8cc6;background:#ff4fa326}
+body.theme-mat .login-wrap,body.theme-prog .login-wrap,body.theme-ing .login-wrap{background:linear-gradient(145deg,#12030dee,#2e0820ee);border-color:#ff4fa366}
+
+/* Centrado general de toda la interfaz */
+#app{align-items:center}
+section{margin-inline:auto;align-items:stretch}
+header.top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;width:100%;gap:12px}
+header.top .brand{margin:0 auto 0 0;text-align:left}
+header.top .tools{justify-content:flex-end}
+@media(max-width:820px){
+  header.top{flex-direction:column;justify-content:center}
+  header.top .brand{margin:0;justify-content:center;text-align:center}
+  header.top .tools{justify-content:center}
+  .action-menu{right:50%;transform:translateX(50%)}
+}
+#menu>div,#end h2,#login>div{text-align:center}
+body #menu:before{text-align:center}
+#menu .lead,#login .lead{margin-inline:auto}
+.chips{justify-content:center}
+.modes .mode{text-align:center;align-items:center}
+.mrow{justify-content:center}
+.screen-heading{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.screen-heading .screen-back{grid-column:1;justify-self:start;margin:0}
+.screen-heading .label{grid-column:2;text-align:center}
+.status{justify-content:center;text-align:center}
+.row{justify-content:center}
+.row .grow{flex:1 1 220px}
+.qcard{text-align:center}
+.qtop{justify-content:center;text-align:center}
+.opt{justify-content:center;text-align:center}
+.fb{text-align:center}
+.ctx{align-items:center;text-align:center}
+.ctx p{margin-inline:auto}
+#pairs>.lead{text-align:center;margin-inline:auto}
+.pgrid{justify-content:center}
+.login-wrap{text-align:center}
+.login-wrap label{text-align:left}
+.login-wrap .subject-pick{align-items:center;text-align:center;justify-content:center}
+.subject-pick span:last-child{text-align:center}
+@media (min-width:520px){.login-wrap .subject-pick{flex-direction:column}}
+
+
+/* Ranking global */
+#ranking{max-width:760px}
+#ranking h2{text-align:center}
+.rk-modes{justify-content:center}
+.rk-list{display:grid;gap:8px}
+.rk-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;text-align:left}
+.rk-row b{font-family:var(--disp);font-weight:700;color:var(--mute);text-align:center}
+.rk-row span:nth-child(2){overflow-wrap:anywhere;font-weight:700}
+.rk-row span:last-child{font-family:var(--disp);font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums}
+.rk-row.top b{color:var(--acc)}
+.rk-row.top{border-color:var(--acc);box-shadow:0 0 18px color-mix(in srgb,var(--acc) 22%,transparent)}
+.rk-row.me{background:var(--panel2);border-color:var(--acc)}
+.rk-row.me span:nth-child(2):after{content:' · tú';color:var(--acc);font-weight:600}
+.rk-msg{text-align:center;color:var(--mute);margin:8px auto;max-width:46ch}
+#eRank{text-align:center;min-height:1.5em;font-size:13px;margin:0 auto}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head><body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="app">
+  <section id="login" class="login-wrap">
+    <div>
+      <h1>Juega y Aprende</h1>
+      <p class="lead" style="margin-top:12px">Inicia sesión para entrar a tu espacio de estudio.</p>
+    </div>
+    <form class="form" id="loginForm">
+      <label>Usuario<input id="loginUser" type="text" placeholder="Escribe tu usuario" autocomplete="username" required></label>
+      <label>Contraseña<input id="loginPass" type="password" placeholder="Escribe tu contraseña" autocomplete="current-password" required></label>
+      <button class="btn primary" type="submit">Iniciar sesión</button>
+      <p class="lead" style="font-size:12px">Demo local: puedes escribir cualquier usuario y contraseña. No se envían a ningún servidor.</p>
+    </form>
+    <div id="subjectChooser" hidden>
+      <h2 style="margin-top:24px">¿Qué quieres estudiar?</h2>
+      <p class="lead" style="margin-top:8px">Cada área tiene su propia pantalla y sus propios retos.</p>
+      <div class="subject-picks">
+        <button class="subject-pick" type="button" data-area="mat"><span class="subject-icon">∑</span><span><strong>Matemáticas</strong></span></button>
+        <button class="subject-pick" type="button" data-area="prog"><span class="subject-icon">&lt;/&gt;</span><span><strong>Programación</strong></span></button>
+        <button class="subject-pick" type="button" data-area="ing"><span class="subject-icon">文</span><span><strong>Inglés</strong></span></button>
+      </div>
+    </div>
+  </section>
+  <header class="top" id="appHeader">
+    <h1 class="brand"><i></i>Juega y Aprende</h1>
+    <div class="tools">
+      <button class="btn top-back" id="bBackTop" type="button" aria-label="Volver a la pantalla anterior">← Volver</button>
+      <span class="stat">Puntos<b id="hScore">0</b></span>
+      <span class="stat">Racha<b id="hStreak">0</b></span>
+      <span class="stat">Nivel<b id="hLevel">1</b></span>
+      <span class="stat" id="hLivesW" hidden>Vidas<b id="hLives">3</b></span>
+      <button class="btn" id="bMenuActions" type="button" aria-expanded="false" aria-controls="menuActions">☰ Menú</button>
+      <div class="action-menu" id="menuActions" hidden>
+        <button class="btn" id="bSound" type="button" aria-pressed="true">Efectos: sí</button>
+        <button class="btn" id="bMusic" type="button" aria-pressed="true">Música: sí</button>
+        <button class="btn" id="bRank" type="button"><span aria-hidden="true">🏆</span> Ranking global</button>
+        <div class="language-control" id="languageLabel"><span>Idioma / Language</span><div class="language-options" role="group" aria-label="Seleccionar idioma"><button class="btn" type="button" data-language="es" aria-pressed="true">Español</button><button class="btn" type="button" data-language="en" aria-pressed="false">English</button><button class="btn" type="button" data-language="pt" aria-pressed="false">Português</button><button class="btn" type="button" data-language="fr" aria-pressed="false">Français</button></div></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="menu">
+    <div>
+      <h1 id="subjectTitle">Matemáticas</h1>
+      <p class="lead" id="subjectIntro">Practica con preguntas, gana puntos y haz evolucionar la figura 3D cada 5 niveles hasta llegar al nivel 1000.</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:8px">Categoría</div>
+      <div class="chips" id="cats" role="group" aria-label="Categoría"></div>
+      <p class="lead" id="qCount" style="margin-top:8px;font-size:13px"></p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:8px">Modo de juego</div>
+      <div class="modes" id="modes"></div>
+    </div>
+  </section>
+
+  <section id="game" hidden>
+    <div class="screen-heading"><button class="btn screen-back" type="button" data-back>← Volver</button><span class="label">Sesión de práctica</span></div>
+    <div class="status panel">
+      <span id="gMode" style="color:var(--acc);font-weight:800"></span>
+      <span>Pregunta <b id="gN">1</b></span>
+      <div class="bar" id="gBar"><i></i></div>
+      <b id="gTime"></b>
+    </div>
+    <div class="qcard" data-tilt>
+      <div class="qtop"><span class="cat" id="qCat"></span><span class="badge" id="qBadge"></span></div>
+      <p class="q" id="qText"></p>
+      <p class="sub" id="qSub"></p>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="row" id="wBox" hidden>
+      <div class="grow"><input type="text" id="wIn" placeholder="Escribe tu respuesta" aria-label="Tu respuesta" autocomplete="off"></div>
+      <button class="btn primary" id="wGo" type="button">Comprobar</button>
+      <button class="btn" id="wHint" type="button">Pista</button>
+    </div>
+    <div class="panel ctx" id="ctx" hidden>
+      <div class="label" id="ctxL"></div>
+      <p id="ctxT"></p>
+      <button class="btn primary" id="bNext" type="button">Siguiente</button>
+    </div>
+    <div class="panel ctx" id="cp" hidden>
+      <div class="label">Punto de control</div>
+      <p id="cpT"></p>
+      <div class="row"><button class="btn primary" id="cpGo" type="button">Seguir jugando</button><button class="btn" id="cpSave" type="button">Guardar y salir</button></div>
+    </div>
+    <div class="row">
+      <button class="btn" id="b50" type="button">Comodín 50/50 ×2</button>
+      <p class="fb grow" id="fb" role="status"></p>
+    </div>
+  </section>
+
+  <section id="pairs" hidden>
+    <div class="screen-heading"><button class="btn screen-back" type="button" data-back>← Volver</button><span class="label">Reto de parejas</span></div>
+    <div class="status panel">
+      <span style="color:var(--acc);font-weight:800">Parejas 3D</span>
+      <span>Movimientos <b id="pMoves">0</b></span>
+      <span>Parejas <b id="pFound">0/6</b></span>
+      <b id="pTime">0 s</b>
+    </div>
+    <p class="lead">Voltea dos cartas. Une cada término con su significado.</p>
+    <div class="pgrid" id="pgrid"></div>
+  </section>
+
+  <section id="end" hidden>
+    <div class="screen-heading"><button class="btn screen-back" type="button" data-back>← Volver</button><span class="label">Resumen de partida</span></div>
+    <h2 id="eTitle">Resultado</h2>
+    <div class="panel" style="display:grid;gap:12px;text-align:center">
+      <div class="label">Puntaje final</div>
+      <div class="big" id="eScore">0</div>
+      <div id="eRec" style="font-weight:700"></div>
+    </div>
+    <div class="grid3">
+      <div class="panel"><b id="eOk">0</b><span>Aciertos</span></div>
+      <div class="panel"><b id="eStreak">0</b><span>Mejor racha</span></div>
+      <div class="panel"><b id="eTime">0 s</b><span>Tiempo</span></div>
+    </div>
+    <p class="lead" id="eRank"></p>
+    <div class="row">
+      <button class="btn primary" id="eAgain" type="button">Jugar de nuevo</button>
+      <button class="btn" id="eRanking" type="button">Ver ranking</button>
+      <button class="btn" id="eMenu" type="button">Cambiar modo</button>
+    </div>
+  </section>
+  <section id="ranking" hidden>
+    <div class="screen-heading"><button class="btn screen-back" type="button" data-back>← Volver</button><span class="label">Ranking global</span></div>
+    <h2>Los mejores puntajes</h2>
+    <div class="chips rk-modes" id="rkAreas" role="group" aria-label="Área"></div>
+    <div class="chips rk-modes" id="rkModes" role="group" aria-label="Modo de juego"></div>
+    <div class="rk-list" id="rkList" aria-live="polite"></div>
+    <p class="rk-msg" id="rkMsg"></p>
+    <div class="row"><button class="btn" id="rkRefresh" type="button">Actualizar</button></div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var shuffle=function(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a};
+var norm=function(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').replace(/[.¿?¡!]+$/g,'').trim()};
+var activeProfile=(function(){try{var v=localStorage.getItem('q3d_user');return v?String(JSON.parse(v)||'').trim().toLocaleLowerCase():''}catch(e){return ''}})();
+var store={key:function(k){return (k==='q3d_user'||!activeProfile)?k:('q3d_profile_'+encodeURIComponent(activeProfile)+'_'+k)},get:function(k,d){try{var v=localStorage.getItem(this.key(k));if(v!==null)return JSON.parse(v);return d}catch(e){return d}},set:function(k,v){try{localStorage.setItem(this.key(k),JSON.stringify(v))}catch(e){}}};
+/* ---------- TEXTOS EDITADOS POR EL ADMINISTRADOR (se guardan en este navegador) ---------- */
+var ADM_KEY='q3d_admin';
+function admLoad(){try{var v=JSON.parse(localStorage.getItem(ADM_KEY)||'{}');return(v&&typeof v==='object'&&!Array.isArray(v))?v:{}}catch(e){return {}}}
+var ADM=admLoad();
+function admNormalize(){['ui','msg','banner','intro','qs','pairs'].forEach(function(k){if(!ADM[k]||typeof ADM[k]!=='object'||Array.isArray(ADM[k]))ADM[k]={}});ADM.qs={};ADM.pairs={}}
+admNormalize();
+function admSave(){try{localStorage.setItem(ADM_KEY,JSON.stringify(ADM));return true}catch(e){return false}}
+function ov(s){var v=ADM.ui[s];return(typeof v==='string'&&v!=='')?v:s}
+/* Mensajes con datos variables: {n}, {a}, etc. se reemplazan al mostrarlos. */
+var MSG_DEFAULT={
+  correct:'¡Correcto! +{p}',
+  streak:'  ·  racha de {n}',
+  timeout:'Se acabó el tiempo. ',
+  answer:'Respuesta: {a}',
+  ctxFallback:'La respuesta correcta es: {a}.',
+  vfSub:'Afirmación: «{t}». ¿Es correcta?',
+  vfTrue:'La afirmación era verdadera: {a}',
+  vfFalse:'Era falsa. Lo correcto: {a}',
+  timed:'Con tiempo · {n} s',
+  hint:'Empieza con «{c}» y tiene {n} caracteres',
+  fifty:'Comodín 50/50 ×{n}',
+  checkpoint:'Llevas {t} preguntas, {ok} correctas y {s} puntos. Puedes seguir o dejarlo aquí: tu avance queda guardado en este modo y lo retomas desde el menú.',
+  newRecord:'Nuevo récord en {m}',
+  yourRecord:'Tu récord: {n} pts',
+  record:'Récord: {n} pts',
+  pairsOk:'{n} pares',
+  savedQ:'Partida guardada · pregunta {n} · {s} pts',
+  savedPairs:'Partida guardada · {f} de 6 parejas · {m} movimientos',
+  resumeQ:'Partida retomada en la pregunta {n}.',
+  resumePairs:'Partida retomada: {n} de 6 parejas.',
+  evolve:'¡Evolución 3D desbloqueada! Nivel {n}',
+  qCount:'{n} preguntas en esta categoría',
+  hello:'¡Hola, {u}!'
+};
+var MSG_LABEL={
+  correct:'Al acertar · {p} = puntos ganados',
+  streak:'Se agrega al acertar con racha · {n} = racha',
+  timeout:'Antes de la respuesta cuando se acaba el tiempo',
+  answer:'Al fallar · {a} = respuesta correcta',
+  ctxFallback:'Explicación cuando la pregunta no tiene una · {a} = respuesta',
+  vfSub:'Pregunta de verdadero o falso · {t} = afirmación',
+  vfTrue:'Verdadero o falso (era verdadera) · {a} = respuesta',
+  vfFalse:'Verdadero o falso (era falsa) · {a} = respuesta',
+  timed:'Etiqueta de pregunta con reloj · {n} = segundos',
+  hint:'Pista en el modo Escribir · {c} = primera letra, {n} = largo',
+  fifty:'Botón del comodín · {n} = comodines restantes',
+  checkpoint:'Punto de control · {t} preguntas, {ok} aciertos, {s} puntos',
+  newRecord:'Resumen final con récord nuevo · {m} = modo',
+  yourRecord:'Resumen final sin récord nuevo · {n} = récord',
+  record:'Récord en la tarjeta del modo · {n} = puntos',
+  pairsOk:'Resumen de parejas · {n} = parejas',
+  savedQ:'Partida guardada · {n} = pregunta, {s} = puntos',
+  savedPairs:'Partida guardada de parejas · {f} = parejas, {m} = movimientos',
+  resumeQ:'Aviso al continuar una partida · {n} = pregunta',
+  resumePairs:'Aviso al continuar parejas · {n} = parejas halladas',
+  evolve:'Aviso al evolucionar la figura 3D · {n} = nivel',
+  qCount:'Cantidad de preguntas de la categoría · {n} = cantidad',
+  hello:'Saludo al iniciar sesión · {u} = usuario'
+};
+function tm(k,v){var t=(typeof ADM.msg[k]==='string'&&ADM.msg[k]!=='')?ADM.msg[k]:MSG_DEFAULT[k];return String(t).replace(/\{(\w+)\}/g,function(m,n){return(v&&v[n]!=null)?v[n]:m})}
+/* Textos fijos que el código escribe en pantalla (se editan en la pestaña "Textos"). */
+var EXTRA_UI=['Juega y Aprende','Inglés','Pregunta','Libre','Reloj global','Sin límite de tiempo','Escribe la respuesta y presiona Enter.','Verdadero','Falso','Contexto · ¡acertaste!','Contexto · para repasar','Ver resultado','Siguiente','Sin récord todavía','Jugar','Continuar','Empezar de nuevo','Nivel maestro','Muy buen resultado','Vas por buen camino','A seguir practicando','Elige tu área de estudio','¡Bienvenido de nuevo!','Escribe tu usuario para continuar.','No hay suficientes preguntas para este modo.','Escribe algo primero.','Avance guardado. Puedes continuar desde el menú.','Este modo usa las categorías con parejas. Elige otra.'];
+var UI_LANGS={
+  en:{'Usuario':'Username','Contraseña':'Password','Inicia sesión para entrar a tu espacio de estudio.':'Sign in to enter your study space.','Escribe tu usuario':'Enter your username','Escribe tu contraseña':'Enter your password','Iniciar sesión':'Sign in','Demo local: puedes escribir cualquier usuario y contraseña. No se envían a ningún servidor.':'Local demo: enter any username and password. Nothing is sent to a server.','¿Qué quieres estudiar?':'What would you like to study?','Cada área tiene su propia pantalla y sus propios retos.':'Each subject has its own screen and challenges.','Matemáticas':'Mathematics','Programación':'Programming','Inglés básico':'English','Laboratorio de Matemáticas':'Math Lab','Laboratorio de Programación':'Programming Lab','Laboratorio de Inglés':'English Lab','Álgebra, cálculo y estadística':'Algebra, calculus and statistics','Lógica, código y algoritmos':'Logic, code and algorithms','Vocabulario y gramática básica':'Vocabulary and basic grammar','← Volver':'← Back','Sesión de práctica':'Practice session','Reto de parejas':'Matching challenge','Resumen de partida':'Game summary','Puntos':'Points','Racha':'Streak','Nivel':'Level','Vidas':'Lives','☰ Menú':'☰ Menu','Efectos: sí':'Effects: on','Efectos: no':'Effects: off','Música: sí':'Music: on','Música: no':'Music: off','Idioma / Language':'Language','Categoría':'Category','Modo de juego':'Game mode','preguntas en esta categoría':'questions in this category','Comodín 50/50 ×2':'50/50 hint ×2','Escribe tu respuesta':'Type your answer','Comprobar':'Check','Pista':'Hint','Siguiente':'Next','Punto de control':'Checkpoint','Seguir jugando':'Keep playing','Guardar y salir':'Save and exit','Movimientos':'Moves','Parejas':'Pairs','Voltea dos cartas. Une cada término con su significado.':'Flip two cards. Match each term with its meaning.','Resultado':'Result','Puntaje final':'Final score','Aciertos':'Correct answers','Mejor racha':'Best streak','Tiempo':'Time','Jugar de nuevo':'Play again','Cambiar modo':'Change mode','Clásico':'Classic','Hasta 20 preguntas de opción múltiple. Algunas llevan reloj y otras no.':'Up to 20 multiple-choice questions. Some are timed.','Verdadero o falso':'True or false','Hasta 20 afirmaciones. Algunas llevan reloj y otras no.':'Up to 20 statements. Some are timed.','Contrarreloj':'Time attack','60 segundos. Acertar suma 2 s, fallar resta 5 s.':'60 seconds. Correct answers add 2 s; wrong answers subtract 5 s.','Supervivencia':'Survival','Tres vidas, sin fin. Algunas preguntas llevan reloj.':'Three lives, endless mode. Some questions are timed.','Relámpago':'Lightning','Hasta 15 preguntas de 8 segundos cada una, más puntos si respondes rápido.':'Up to 15 questions, 8 seconds each. Answer quickly for more points.','Escribir':'Typing','10 preguntas sin opciones: escribe la respuesta. Hay pista y algunas llevan reloj.':'10 questions without choices: type the answer. Hints and some timers included.','Parejas 3D':'3D matching','Voltea cartas y une cada término con su significado.':'Flip cards and match each term with its meaning.','Álgebra':'Algebra','Cálculo':'Calculus','Estadística':'Statistics','Lógica':'Logic','Python':'Python','HTML':'HTML','JavaScript':'JavaScript','Funciones':'Functions','Bucles':'Loops','Arreglos':'Arrays','Pseudocódigo':'Pseudocode','Gramática':'Grammar','Vocabulario':'Vocabulary'},
+  pt:{'Usuario':'Usuário','Contraseña':'Senha','Inicia sesión para entrar a tu espacio de estudio.':'Entre para acessar seu espaço de estudos.','Escribe tu usuario':'Digite seu usuário','Escribe tu contraseña':'Digite sua senha','Iniciar sesión':'Entrar','Demo local: puedes escribir cualquier usuario y contraseña. No se envían a ningún servidor.':'Demonstração local: digite qualquer usuário e senha. Nada é enviado a um servidor.','¿Qué quieres estudiar?':'O que você quer estudar?','Cada área tiene su propia pantalla y sus propios retos.':'Cada matéria tem sua própria tela e seus próprios desafios.','Matemáticas':'Matemática','Programación':'Programação','Inglés básico':'Inglês','Laboratorio de Matemáticas':'Laboratório de Matemática','Laboratorio de Programación':'Laboratório de Programação','Laboratorio de Inglés':'Laboratório de Inglês','Álgebra, cálculo y estadística':'Álgebra, cálculo e estatística','Lógica, código y algoritmos':'Lógica, código e algoritmos','Vocabulario y gramática básica':'Vocabulário e gramática básica','← Volver':'← Voltar','Sesión de práctica':'Sessão de prática','Reto de parejas':'Desafio de pares','Resumen de partida':'Resumo da partida','Puntos':'Pontos','Racha':'Sequência','Nivel':'Nível','Vidas':'Vidas','☰ Menú':'☰ Menu','Efectos: sí':'Efeitos: sim','Efectos: no':'Efeitos: não','Música: sí':'Música: sim','Música: no':'Música: não','Idioma / Language':'Idioma','Categoría':'Categoria','Modo de juego':'Modo de jogo','preguntas en esta categoría':'perguntas nesta categoria','Comodín 50/50 ×2':'Ajuda 50/50 ×2','Escribe tu respuesta':'Digite sua resposta','Comprobar':'Verificar','Pista':'Dica','Siguiente':'Próxima','Punto de control':'Ponto de controle','Seguir jugando':'Continuar jogando','Guardar y salir':'Salvar e sair','Movimientos':'Movimentos','Parejas':'Pares','Voltea dos cartas. Une cada término con su significado.':'Vire duas cartas. Combine cada termo com seu significado.','Resultado':'Resultado','Puntaje final':'Pontuação final','Aciertos':'Acertos','Mejor racha':'Melhor sequência','Tiempo':'Tempo','Jugar de nuevo':'Jogar novamente','Cambiar modo':'Mudar modo','Clásico':'Clássico','Verdadero o falso':'Verdadeiro ou falso','Contrarreloj':'Contra o relógio','Supervivencia':'Sobrevivência','Relámpago':'Relâmpago','Escribir':'Digitar','Parejas 3D':'Pares 3D','Álgebra':'Álgebra','Cálculo':'Cálculo','Estadística':'Estatística','Lógica':'Lógica','Funciones':'Funções','Bucles':'Laços','Arreglos':'Vetores','Pseudocódigo':'Pseudocódigo','Gramática':'Gramática','Vocabulario':'Vocabulário'},
+  fr:{'Usuario':'Nom d’utilisateur','Contraseña':'Mot de passe','Inicia sesión para entrar a tu espacio de estudio.':'Connectez-vous pour accéder à votre espace d’étude.','Escribe tu usuario':'Saisissez votre nom d’utilisateur','Escribe tu contraseña':'Saisissez votre mot de passe','Iniciar sesión':'Se connecter','Demo local: puedes escribir cualquier usuario y contraseña. No se envían a ningún servidor.':'Démo locale : saisissez n’importe quel nom et mot de passe. Rien n’est envoyé à un serveur.','¿Qué quieres estudiar?':'Que souhaitez-vous étudier ?','Cada área tiene su propia pantalla y sus propios retos.':'Chaque matière possède son écran et ses défis.','Matemáticas':'Mathématiques','Programación':'Programmation','Inglés básico':'Anglais','Laboratorio de Matemáticas':'Laboratoire de mathématiques','Laboratorio de Programación':'Laboratoire de programmation','Laboratorio de Inglés':'Laboratoire d’anglais','Álgebra, cálculo y estadística':'Algèbre, calcul et statistiques','Lógica, código y algoritmos':'Logique, code et algorithmes','Vocabulario y gramática básica':'Vocabulaire et grammaire de base','← Volver':'← Retour','Sesión de práctica':'Séance d’entraînement','Reto de parejas':'Défi des paires','Resumen de partida':'Résumé de la partie','Puntos':'Points','Racha':'Série','Nivel':'Niveau','Vidas':'Vies','☰ Menú':'☰ Menu','Efectos: sí':'Effets : oui','Efectos: no':'Effets : non','Música: sí':'Musique : oui','Música: no':'Musique : non','Idioma / Language':'Langue','Categoría':'Catégorie','Modo de juego':'Mode de jeu','preguntas en esta categoría':'questions dans cette catégorie','Comodín 50/50 ×2':'Indice 50/50 ×2','Escribe tu respuesta':'Écrivez votre réponse','Comprobar':'Vérifier','Pista':'Indice','Siguiente':'Suivant','Punto de control':'Point de contrôle','Seguir jugando':'Continuer','Guardar y salir':'Enregistrer et quitter','Movimientos':'Coups','Parejas':'Paires','Voltea dos cartas. Une cada término con su significado.':'Retournez deux cartes. Associez chaque terme à sa signification.','Resultado':'Résultat','Puntaje final':'Score final','Aciertos':'Bonnes réponses','Mejor racha':'Meilleure série','Tiempo':'Temps','Jugar de nuevo':'Rejouer','Cambiar modo':'Changer de mode','Clásico':'Classique','Verdadero o falso':'Vrai ou faux','Contrarreloj':'Contre-la-montre','Supervivencia':'Survie','Relámpago':'Éclair','Escribir':'Écriture','Parejas 3D':'Paires 3D','Álgebra':'Algèbre','Cálculo':'Calcul','Estadística':'Statistiques','Lógica':'Logique','Funciones':'Fonctions','Bucles':'Boucles','Arreglos':'Tableaux','Pseudocódigo':'Pseudocode','Gramática':'Grammaire','Vocabulario':'Vocabulaire'}
+};
+
+Object.assign(UI_LANGS.en,{'Ranking global':'Global ranking','Ver ranking':'View ranking','Los mejores puntajes':'Top scores','Actualizar':'Refresh','Cargando ranking…':'Loading ranking…','Aún no hay puntajes en este modo. ¡Sé el primero!':'No scores in this mode yet. Be the first!','No se pudo cargar el ranking. Revisa tu conexión.':'Could not load the ranking. Check your connection.','El ranking global todavía no está activado.':'The global ranking is not enabled yet.','Enviando tu puntaje al ranking global…':'Sending your score to the global ranking…','Puntaje enviado al ranking global.':'Score sent to the global ranking.','No se pudo enviar el puntaje al ranking.':'Could not send your score to the ranking.'});
+Object.assign(UI_LANGS.pt,{'Ranking global':'Ranking global','Ver ranking':'Ver ranking','Los mejores puntajes':'Melhores pontuações','Actualizar':'Atualizar','Cargando ranking…':'Carregando ranking…','Aún no hay puntajes en este modo. ¡Sé el primero!':'Ainda não há pontuações neste modo. Seja o primeiro!','No se pudo cargar el ranking. Revisa tu conexión.':'Não foi possível carregar o ranking. Verifique sua conexão.','El ranking global todavía no está activado.':'O ranking global ainda não está ativado.','Enviando tu puntaje al ranking global…':'Enviando sua pontuação ao ranking global…','Puntaje enviado al ranking global.':'Pontuação enviada ao ranking global.','No se pudo enviar el puntaje al ranking.':'Não foi possível enviar sua pontuação ao ranking.'});
+Object.assign(UI_LANGS.fr,{'Ranking global':'Classement mondial','Ver ranking':'Voir le classement','Los mejores puntajes':'Meilleurs scores','Actualizar':'Actualiser','Cargando ranking…':'Chargement du classement…','Aún no hay puntajes en este modo. ¡Sé el primero!':'Aucun score dans ce mode. Soyez le premier !','No se pudo cargar el ranking. Revisa tu conexión.':'Impossible de charger le classement. Vérifiez votre connexion.','El ranking global todavía no está activado.':'Le classement mondial n’est pas encore activé.','Enviando tu puntaje al ranking global…':'Envoi de votre score au classement mondial…','Puntaje enviado al ranking global.':'Score envoyé au classement mondial.','No se pudo enviar el puntaje al ranking.':'Impossible d’envoyer votre score au classement.'});
+var currentLang='es';
+var originalTextNodes=new WeakMap();
+function spanishCanonical(text,sourceLang){
+  var t=String(text||'').trim();
+  if(!t)return t;
+  if(sourceLang==='es')return t;
+  var source=UI_LANGS[sourceLang]||{};
+  for(var key in source){if(source[key]===t)return key;}
+  return t;
+}
+var BTN_SEL='button,.btn,.chip,.subject-pick,[role=button],.opt';
+var BTN_TEXTS=['Inglés','Verdadero','Falso','Ver resultado','Siguiente','Jugar','Continuar','Empezar de nuevo','Comprobar','Pista'];
+function uiOverride(node,s){
+  var v=ADM.ui[s];
+  if(typeof v!=='string'||v==='')return s;
+  var el=node.parentElement;
+  if(el&&(el.closest(BTN_SEL)||el.closest('#qText,#qSub,#ctxT,#pgrid')||el.closest('#opts')))return s;
+  return v;
+}
+function translateTextNodes(root){
+  var lang=UI_LANGS[currentLang]||{};
+  var walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT);
+  var node;
+  while(node=walker.nextNode()){
+    var live=node.nodeValue,trim=live.trim();
+    if(!trim)continue;
+    if(!originalTextNodes.has(node)){
+      var canonical=spanishCanonical(trim,currentLang);
+      var lead=live.match(/^\s*/)[0],tail=live.match(/\s*$/)[0];
+      originalTextNodes.set(node,{text:canonical,lead:lead,tail:tail});
+    }
+    var saved=originalTextNodes.get(node),translated=lang[saved.text],shown;
+    if(currentLang==='es')shown=uiOverride(node,saved.text);
+    else if(translated!==undefined)shown=translated;
+    else shown=saved.text;
+    node.nodeValue=saved.lead+shown+saved.tail;
+  }
+}
+function applyLanguage(){
+  translateTextNodes(document.body);
+  document.querySelectorAll('[data-language]').forEach(function(btn){btn.setAttribute('aria-pressed',String(btn.getAttribute('data-language')===currentLang))});
+  var placeholders={en:{u:'Enter your username',p:'Enter your password',w:'Type your answer'},pt:{u:'Digite seu usuário',p:'Digite sua senha',w:'Digite sua resposta'},fr:{u:'Saisissez votre nom d’utilisateur',p:'Saisissez votre mot de passe',w:'Écrivez votre réponse'},es:{u:ov('Escribe tu usuario'),p:ov('Escribe tu contraseña'),w:ov('Escribe tu respuesta')}}[currentLang];
+  var u=document.getElementById('loginUser'),p=document.getElementById('loginPass'),wi=document.getElementById('wIn');
+  if(u)u.placeholder=placeholders.u;if(p)p.placeholder=placeholders.p;
+  if(wi){wi.placeholder=placeholders.w;wi.setAttribute('aria-label',wi.placeholder)}
+  document.documentElement.lang=({en:'en',pt:'pt',fr:'fr',es:'es-419'})[currentLang]||'es-419';
+}
+function setLanguage(lang){
+  currentLang=UI_LANGS[lang]?lang:'es';
+  try{localStorage.setItem('q3d_language',JSON.stringify(currentLang))}catch(e){}
+  applyLanguage();
+  document.querySelectorAll('[data-language]').forEach(function(btn){btn.setAttribute('aria-pressed',String(btn.getAttribute('data-language')===currentLang))});
+}
+function activateProfile(name){activeProfile=String(name||'').trim().toLocaleLowerCase();if(!activeProfile)return;try{var marker='q3d_profile_migrated_'+encodeURIComponent(activeProfile);if(localStorage.getItem(marker))return;['q3d_area','q3d_levels','q3d_save','q3d_best'].forEach(function(k){var target='q3d_profile_'+encodeURIComponent(activeProfile)+'_'+k;if(localStorage.getItem(target)===null){var legacy=localStorage.getItem(k);if(legacy!==null)localStorage.setItem(target,legacy)}});localStorage.setItem(marker,'1')}catch(e){}};
+if(activeProfile)activateProfile(activeProfile);
+
+/* ---------- BANCO DE PREGUNTAS: [pregunta, correcta, [3 incorrectas], [respuestas aceptadas al escribir]] ---------- */
+var CATS={
+ alg:{name:'Álgebra',qs:[
+  ['¿Cuáles son las soluciones de x² − 5x + 6 = 0?','x = 2 y x = 3',['x = −2 y x = −3','x = 1 y x = 6','x = 5 y x = 1'],[],'Se factoriza como (x − 2)(x − 3) = 0 y cada factor igualado a cero da una solución.'],
+  ['¿Cuál es la fórmula general para resolver ax² + bx + c = 0?','x = (−b ± √(b² − 4ac)) / 2a',['x = (b ± √(b² − 4ac)) / 2a','x = (−b ± √(b² + 4ac)) / 2a','x = (−b ± √(b² − 4ac)) / a'],[],'Sale de completar el cuadrado en ax² + bx + c = 0. El ± da las dos raíces.'],
+  ['¿A qué es igual (a + b)²?','a² + 2ab + b²',['a² + b²','a² + ab + b²','a² − 2ab + b²'],['a2+2ab+b2','a²+2ab+b²','a^2+2ab+b^2','a² + 2ab + b²'],'Es un producto notable. El doble producto 2ab no se puede omitir, por eso (a + b)² no es a² + b².'],
+  ['¿Cómo se factoriza a² − b²?','(a − b)(a + b)',['(a − b)²','(a + b)²','(a − b)(a² + b²)'],['(a-b)(a+b)','(a+b)(a-b)','(a − b)(a + b)','(a + b)(a − b)'],'Es la diferencia de cuadrados: se factoriza como la suma por la diferencia.'],
+  ['¿Cómo se llama b² − 4ac en una ecuación cuadrática?','Discriminante',['Vértice','Pendiente','Raíz doble'],['discriminante'],'Su signo dice cuántas raíces reales hay: positivo dos, cero una doble y negativo ninguna.'],
+  ['Si el discriminante es negativo, ¿cuántas raíces reales hay?','Ninguna',['Una','Dos distintas','Infinitas'],['ninguna','0','cero'],'La raíz cuadrada de un número negativo no es real, así que las soluciones son complejas.'],
+  ['¿A qué es igual log(x·y)?','log x + log y',['log x · log y','log x − log y','x · log y'],[],'Los logaritmos convierten productos en sumas: log(xy) = log x + log y, para x, y > 0.'],
+  ['¿Cuánto vale 2⁵ · 2³?','256',['32 768','64','1 024'],['256','2^8','2⁸'],'Al multiplicar potencias de igual base se suman los exponentes: 2⁵⁺³ = 2⁸ = 256.'],
+  ['Resuelve 3x − 7 = 11.','x = 6',['x = 4','x = 18','x = 8'],['6','x=6','x = 6'],'Se suma 7 a ambos lados: 3x = 18. Luego se divide entre 3.'],
+  ['¿Cuál es la pendiente de la recta que pasa por (1, 2) y (3, 8)?','3',['2','6','1/3'],['3','tres'],'Pendiente = cambio en y entre cambio en x = (8 − 2)/(3 − 1) = 6/2 = 3.'],
+  ['¿Qué valores de x cumplen |x| = 5?','x = 5 o x = −5',['Solo x = 5','x = 0','x = 25'],[],'El valor absoluto mide la distancia al cero, y hay dos números a distancia 5 del origen.'],
+  ['¿A qué es igual (xᵃ)ᵇ?','xᵃᵇ',['xᵃ⁺ᵇ','xᵃ/ᵇ','xᵃ + xᵇ'],[],'Una potencia de una potencia multiplica los exponentes.'],
+  ['¿Cuánto suman los n primeros términos de una progresión aritmética?','n(a₁ + aₙ) / 2',['n(a₁ · aₙ) / 2','n(a₁ + aₙ)','(a₁ + aₙ) / 2n'],[],'Se promedian el primer y el último término y se multiplica por la cantidad de términos. Es el truco de Gauss.'],
+  ['Factoriza x² + 5x + 6.','(x + 2)(x + 3)',['(x + 1)(x + 6)','(x − 2)(x − 3)','(x + 2)(x − 3)'],['(x+2)(x+3)','(x+3)(x+2)','(x + 2)(x + 3)','(x + 3)(x + 2)'],'Buscas dos números que sumen 5 y multipliquen 6: son 2 y 3.'],
+  ['¿En qué valor de x está el vértice de y = ax² + bx + c?','x = −b / 2a',['x = b / 2a','x = −b / a','x = −2a / b'],['-b/2a','-b/(2a)','−b/2a','−b/(2a)','x = -b/2a','x = −b/2a'],'Es el punto medio entre las dos raíces, donde la parábola cambia de dirección.'],
+  ['Si 2ˣ = 32, ¿cuánto vale x?','5',['4','6','16'],['5','cinco'],'Como 32 = 2⁵, el exponente que buscas es 5.'],
+  ['Simplifica (x² · x³) / x⁴.','x',['x²','x⁵','x⁹'],['x'],'El numerador es x⁵, y al dividir entre x⁴ se restan exponentes: x⁵⁻⁴ = x.'],
+  ['Resuelve el sistema x + y = 10, x − y = 2.','x = 6 y y = 4',['x = 8 y y = 2','x = 5 y y = 5','x = 4 y y = 6'],[],'Al sumar las dos ecuaciones queda 2x = 12, luego x = 6 y y = 4.'],
+  ['¿Es cierto que √(a² + b²) = a + b?','No, en general no',['Sí, siempre','Sí, si a = b','Sí, si ambos son negativos'],[],'La raíz no se distribuye sobre una suma. Ejemplo: √(9 + 16) = 5, pero 3 + 4 = 7.'],
+  ['Resuelve 2x + 3 > 11.','x > 4',['x < 4','x > 7','x > 8'],['x > 4','x>4'],'Restas 3 para tener 2x > 8 y divides entre 2. Como 2 es positivo, el sentido no cambia.'],
+  ['¿Qué le pasa al sentido de una desigualdad al multiplicar por un número negativo?','Se invierte',['Se mantiene','Se vuelve igualdad','Desaparece'],['se invierte','se cambia'],'Por ejemplo, 2 < 3 pero −2 > −3.'],
+  ['¿Cuánto vale log₂ 8?','3',['2','4','16'],['3','tres'],'Porque 2³ = 8: el logaritmo es el exponente al que hay que elevar la base.'],
+  ['¿Cuál es el máximo factor común de 6x² + 9x?','3x',['6x','9x','3'],['3x'],'El mayor número que divide a 6 y a 9 es 3, y la mayor potencia común de x es x¹.'],
+  ['¿Cuánto vale i², donde i es la unidad imaginaria?','−1',['1','i','−i'],['-1','−1','menos 1'],'La unidad imaginaria se define precisamente por la propiedad i² = −1.'],
+  ['¿Cuánto suman las raíces de x² − 7x + 10 = 0?','7',['10','−7','3'],['7','siete'],'Por las fórmulas de Vieta la suma de raíces es −b/a = 7. En efecto, las raíces son 2 y 5.'],
+  ['¿Cuál es el término n de una progresión geométrica con razón r?','a₁ · rⁿ⁻¹',['a₁ · n · r','a₁ + (n − 1)r','a₁ · rⁿ⁺¹'],['a1*r^(n-1)','a1·r^(n-1)','a₁·rⁿ⁻¹','a₁ · rⁿ⁻¹'],'Cada término se obtiene multiplicando el anterior por la razón r.'],
+  ['¿Cuánto es 1/2 + 1/3?','5/6',['2/5','1/5','2/6'],['5/6'],'Con denominador común 6 queda 3/6 + 2/6 = 5/6.'],
+  ['¿Cuáles son las soluciones de x² = 49?','x = 7 o x = −7',['Solo x = 7','x = 24,5','x = 49'],[],'Una ecuación x² = k con k > 0 tiene dos soluciones, +√k y −√k.'],
+  ['Racionaliza 1/√2.','√2 / 2',['√2','1/2','2√2'],['√2/2','sqrt(2)/2','raiz de 2 entre 2'],'Se multiplica arriba y abajo por √2, y queda √2/2, que vale unos 0,707.'],
+  ['¿Cuál es la pendiente de la recta y = −3x + 4?','−3',['4','3','−4'],['-3','−3','menos 3'],'En la forma y = mx + b, m es la pendiente y b la ordenada al origen.'],
+  ['Desarrolla (x − 3)².','x² − 6x + 9',['x² − 9','x² + 9','x² − 3x + 9'],['x2-6x+9','x²-6x+9','x^2-6x+9','x² − 6x + 9'],'Es el cuadrado de un binomio: x² − 2·3·x + 3².'],
+  ['Si f(x) = 2x + 1, ¿cuánto vale f(3)?','7',['6','5','9'],['7','siete'],'Se sustituye x = 3: 2·3 + 1 = 7.'],
+  ['¿Cuál es la solución real de x³ = −8?','x = −2',['x = 2','x = −4','No tiene solución real'],['-2','−2','x=-2','x = -2','x = −2'],'La raíz cúbica sí admite negativos, porque (−2)³ = −8.']
+ ]},
+ calc:{name:'Cálculo',qs:[
+  ['¿Cuál es la derivada de x²?','2x',['x','x²','2'],['2x'],'Regla de la potencia: la derivada de xⁿ es n·xⁿ⁻¹.'],
+  ['¿Cuál es la derivada de sen(x)?','cos(x)',['−cos(x)','−sen(x)','tan(x)'],['cos(x)','cos x','cos'],'Es una derivada básica: (sen x)′ = cos x y (cos x)′ = −sen x.'],
+  ['¿Cuál es la integral de 2x dx?','x² + C',['2x² + C','x + C','2 + C'],['x2 + c','x^2 + c','x² + c','x2+c','x²+c'],'La antiderivada de 2x es x². La constante C aparece porque la derivada de una constante es 0.'],
+  ['¿Cuál es la derivada de eˣ?','eˣ',['x·eˣ⁻¹','ln x','1'],['e^x','ex','eˣ'],'eˣ es, salvo múltiplos constantes, la única función igual a su propia derivada.'],
+  ['¿Cuánto vale el límite de sen(x)/x cuando x → 0?','1',['0','∞','No existe'],['1','uno'],'Es un límite notable que se demuestra geométricamente y sirve para derivar sen x.'],
+  ['¿Cuál es la derivada de ln(x)?','1/x',['x','ln(x)/x','eˣ'],['1/x'],'La derivada del logaritmo natural es 1/x, definida para x > 0.'],
+  ['La regla de la cadena establece que (f∘g)′(x) =','f′(g(x))·g′(x)',['f′(x)·g′(x)','f(g′(x))','f′(x) + g′(x)'],[],'Se deriva la función externa evaluada en la interna y se multiplica por la derivada de la interna.'],
+  ['¿Cuál es la integral de 1/x dx?','ln|x| + C',['1/x² + C','x·ln x + C','eˣ + C'],['ln|x| + c','ln|x|+c','ln x + c','ln(x) + c'],'Es la excepción de la regla de la potencia (n = −1). Lleva valor absoluto porque 1/x también existe para x < 0.'],
+  ['¿Cuál es la derivada de una constante?','0',['1','La misma constante','x'],['0','cero'],'Una constante no cambia, así que su tasa de cambio es cero.'],
+  ['¿Cuál es la derivada de x³?','3x²',['x²','3x','x³/3'],['3x2','3x^2','3x²'],'Se baja el exponente y se resta uno: 3·x³⁻¹ = 3x².'],
+  ['¿Cuál es la derivada de tan(x)?','sec²(x)',['cot(x)','−csc²(x)','sec(x)·tan(x)'],['sec^2(x)','sec²(x)','sec2(x)','sec^2 x','sec² x'],'tan x = sen x / cos x. Con la regla del cociente queda 1/cos² x = sec² x.'],
+  ['¿Cuánto es (u·v)′ según la regla del producto?','u′v + uv′',['u′v′','u′v − uv′','(u′v − uv′) / v²'],[],'No se derivan los factores por separado: se deriva uno a la vez y se suman los resultados.'],
+  ['¿Cuál es la integral de cos(x) dx?','sen(x) + C',['−sen(x) + C','cos(x) + C','tan(x) + C'],['sen x + c','sin x + c','sen(x) + c','sen x+c','sen(x)+c'],'Como (sen x)′ = cos x, la antiderivada de cos x es sen x + C.'],
+  ['El teorema fundamental del cálculo dice que ∫ₐᵇ f(x) dx =','F(b) − F(a)',['F(a) − F(b)','F(b) + F(a)','f(b) − f(a)'],['f(b)-f(a)','f(b) - f(a)'],'Conecta derivadas e integrales: la integral definida se evalúa con cualquier antiderivada F de f.'],
+  ['¿Cuál es la derivada de √x?','1 / (2√x)',['2√x','1 / √x','√x / 2'],['1/(2√x)','1/(2*sqrt(x))','1/(2sqrt(x))'],'Como √x = x^(1/2), su derivada es (1/2)·x^(−1/2) = 1/(2√x).'],
+  ['¿Cuál es la derivada de cos(x)?','−sen(x)',['sen(x)','−cos(x)','tan(x)'],['-sen(x)','−sen(x)','-sen x','−sen x','-sin(x)','-sin x'],'Lo que más se olvida es el signo menos: (cos x)′ = −sen x.'],
+  ['¿Cuál es la derivada de 5x⁴?','20x³',['5x³','20x⁴','4x³'],['20x3','20x^3','20x³'],'Se multiplica el coeficiente por el exponente (5·4 = 20) y el exponente baja a 3.'],
+  ['¿Cuánto vale el límite de (x² − 4)/(x − 2) cuando x → 2?','4',['0','2','No existe'],['4','cuatro'],'Se factoriza x² − 4 = (x − 2)(x + 2), se simplifica y queda x + 2, que tiende a 4.'],
+  ['¿Cuánto vale ∫₀¹ x dx?','1/2',['1','2','0'],['1/2','0.5','0,5'],'La antiderivada x²/2 evaluada entre 0 y 1 da 1/2 − 0 = 1/2.'],
+  ['Los puntos críticos de f se encuentran resolviendo:','f′(x) = 0',['f(x) = 0','f″(x) = 0','f(x) = f′(x)'],["f'(x) = 0",'f′(x) = 0',"f'(x)=0",'f′(x)=0'],'En un máximo o mínimo local la tangente es horizontal, es decir, la pendiente vale 0.'],
+  ['Si f′(c) = 0 y f″(c) > 0, ¿qué hay en x = c?','Un mínimo local',['Un máximo local','Un punto de inflexión','No se puede saber'],['minimo local','minimo','un minimo local'],'Con f″ > 0 la curva abre hacia arriba, como el fondo de un valle.'],
+  ['¿Cuál es la derivada de e²ˣ?','2e²ˣ',['e²ˣ','2x·e²ˣ⁻¹','e²'],['2e^(2x)','2e2x','2e²ˣ','2*e^(2x)'],'Por la regla de la cadena, la derivada del exponente (2) multiplica a e²ˣ.'],
+  ['¿Cuál es la integral de eˣ dx?','eˣ + C',['eˣ/x + C','x·eˣ + C','ln x + C'],['e^x + c','ex + c','eˣ + c','e^x+c'],'Como eˣ es su propia derivada, también es su propia antiderivada.'],
+  ['¿Cuál es la derivada de x·ln(x)?','ln(x) + 1',['1/x','ln(x)','x / ln(x)'],['ln x + 1','ln(x) + 1','ln x+1','1 + ln x','1 + ln(x)'],'Regla del producto: 1·ln x + x·(1/x) = ln x + 1.'],
+  ['¿Cuánto suma la serie 1/2 + 1/4 + 1/8 + …?','1',['2','1/2','Diverge'],['1','uno'],'Es geométrica con razón 1/2: suma = (1/2)/(1 − 1/2) = 1.'],
+  ['¿Qué representa geométricamente la derivada en un punto?','La pendiente de la recta tangente',['El área bajo la curva','El valor máximo de la función','La longitud de la curva'],[],'Es la tasa de cambio instantánea de la función en ese punto.'],
+  ['¿Qué representa ∫ₐᵇ f(x) dx cuando f ≥ 0?','El área bajo la curva entre a y b',['La pendiente en x = a','El valor máximo de f','La longitud de la curva'],[],'Es el límite de las sumas de Riemann: rectángulos cada vez más finos bajo la curva.'],
+  ['Una función f es continua en a si:','lím f(x) cuando x → a es igual a f(a)',['Existe f′(a)','f(a) existe, y nada más','El límite en a es 0'],[],'Deben cumplirse tres cosas: f(a) está definida, el límite existe y ambos valores coinciden.'],
+  ['La regla de L’Hôpital se usa en límites de la forma:','0/0 o ∞/∞',['1/0','0 · 1','∞ + 1'],[],'Si el límite es indeterminado, se puede derivar numerador y denominador por separado y volver a calcular.'],
+  ['¿Cuál es la integral de x² dx?','x³/3 + C',['2x + C','x³ + C','x²/2 + C'],['x3/3 + c','x^3/3 + c','x³/3 + c','x³/3+c'],'Se sube el exponente en uno y se divide entre el nuevo exponente: x³/3.'],
+  ['¿Cuál es la derivada de 1/x?','−1/x²',['1/x²','ln x','−1/x'],['-1/x2','-1/x^2','−1/x²','-1/x²'],'Como 1/x = x⁻¹, su derivada es −1·x⁻² = −1/x².'],
+  ['¿Cuánto vale el límite de 1/x cuando x → ∞?','0',['1','∞','No existe'],['0','cero'],'Al crecer x sin límite, 1/x se acerca tanto como se quiera a 0.'],
+  ['¿Cuál es la derivada de sen(2x)?','2cos(2x)',['cos(2x)','−2cos(2x)','2sen(2x)'],['2cos(2x)','2cos 2x','2*cos(2x)'],'Regla de la cadena: la derivada de sen es cos y se multiplica por la derivada de 2x, que es 2.']
+ ]},
+ lin:{name:'Álgebra lineal',qs:[
+  ['¿Cuánto vale el determinante de [a b; c d]?','ad − bc',['ad + bc','ab − cd','ac − bd'],['ad-bc','ad − bc','ad - bc'],'Es el producto de la diagonal principal menos el de la diagonal secundaria.'],
+  ['¿A qué es igual (AB)ᵀ?','BᵀAᵀ',['AᵀBᵀ','ABᵀ','BA'],['btat','bᵀaᵀ','b^t a^t'],'La transpuesta invierte el orden del producto, igual que la inversa: (AB)⁻¹ = B⁻¹A⁻¹.'],
+  ['Una matriz cuadrada A es invertible si y solo si:','det(A) ≠ 0',['det(A) = 0','A es simétrica','A es triangular'],['det(a) != 0','det(a) ≠ 0','determinante distinto de cero','distinto de cero'],'Si el determinante es 0, la matriz aplasta el espacio y esa operación no se puede deshacer.'],
+  ['¿Cuánto vale el producto escalar (1, 2, 3) · (4, 5, 6)?','32',['28','21','36'],['32'],'1·4 + 2·5 + 3·6 = 4 + 10 + 18 = 32.'],
+  ['¿Qué ecuación cumple un vector propio v con valor propio λ?','Av = λv',['Av = v','Av = 0','Aᵀv = λ'],['av = λv','av=λv','av = lambda v','av = lv'],'Al aplicarle A, el vector propio solo se estira o encoge (por λ) sin cambiar de dirección.'],
+  ['¿Cuál es el rango de la matriz identidad de 3 × 3?','3',['1','0','9'],['3','tres'],'Sus tres filas son linealmente independientes, así que el rango es 3.'],
+  ['El producto AB está definido cuando:','Las columnas de A = las filas de B',['Las filas de A = las filas de B','A y B tienen el mismo tamaño','Las columnas de A = las columnas de B'],[],'Si A es m×n y B es n×p, el producto es m×p. El n central debe coincidir.'],
+  ['¿Cuál es la dimensión de ℝ⁴?','4',['3','16','8'],['4','cuatro'],'La dimensión es el número de vectores de cualquier base, y la base canónica de ℝ⁴ tiene 4.'],
+  ['Dos vectores son ortogonales cuando:','Su producto escalar es 0',['Su suma es 0','Son paralelos','Tienen la misma norma'],['producto escalar es 0','su producto escalar es 0','producto escalar = 0','u·v = 0','u.v = 0'],'Producto escalar 0 equivale a un ángulo de 90° entre dos vectores no nulos.'],
+  ['¿Qué es la traza de una matriz cuadrada?','La suma de su diagonal principal',['El producto de su diagonal','La suma de todos sus elementos','Su determinante'],[],'Se escribe tr(A) y además es igual a la suma de los valores propios.'],
+  ['¿Cuánto vale el determinante de la matriz identidad?','1',['0','n','n²'],['1','uno'],'La identidad no cambia ningún vector, y su determinante es 1.'],
+  ['Los valores propios de una matriz triangular son:','Los elementos de su diagonal',['Los elementos fuera de la diagonal','Las sumas de sus filas','Su determinante'],[],'En una triangular, det(A − λI) es el producto de (aᵢᵢ − λ), y sus raíces son los aᵢᵢ.'],
+  ['Un conjunto de vectores es linealmente independiente si:','Ninguno es combinación lineal de los demás',['Todos son ortogonales','Todos tienen norma 1','Suman cero'],[],'Si uno se puede escribir con los demás, es redundante y no aporta una dirección nueva.'],
+  ['¿A qué es igual det(AB)?','det(A)·det(B)',['det(A) + det(B)','det(A) − det(B)','det(Aᵀ)·det(B)⁻¹'],['det(a)·det(b)','det(a)*det(b)','det a det b','det(a)det(b)'],'El determinante es multiplicativo. Por eso det(A⁻¹) = 1/det(A).'],
+  ['Si A es 2×3 y B es 3×4, ¿de qué tamaño es AB?','2×4',['3×3','2×3','4×2'],['2x4','2×4'],'Se conservan las filas de A y las columnas de B; el 3 central desaparece.'],
+  ['¿Cuál es la inversa de la matriz diagonal [2 0; 0 4]?','[1/2 0; 0 1/4]',['La misma matriz','[−2 0; 0 −4]','[4 0; 0 2]'],[],'En una matriz diagonal basta invertir cada elemento de la diagonal.'],
+  ['¿Cuánto vale el determinante de [1 2; 3 4]?','−2',['2','10','−10'],['-2','−2'],'1·4 − 2·3 = 4 − 6 = −2.'],
+  ['¿Cuál es la norma del vector (3, 4)?','5',['7','25','12'],['5','cinco'],'√(3² + 4²) = √25 = 5. Es el triple pitagórico 3-4-5.'],
+  ['¿Qué ecuación permite hallar los valores propios de A?','det(A − λI) = 0',['det(A + λI) = 1','A − λ = 0','det(A) = λ'],['det(a - λi) = 0','det(a − λi) = 0','det(a-λi)=0','det(a-lambda i)=0'],'Para que (A − λI)v = 0 tenga una solución no nula, A − λI debe ser singular.'],
+  ['Si A es cuadrada e invertible, el sistema Ax = b tiene:','Exactamente una solución',['Ninguna solución','Infinitas soluciones','Depende de b'],[],'La solución es x = A⁻¹b y es única para cualquier b.'],
+  ['¿Qué es el espacio nulo (núcleo) de A?','Las soluciones de Ax = 0',['Las filas de A','Las soluciones de Ax = b','Las columnas de A'],[],'Siempre contiene al vector cero y es un subespacio de ℝⁿ.'],
+  ['El teorema rango-nulidad dice que rango(A) + nulidad(A) =','El número de columnas de A',['El número de filas de A','det(A)','La traza de A'],[],'Para A de m×n se cumple dim Im(A) + dim Ker(A) = n.'],
+  ['Una matriz simétrica cumple:','A = Aᵀ',['A = A⁻¹','A = −Aᵀ','A² = A'],['a = at','a = aᵀ','a=aᵀ','a = a^t'],'Sus elementos son iguales respecto a la diagonal: aᵢⱼ = aⱼᵢ.'],
+  ['Una matriz ortogonal Q cumple:','QᵀQ = I',['Q = Qᵀ','det Q = 0','Q² = Q'],['qtq = i','qᵀq = i','qtq=i','q^t q = i'],'Sus columnas son ortonormales, por lo que Q conserva longitudes y ángulos.'],
+  ['¿Cuál de estos conjuntos es una base de ℝ²?','{(1, 0), (0, 1)}',['{(1, 2), (2, 4)}','{(1, 0), (2, 0)}','{(0, 0), (1, 1)}'],[],'Una base debe ser linealmente independiente y generar todo ℝ². Las otras opciones son dependientes.'],
+  ['El producto vectorial u × v en ℝ³ es:','Un vector perpendicular a u y a v',['Un escalar','Un vector paralelo a u','Igual a u · v'],[],'Su magnitud es |u||v|sen θ, el área del paralelogramo formado por u y v.'],
+  ['¿Cuáles son los valores propios de [2 0; 0 3]?','2 y 3',['0 y 5','1 y 6','−2 y −3'],['2 y 3','2,3','2 3'],'Es diagonal, así que los valores propios son los elementos de la diagonal.'],
+  ['Una matriz singular es aquella que:','No tiene inversa',['Tiene determinante 1','Es simétrica','Solo tiene ceros'],['no tiene inversa','no es invertible','no invertible'],'Singular equivale a det(A) = 0 y a que sus columnas son linealmente dependientes.'],
+  ['¿Qué hace la matriz [0 −1; 1 0] al plano?','Lo rota 90° en sentido antihorario',['Lo refleja respecto al eje x','Lo rota 180°','Lo escala por 2'],[],'Envía (1, 0) a (0, 1) y (0, 1) a (−1, 0): un giro de 90°.'],
+  ['¿A qué es igual (A⁻¹)⁻¹?','A',['Aᵀ','A⁻¹','I'],['a'],'Deshacer una inversión devuelve la matriz original.'],
+  ['¿Cuándo cambia de signo el determinante?','Al intercambiar dos filas',['Al sumar una fila a otra','Al multiplicar una fila por 1','Al transponer la matriz'],[],'Intercambiar filas invierte la orientación. Sumar múltiplos de una fila a otra no altera el determinante.'],
+  ['¿Cuántos vectores tiene una base de un subespacio de dimensión 3?','3',['2','4','Infinitos'],['3','tres'],'Por definición, la dimensión es el tamaño de cualquier base del subespacio.']
+ ]},
+ est:{name:'Estadística',qs:[
+  ['¿Cuál es la media de 2, 4, 6, 8?','5',['4','6','20'],['5','cinco'],'La suma es 20 y hay 4 datos, así que 20/4 = 5.'],
+  ['¿Cuál es la mediana de 2, 9, 4, 7, 3?','4',['5','7','3'],['4','cuatro'],'Ordenados quedan 2, 3, 4, 7, 9 y el dato central es 4. La media sí sería 5.'],
+  ['¿Cuál es la moda de 2, 3, 3, 5, 7, 3, 9?','3',['5','7','4'],['3','tres'],'El 3 aparece tres veces, más que cualquier otro dato.'],
+  ['La desviación estándar es:','La raíz cuadrada de la varianza',['La varianza al cuadrado','La media de las desviaciones','La diferencia entre máximo y mínimo'],['raiz de la varianza','raiz cuadrada de la varianza','√varianza','raiz de varianza'],'Tiene las mismas unidades que los datos, por eso se usa más que la varianza.'],
+  ['¿A qué es igual P(A ∪ B)?','P(A) + P(B) − P(A ∩ B)',['P(A) + P(B)','P(A) · P(B)','P(A) + P(B) + P(A ∩ B)'],[],'Se resta P(A ∩ B) porque esa parte se contó dos veces.'],
+  ['Si A y B son independientes, P(A ∩ B) =','P(A) · P(B)',['P(A) + P(B)','P(A) / P(B)','0'],['p(a)·p(b)','p(a)*p(b)','p(a)p(b)'],'Que ocurra A no cambia la probabilidad de B, así que las probabilidades se multiplican.'],
+  ['¿Qué probabilidad hay de sacar dos caras en 2 lanzamientos de una moneda justa?','1/4',['1/2','1/3','1/8'],['1/4','0.25','0,25','25%'],'(1/2)·(1/2) = 1/4, porque los lanzamientos son independientes.'],
+  ['El teorema de Bayes dice que P(A|B) =','P(B|A)·P(A) / P(B)',['P(B|A)·P(B) / P(A)','P(A)·P(B)','P(A ∩ B) / P(A)'],[],'Permite invertir la condición: pasar de P(B|A) a P(A|B).'],
+  ['La distribución normal estándar tiene:','Media 0 y desviación 1',['Media 1 y desviación 0','Media 1 y desviación 1','Media 0 y desviación 2'],[],'Cualquier normal se estandariza con z = (x − μ)/σ.'],
+  ['En una normal, ¿qué porcentaje de datos queda dentro de ±1σ de la media?','Aprox. 68 %',['Aprox. 50 %','Aprox. 95 %','Aprox. 99,7 %'],['68','68%','68 %'],'Es la regla empírica 68–95–99,7 para distribuciones normales.'],
+  ['Un valor p menor que 0,05 sugiere:','Rechazar H₀',['Aceptar H₀ siempre','Que H₀ es verdadera','Que la muestra está sesgada'],['rechazar h0','rechazar h₀','rechazar la hipotesis nula'],'Un valor p bajo indica que los datos serían muy raros si H₀ fuera cierta.'],
+  ['La varianza muestral divide entre:','n − 1',['n','n + 1','n²'],['n-1','n − 1','n−1','n - 1'],'Dividir entre n − 1 (corrección de Bessel) vuelve insesgado al estimador de la varianza.'],
+  ['El coeficiente de correlación r toma valores entre:','−1 y 1',['0 y 1','0 y 100','−∞ y ∞'],['-1 y 1','−1 y 1','entre -1 y 1','entre −1 y 1','-1 a 1','−1 a 1'],'r = 1 es una relación lineal perfecta positiva, r = −1 una negativa y r = 0 indica ausencia de relación lineal.'],
+  ['¿Cuánto vale C(5, 2), las combinaciones de 5 en 2?','10',['20','25','7'],['10','diez'],'C(5, 2) = 5! / (2!·3!) = 10. El orden no importa.'],
+  ['El error tipo I consiste en:','Rechazar H₀ siendo verdadera',['No rechazar H₀ siendo falsa','Calcular mal la media','Usar una muestra pequeña'],[],'Es un falso positivo. Su probabilidad máxima es el nivel de significancia α.'],
+  ['¿Cuál es la varianza muestral de 2, 4 y 6?','4',['2','8/3','8'],['4','cuatro'],'La media es 4. Los cuadrados de las desviaciones suman 4 + 0 + 4 = 8, y 8/(3 − 1) = 4.'],
+  ['¿Cuál es el rango de los datos 3, 9, 12 y 5?','9',['12','3','7'],['9','nueve'],'Rango = máximo − mínimo = 12 − 3 = 9.'],
+  ['Al lanzar un dado justo, ¿qué probabilidad hay de sacar un número par?','1/2',['1/3','1/6','2/3'],['1/2','0.5','0,5','50%'],'Hay 3 resultados pares (2, 4 y 6) entre 6 posibles.'],
+  ['¿De cuántas formas se pueden ordenar 4 personas en una fila?','24',['16','12','8'],['24'],'Son las permutaciones de 4: 4! = 4·3·2·1 = 24.'],
+  ['Si x = 70, μ = 60 y σ = 5, ¿cuánto vale z?','2',['10','0,5','14'],['2','dos'],'z = (70 − 60)/5 = 2: el dato está a 2 desviaciones por encima de la media.'],
+  ['Un intervalo de confianza del 95 % significa que:','El método captura el parámetro en el 95 % de los muestreos',['El 95 % de los datos está dentro del intervalo','La media muestral vale 95','El error máximo es 5 %'],[],'Es una afirmación sobre el procedimiento, no sobre un intervalo concreto ya calculado.'],
+  ['La ley de los grandes números dice que, al aumentar n, la media muestral:','Se acerca a la media poblacional',['Se aleja de la media poblacional','Siempre vale 0','Se vuelve igual a la mediana'],[],'Por eso el promedio de muchos lanzamientos de moneda se acerca a 0,5.'],
+  ['El teorema del límite central dice que la media muestral tiende a distribuirse:','Normalmente',['Uniformemente','Como una binomial','Exponencialmente'],['normal','normalmente','una normal','gaussiana'],'Ocurre con muestras grandes, casi sin importar la distribución original de los datos.'],
+  ['¿Cuál es la media de una binomial con n = 10 y p = 0,3?','3',['0,3','7','10'],['3','tres'],'La media de una binomial es n·p = 10·0,3 = 3.'],
+  ['¿Qué probabilidad hay de obtener al menos una cara en 2 lanzamientos?','3/4',['1/2','1/4','2/3'],['3/4','0.75','0,75','75%'],'Es el complemento de «ninguna cara»: 1 − 1/4 = 3/4.'],
+  ['Si la media es 10 y se suma 5 a todos los datos, la nueva media es:','15',['10','5','50'],['15','quince'],'Sumar una constante desplaza la media por esa constante, pero no cambia la desviación estándar.'],
+  ['Si todos los datos se multiplican por 2, la desviación estándar:','Se multiplica por 2',['No cambia','Se multiplica por 4','Aumenta en 2'],[],'La dispersión escala igual que los datos. La varianza, en cambio, se multiplica por 4.'],
+  ['Con un valor atípico extremo, ¿qué medida resiste mejor?','La mediana',['La media','El rango','La varianza'],['mediana','la mediana'],'La mediana solo depende del orden de los datos, no de lo grande que sea el extremo.'],
+  ['La hipótesis nula H₀ suele afirmar que:','No hay efecto ni diferencia',['Existe un efecto grande','La muestra está sesgada','El valor p es 1'],[],'Se parte de H₀ y solo se rechaza si los datos serían muy improbables bajo ella.'],
+  ['Una correlación alta entre dos variables:','No implica causalidad',['Prueba que una causa a la otra','Indica que son independientes','Asegura que tienen la misma media'],['no implica causalidad','correlacion no es causalidad','no hay causalidad'],'Puede haber una tercera variable oculta o una simple coincidencia.'],
+  ['En la regresión lineal y = a + bx, ¿qué representa b?','El cambio esperado en y por cada unidad de x',['El valor de y cuando x = 0','El error de la medición','La correlación entre x e y'],[],'Es la pendiente de la recta de mínimos cuadrados.'],
+  ['La probabilidad de todos los resultados posibles de un experimento suma:','1',['0','100','Depende del experimento'],['1','uno','100%'],'Es un axioma de Kolmogorov: P(Ω) = 1.'],
+  ['¿Cuántos grupos de 3 personas se pueden formar con 6 personas?','20',['18','120','36'],['20','veinte'],'C(6, 3) = 6!/(3!·3!) = 20. El orden dentro del grupo no importa.']
+ ]}
+};
+var PAIRS={
+ alg:[['(a + b)²','a² + 2ab + b²'],['a² − b²','(a − b)(a + b)'],['Δ < 0','Sin raíces reales'],['log(xy)','log x + log y'],['|x| = 5','x = ±5'],['Pendiente m','(y₂ − y₁) / (x₂ − x₁)'],['x⁰ (x ≠ 0)','1'],['√(x²)','|x|']],
+ calc:[['(x²)′','2x'],['(sen x)′','cos x'],['(cos x)′','−sen x'],['(tan x)′','sec² x'],['(ln x)′','1/x'],['(√x)′','1 / (2√x)'],['Derivada de una constante','0'],['∫ 1/x dx','ln|x| + C']],
+ lin:[['det [a b; c d]','ad − bc'],['(AB)ᵀ','BᵀAᵀ'],['Identidad I','det = 1'],['Av = λv','Valor propio'],['u · v = 0','Ortogonales'],['Traza','Suma de la diagonal'],['Rango de I₃','3'],['dim ℝ⁴','4']],
+ est:[['Mediana','Valor central'],['Moda','Dato más frecuente'],['σ','√varianza'],['Normal estándar','μ = 0, σ = 1'],['r','Entre −1 y 1'],['Independientes','P(A ∩ B) = P(A)·P(B)'],['Valor p bajo','Rechazar H₀'],['C(5, 2)','10']]
+};
+/* ---------- PROGRAMACIÓN ---------- */
+CATS.cpp={name:'C++',qs:[
+ ['¿Qué librería se incluye para usar cout y cin en C++?','#include <iostream>',['#include <stdio>','#include <print>','#include <console>'],['#include <iostream>','iostream','<iostream>'],'iostream (input/output stream) ofrece cout para imprimir y cin para leer del teclado.'],
+ ['¿Cómo se imprime «Hola» en pantalla en C++?','cout << "Hola";',['print("Hola");','echo "Hola";','console.log("Hola");'],['cout << "Hola";','cout<<"Hola";','cout << "Hola"','cout<<"Hola"'],'cout envía datos a la pantalla con el operador <<. La instrucción termina con punto y coma.'],
+ ['¿Qué tipo de dato usarías en C++ para guardar 3.14?','double',['int','char','bool'],['double','float'],'int solo guarda enteros. Para decimales se usa double (más precisión) o float.'],
+ ['¿Cuál es la función por donde empieza todo programa en C++?','main',['start','init','run'],['main','main()','int main','int main()'],'Cuando ejecutas el programa, la computadora empieza siempre por la función main.'],
+ ['¿Con qué símbolo termina cada instrucción en C++?','Punto y coma ;',['Punto .','Dos puntos :','Coma ,'],['punto y coma',';'],'Si olvidas el punto y coma, el compilador marca un error de sintaxis.'],
+ ['¿Qué instrucción lee un número del teclado en C++?','cin >> numero;',['cout << numero;','input(numero);','readln(numero);'],['cin >> numero;','cin>>numero;','cin >> numero','cin>>numero'],'cin lee datos del teclado y los guarda en la variable con el operador >>.'],
+ ['¿Cómo se declara un entero llamado edad con valor 20?','int edad = 20;',['integer edad = 20;','edad int = 20;','var edad = 20;'],['int edad = 20;','int edad=20;','int edad = 20','int edad=20'],'Primero va el tipo de dato, luego el nombre y después el valor.'],
+ ['¿Para qué sirve «using namespace std;»?','Para usar cout y cin sin escribir std::',['Para importar la librería math','Para declarar una función','Para iniciar el programa'],[],'Sin esa línea habría que escribir std::cout y std::cin cada vez.'],
+ ['¿Qué símbolo comenta una línea en C++?','//',['#','--','%'],['//'],'Todo lo que va después de // en esa línea lo ignora el compilador.'],
+ ['¿Cuánto da 7 / 2 en C++ si ambos son int?','3',['3.5','4','2'],['3','tres'],'La división entre enteros descarta la parte decimal.'],
+ ['¿Qué operador da el residuo de una división en C++?','%',['/','&','//'],['%'],'Por ejemplo, 7 % 2 da 1. Sirve para saber si un número es par o impar.'],
+ ['¿Qué palabra devuelve un valor desde una función en C++?','return',['break','exit','output'],['return'],'return termina la función y entrega el resultado a quien la llamó.']
+]};
+CATS.py={name:'Python',qs:[
+ ['¿Cómo se imprime «Hola» en Python?','print("Hola")',['cout << "Hola"','echo("Hola")','console.log("Hola")'],['print("Hola")',"print('Hola')",'print("hola")'],'print() muestra texto en pantalla y no necesita punto y coma.'],
+ ['¿Qué símbolo comenta una línea en Python?','#',['//','--','/* */'],['#'],'Todo lo que va después de # se ignora.'],
+ ['¿Qué delimita los bloques de código en Python?','La indentación (sangría)',['Las llaves { }','El punto y coma','Los paréntesis'],['indentacion','la indentacion','sangria','la sangria'],'Python usa espacios al inicio de la línea para saber qué código pertenece a un if, un for o una función.'],
+ ['¿Qué tipo de dato es "Hola" en Python?','str (texto)',['int','float','list'],['str','string','texto','cadena'],'Cualquier texto entre comillas es un str.'],
+ ['¿Qué función lee texto del teclado en Python?','input()',['read()','scan()','get()'],['input()','input'],'input() siempre devuelve texto, aunque el usuario escriba un número.'],
+ ['¿Cuánto da 7 // 2 en Python?','3',['3.5','4','2'],['3','tres'],'El doble slash es la división entera: descarta los decimales.'],
+ ['¿Cuánto da 2 ** 3 en Python?','8',['6','5','9'],['8','ocho'],'** es el operador de potencia: 2 elevado a 3.'],
+ ['¿Cómo se crea una lista en Python?','[1, 2, 3]',['(1, 2, 3)','{1, 2, 3}','<1, 2, 3>'],['[1,2,3]','[1, 2, 3]'],'Las listas usan corchetes. Los paréntesis forman una tupla y las llaves un conjunto.'],
+ ['¿Qué función da la cantidad de elementos de una lista?','len()',['size()','length()','count()'],['len()','len'],'len(lista) devuelve cuántos elementos tiene.'],
+ ['¿Qué palabra define una función en Python?','def',['function','func','fn'],['def'],'Se escribe def nombre(parametros): y el cuerpo va indentado.'],
+ ['¿Qué devuelve type(5) en Python?','int',['str','float','bool'],['int','<class int>'],'type() dice de qué tipo es un dato. El 5 es un entero.'],
+ ['¿Cómo se convierte el texto "5" en un número entero?','int("5")',['str("5")','float("5")','number("5")'],['int("5")',"int('5')"],'int() convierte a entero. Es muy usado con input().']
+]};
+CATS.html={name:'HTML',qs:[
+ ['¿Qué significa HTML?','HyperText Markup Language',['High Text Machine Language','Hyper Tool Making Language','Home Text Markup Level'],['hypertext markup language','hyper text markup language'],'Es el lenguaje de marcado que da estructura a las páginas web.'],
+ ['¿Qué etiqueta crea el título más grande?','<h1>',['<title>','<head>','<big>'],['<h1>','h1'],'Los títulos van de <h1> (el más importante) a <h6>.'],
+ ['¿Qué etiqueta crea un párrafo?','<p>',['<para>','<text>','<br>'],['<p>','p'],'Cada párrafo va dentro de <p> y se cierra con la etiqueta de cierre.'],
+ ['¿Qué etiqueta inserta una imagen?','<img>',['<image>','<picture>','<src>'],['<img>','img'],'<img> no necesita etiqueta de cierre y usa los atributos src y alt.'],
+ ['¿Qué etiqueta crea un enlace?','<a>',['<link>','<href>','<url>'],['<a>','a'],'La a viene de «anchor» (ancla).'],
+ ['¿Qué atributo indica el destino de un enlace?','href',['src','link','url'],['href'],'Por ejemplo: <a href="pagina.html">. src se usa en imágenes.'],
+ ['¿Qué etiqueta crea una lista con viñetas?','<ul>',['<ol>','<li>','<list>'],['<ul>','ul'],'ul es «unordered list». Cada elemento va en un <li>.'],
+ ['¿Qué etiqueta crea una lista numerada?','<ol>',['<ul>','<nl>','<num>'],['<ol>','ol'],'ol es «ordered list».'],
+ ['¿Qué etiqueta contiene todo lo visible de la página?','<body>',['<head>','<html>','<footer>'],['<body>','body'],'<head> guarda datos de la página y <body> lo que ves en pantalla.'],
+ ['¿Qué etiqueta hace un salto de línea?','<br>',['<lb>','<break>','<hr>'],['<br>','br'],'<hr> dibuja una línea horizontal, no un salto.'],
+ ['¿Qué se escribe al inicio de un documento HTML5?','<!DOCTYPE html>',['<html5>','<!HTML>','<?html>'],['<!doctype html>','doctype html'],'Le indica al navegador que el documento es HTML5.'],
+ ['¿Qué atributo da el texto alternativo de una imagen?','alt',['title','name','text'],['alt'],'Se muestra si la imagen no carga y lo leen los lectores de pantalla.']
+]};
+CATS.js={name:'JavaScript',qs:[
+ ['¿Cómo se imprime en la consola de JavaScript?','console.log("Hola")',['print("Hola")','cout << "Hola"','System.out("Hola")'],['console.log("Hola")',"console.log('Hola')",'console.log("hola")'],'console.log() muestra datos en la consola del navegador.'],
+ ['¿Qué palabra declara una variable que puede cambiar?','let',['const','int','dim'],['let','var'],'let (o el antiguo var) crea una variable. const crea una que no se reasigna.'],
+ ['¿Qué palabra declara una constante?','const',['let','final','fixed'],['const'],'Una variable const no se puede reasignar después.'],
+ ['¿Qué hace el operador === en JavaScript?','Compara valor y tipo',['Asigna un valor','Compara solo el valor','Suma tres veces'],[],'5 === "5" es falso porque uno es número y el otro texto.'],
+ ['¿Qué devuelve typeof 42?','number',['int','numeric','float'],['number'],'JavaScript tiene un solo tipo numérico: number.'],
+ ['¿Qué símbolo comenta una línea en JavaScript?','//',['#','--','<!-- -->'],['//'],'Para varias líneas se usa /* ... */.'],
+ ['¿Qué palabra define una función en JavaScript?','function',['def','func','method'],['function'],'Ejemplo: function saludar() { ... }.'],
+ ['¿Qué método agrega un elemento al final de un arreglo?','push()',['add()','append()','insert()'],['push','push()'],'arr.push(5) agrega el 5 al final.'],
+ ['¿Qué función muestra un cuadro de aviso al usuario?','alert()',['popup()','message()','print()'],['alert()','alert'],'alert("Hola") abre una ventanita con el mensaje.'],
+ ['¿Qué método selecciona un elemento de la página por su id?','document.getElementById()',['document.find()','document.selectId()','window.getId()'],['document.getelementbyid','document.getelementbyid()'],'Devuelve el elemento HTML que tiene ese id.'],
+ ['¿Qué resultado da "5" + 3 en JavaScript?','"53" (texto)',['8','Error','NaN'],['53','"53"'],'Si uno de los lados es texto, el + concatena en vez de sumar.'],
+ ['¿Cuánto vale "hola".length?','4',['3','5','hola'],['4','cuatro'],'length cuenta los caracteres: h, o, l, a.']
+]};
+CATS.pseudo={name:'Pseudocódigo',qs:[
+ ['¿Qué es el pseudocódigo?','Describir los pasos de un algoritmo en lenguaje casi humano',['Un lenguaje que ejecuta la computadora','Un tipo de virus','Un compilador'],[],'No se ejecuta: sirve para planear la lógica antes de programar.'],
+ ['¿Qué es un algoritmo?','Una serie ordenada de pasos para resolver un problema',['Un lenguaje de programación','Un error del programa','Un tipo de variable'],[],'Una receta de cocina es un buen ejemplo de algoritmo.'],
+ ['¿Con qué palabra suele empezar un pseudocódigo?','Inicio',['Fin','Si','Mientras'],['inicio'],'Se marca el comienzo con Inicio y el final con Fin.'],
+ ['¿Con qué palabra suele terminar un pseudocódigo?','Fin',['Inicio','Leer','Escribir'],['fin'],'Fin cierra el algoritmo.'],
+ ['¿Qué instrucción pide un dato al usuario?','Leer',['Escribir','Calcular','Repetir'],['leer'],'Leer guarda lo que el usuario escribe en una variable.'],
+ ['¿Qué instrucción muestra un resultado?','Escribir (o Mostrar)',['Leer','Guardar','Fin'],['escribir','mostrar','imprimir'],'Escribir, Mostrar o Imprimir sacan información por pantalla.'],
+ ['¿Qué estructura toma una decisión?','Condicional (Si... Entonces)',['Bucle','Arreglo','Función'],['condicional','si entonces','si'],'Ejecuta unas instrucciones solo si la condición es verdadera.'],
+ ['¿Qué es una variable?','Un espacio con nombre donde se guarda un dato',['Un paso del algoritmo','Un tipo de bucle','Un comentario'],[],'Su valor puede cambiar mientras corre el programa.'],
+ ['¿Qué símbolo se usa a menudo para asignar un valor en pseudocódigo?','← (flecha)',['≠','≥','≈'],['←','<-','flecha'],'Por ejemplo, suma ← a + b guarda el resultado en suma.'],
+ ['¿Qué figura representa una decisión en un diagrama de flujo?','Un rombo',['Un círculo','Un rectángulo','Un triángulo'],['rombo','un rombo'],'El rombo tiene dos salidas: verdadero y falso.'],
+ ['¿Cuál es el orden típico de un algoritmo?','Entrada, proceso, salida',['Salida, entrada, proceso','Proceso, salida, entrada','Salida, proceso, entrada'],['entrada proceso salida','entrada, proceso, salida','entrada, proceso y salida'],'Primero recibes datos, luego los procesas y al final muestras el resultado.'],
+ ['En «Si x > 5 Entonces Escribir mayor», si x vale 3, ¿qué pasa?','No escribe nada',['Escribe mayor','Da error','Escribe 3'],[],'3 no es mayor que 5, así que la condición es falsa y se salta la instrucción.']
+]};
+CATS.func={name:'Funciones',qs:[
+ ['¿Qué es una función?','Un bloque de código con nombre que se puede reutilizar',['Una variable que no cambia','Un comentario','Un tipo de dato'],[],'Escribes el código una vez y lo llamas cuantas veces quieras.'],
+ ['¿Qué es un parámetro?','Un dato que la función recibe para trabajar',['El nombre del programa','El resultado final','Un error'],[],'Se escribe entre paréntesis en la definición de la función.'],
+ ['¿Qué es el valor de retorno?','El resultado que la función devuelve',['Un parámetro','Un comentario','El nombre de la función'],[],'Se entrega con return a quien llamó la función.'],
+ ['¿Qué palabra devuelve un valor en la mayoría de lenguajes?','return',['back','give','exit'],['return'],'return entrega el resultado y termina la función.'],
+ ['¿Qué pasa si defines una función pero nunca la llamas?','Su código nunca se ejecuta',['Se ejecuta sola al final','Da error siempre','Se ejecuta dos veces'],[],'Definir una función solo la deja lista. Hay que llamarla.'],
+ ['¿Cómo se llama ejecutar una función?','Llamar (invocar) a la función',['Compilar','Declarar','Comentar'],['llamar','llamarla','llamar a la funcion','invocar'],'Se hace escribiendo su nombre con paréntesis, por ejemplo saludar().'],
+ ['En Python, si def doble(x): return x * 2, ¿cuánto vale doble(4)?','8',['6','4','2'],['8','ocho'],'El parámetro x toma el valor 4 y la función devuelve 4 * 2.'],
+ ['¿Para qué sirven las funciones?','Para no repetir código y mantenerlo ordenado',['Para que el programa corra más lento','Para borrar variables','Para comentar'],[],'Dividen un problema grande en partes pequeñas y fáciles de probar.'],
+ ['¿Qué es un argumento?','El valor real que se pasa al llamar la función',['El nombre del parámetro','El tipo de retorno','Una librería'],[],'En doble(4), el 4 es el argumento y x es el parámetro.'],
+ ['En C++, ¿qué tipo de retorno tiene una función que no devuelve nada?','void',['null','none','empty'],['void'],'void significa «vacío».'],
+ ['¿Qué es una variable local?','Una variable que solo existe dentro de su función',['La que existe en todo el programa','Una que no tiene nombre','Una constante'],[],'Al terminar la función, la variable local desaparece.'],
+ ['¿Qué es la recursividad?','Cuando una función se llama a sí misma',['Cuando una función no devuelve nada','Cuando dos funciones tienen el mismo nombre','Cuando una función es muy larga'],['una funcion que se llama a si misma','se llama a si misma'],'Necesita un caso base que detenga las llamadas. Ejemplo: el factorial.']
+]};
+CATS.bucles={name:'Bucles',qs:[
+ ['¿Qué es un bucle?','Una estructura que repite instrucciones',['Una variable','Un tipo de dato','Un error del programa'],[],'Evita escribir la misma instrucción muchas veces.'],
+ ['¿Qué bucle usas cuando sabes cuántas veces repetir?','for',['if','switch','return'],['for','para'],'for suele llevar un contador con inicio, condición y avance.'],
+ ['¿Qué bucle repite mientras una condición sea verdadera?','while',['if','break','case'],['while','mientras'],'Revisa la condición antes de cada vuelta.'],
+ ['¿Qué es un bucle infinito?','Uno cuya condición nunca se vuelve falsa',['Uno que se repite 100 veces','Uno que usa for','Uno sin cuerpo'],[],'Suele pasar cuando se olvida actualizar el contador.'],
+ ['¿Cuántas veces se ejecuta for (int i = 0; i < 5; i++)?','5',['4','6','0'],['5','cinco'],'i toma los valores 0, 1, 2, 3 y 4.'],
+ ['¿Qué hace break dentro de un bucle?','Sale del bucle',['Salta a la siguiente vuelta','Reinicia el bucle','Pausa el programa'],['sale del bucle','salir'],'El programa continúa con lo que sigue después del bucle.'],
+ ['¿Qué hace continue dentro de un bucle?','Salta a la siguiente vuelta',['Termina el programa','Sale del bucle','Reinicia el contador'],['salta a la siguiente vuelta','siguiente vuelta'],'Se ignora lo que falta de esa vuelta y empieza la siguiente.'],
+ ['¿Qué hace i++ ?','Suma 1 a i',['Multiplica i por 2','Resta 1 a i','Reinicia i a 0'],['suma 1','suma 1 a i','incrementa i'],'Es lo mismo que i = i + 1.'],
+ ['En Python, ¿cuántas vueltas da for i in range(3)?','3',['2','4','1'],['3','tres'],'range(3) genera 0, 1 y 2.'],
+ ['En Python, ¿qué valores toma i en for i in range(3)?','0, 1, 2',['1, 2, 3','0, 1, 2, 3','1, 2'],['0, 1, 2','0 1 2','0,1,2'],'range empieza en 0 y llega hasta el número anterior al que indicas.'],
+ ['¿Qué bucle se ejecuta al menos una vez aunque la condición sea falsa?','do...while',['while','for','if'],['do while','do...while','do-while'],'Revisa la condición al final de cada vuelta, no al inicio.'],
+ ['¿Cuánto vale suma al final? suma = 0; para i de 1 a 4: suma = suma + i','10',['4','6','24'],['10','diez'],'1 + 2 + 3 + 4 = 10.']
+]};
+CATS.arr={name:'Arreglos',qs:[
+ ['¿Qué es un arreglo (array)?','Una colección ordenada de elementos en una sola variable',['Una función','Un tipo de bucle','Un comentario'],[],'Permite guardar muchos datos juntos, como las notas de un grupo.'],
+ ['¿En qué posición está el primer elemento de un arreglo en la mayoría de lenguajes?','0',['1','-1','2'],['0','cero'],'Los índices empiezan en 0.'],
+ ['En lista = [10, 20, 30], ¿cuánto da lista[1]?','20',['10','30','2'],['20','veinte'],'El índice 0 es 10 y el índice 1 es 20.'],
+ ['En lista = [10, 20, 30], ¿cuál es el último índice?','2',['3','1','30'],['2','dos'],'Con 3 elementos los índices son 0, 1 y 2.'],
+ ['¿Qué pasa si accedes a un índice que no existe?','Da error o un resultado inesperado',['Devuelve 0 siempre','Crea el elemento solo','Borra el arreglo'],[],'Por ejemplo, lista[5] en una lista de 3 elementos falla en Python.'],
+ ['¿Cómo se declara un arreglo de 5 enteros en C++?','int numeros[5];',['array numeros(5);','int[5] numeros;','numeros = int(5);'],['int numeros[5];','int numeros[5]'],'El tamaño va entre corchetes después del nombre.'],
+ ['¿Cómo se obtiene el tamaño de una lista en Python?','len(lista)',['lista.size','size(lista)','lista.length'],['len(lista)'],'len() funciona con listas, textos y más.'],
+ ['¿Cómo se agrega un elemento al final de una lista en Python?','lista.append(x)',['lista.push(x)','lista.add(x)','lista + x'],['lista.append(x)','append'],'push es de JavaScript. En Python se usa append.'],
+ ['¿Qué se usa normalmente para recorrer un arreglo?','Un bucle for',['Un if','Una constante','Un comentario'],['for','un bucle for','bucle for'],'El bucle visita cada posición, de la primera a la última.'],
+ ['¿Qué es un arreglo bidimensional?','Una tabla con filas y columnas',['Un arreglo con dos nombres','Dos arreglos separados','Un arreglo de texto'],['matriz','una matriz','tabla'],'Se accede con dos índices: fila y columna.'],
+ ['En JavaScript, ¿qué método quita el último elemento de un arreglo?','pop()',['shift()','remove()','delete()'],['pop','pop()'],'shift() quita el primero y pop() quita el último.'],
+ ['Si arr = [4, 8, 15] en JavaScript, ¿cuánto vale arr.length?','3',['2','15','4'],['3','tres'],'Tiene tres elementos, aunque el último índice sea 2.']
+]};
+PAIRS.cpp=[['cout','Imprime en pantalla'],['cin','Lee del teclado'],['int','Número entero'],['double','Número decimal'],['main()','Punto de inicio del programa'],['//','Comentario de una línea'],['#include','Importa una librería'],['void','Función sin valor de retorno']];
+PAIRS.py=[['print()','Muestra texto en pantalla'],['input()','Pide datos al usuario'],['len()','Cantidad de elementos'],['def','Define una función'],['#','Comentario'],['//','División entera'],['**','Potencia'],['[ ]','Lista']];
+PAIRS.html=[['<h1>','Título principal'],['<p>','Párrafo'],['<a>','Enlace'],['<img>','Imagen'],['<ul>','Lista con viñetas'],['<br>','Salto de línea'],['href','Destino del enlace'],['alt','Texto alternativo de la imagen']];
+PAIRS.js=[['console.log()','Muestra en la consola'],['let','Variable que puede cambiar'],['const','Variable constante'],['===','Igual en valor y tipo'],['push()','Agrega al final del arreglo'],['alert()','Cuadro de aviso'],['function','Define una función'],['typeof','Dice el tipo de dato']];
+PAIRS.pseudo=[['Inicio','Comienza el algoritmo'],['Fin','Termina el algoritmo'],['Leer','Pide un dato'],['Escribir','Muestra un resultado'],['Si... Entonces','Toma una decisión'],['Mientras','Repite con condición'],['←','Asignación'],['Rombo','Decisión en el diagrama']];
+PAIRS.func=[['Parámetro','Dato que recibe la función'],['return','Devuelve un resultado'],['void','No devuelve nada'],['Llamada','Ejecuta la función'],['Variable local','Solo existe dentro de la función'],['Recursividad','Función que se llama a sí misma'],['Argumento','Valor real que se pasa'],['def','Define una función en Python']];
+PAIRS.bucles=[['for','Repite un número conocido de veces'],['while','Repite mientras la condición sea verdadera'],['do...while','Se ejecuta al menos una vez'],['break','Sale del bucle'],['continue','Salta a la siguiente vuelta'],['i++','Suma 1 a i'],['Bucle infinito','La condición nunca es falsa'],['range(3)','0, 1, 2']];
+PAIRS.arr=[['Índice','Posición de un elemento'],['arr[0]','Primer elemento'],['len(lista)','Cantidad de elementos'],['append()','Agrega a una lista de Python'],['pop()','Quita el último elemento'],['Matriz','Arreglo con filas y columnas'],['int a[5]','Arreglo de 5 enteros en C++'],['Recorrer','Visitar cada elemento con un bucle']];
+
+/* ---------- INGLÉS BÁSICO ---------- */
+CATS.ing1={name:'Saludos',qs:[
+ ['¿Cómo se dice «Hola» en inglés?','Hello',['Goodbye','Thanks','Please'],['hello','hi'],'Hello es el saludo más común. Hi es la versión informal.'],
+ ['¿Cómo se dice «Adiós» en inglés?','Goodbye',['Hello','Sorry','Welcome'],['goodbye','bye'],'Bye es la forma corta e informal.'],
+ ['¿Cómo se dice «Gracias» en inglés?','Thank you',['Please','Sorry','Excuse me'],['thank you','thanks'],'Thanks es la versión corta.'],
+ ['¿Cómo se dice «Por favor» en inglés?','Please',['Sorry','Thanks','Welcome'],['please'],'Please se usa al pedir algo con cortesía.'],
+ ['¿Cómo se dice «Lo siento» en inglés?','Sorry',['Please','Thanks','Hello'],['sorry','i am sorry',"i'm sorry"],'También puedes decir I am sorry.'],
+ ['¿Cómo se dice «Buenos días» en inglés?','Good morning',['Good night','Good afternoon','Good evening'],['good morning'],'Se usa desde que amanece hasta el mediodía.'],
+ ['¿Cómo se dice «Buenas noches» al despedirse para dormir?','Good night',['Good morning','Good afternoon','Good day'],['good night'],'Good evening es un saludo al llegar por la noche. Good night es para despedirse.'],
+ ['¿Cómo se pregunta «¿Cómo estás?» en inglés?','How are you?',['Who are you?','Where are you?','What are you?'],['how are you','how are you?'],'La respuesta típica es I am fine, thank you.'],
+ ['¿Cómo se dice «Mucho gusto» en inglés?','Nice to meet you',['See you later','How old are you','Good luck'],['nice to meet you'],'Se dice al conocer a alguien por primera vez.'],
+ ['¿Cómo se dice «Me llamo Ana» en inglés?','My name is Ana',['I am name Ana','Name my Ana','Me call Ana'],['my name is ana','i am ana',"i'm ana"],'También puedes decir I am Ana.'],
+ ['¿Cómo se dice «Hasta luego» en inglés?','See you later',['Good morning','Nice to meet you','Thank you'],['see you later','see you'],'Se usa al despedirte de alguien que verás pronto.'],
+ ['¿Qué significa «You are welcome»?','De nada',['Gracias','Lo siento','Hasta pronto'],['de nada'],'Es la respuesta a Thank you.']
+]};
+CATS.ing2={name:'Verbo to be',qs:[
+ ['¿Cómo se dice «Yo» en inglés?','I',['He','We','It'],['i'],'I siempre se escribe con mayúscula.'],
+ ['¿Cómo se dice «Ella» en inglés?','She',['He','They','It'],['she'],'She es femenino y he es masculino.'],
+ ['¿Cómo se dice «Nosotros» en inglés?','We',['You','They','He'],['we'],'We incluye a quien habla.'],
+ ['¿Cómo se dice «Ellos» en inglés?','They',['We','You','She'],['they'],'They sirve para ellos y ellas.'],
+ ['Completa: I ___ a student.','am',['is','are','be'],['am'],'Con I se usa am.'],
+ ['Completa: She ___ my friend.','is',['am','are','be'],['is'],'Con he, she e it se usa is.'],
+ ['Completa: They ___ at home.','are',['is','am','be'],['are'],'Con you, we y they se usa are.'],
+ ['Completa: He ___ tall.','is',['am','are','be'],['is'],'He is tall significa «Él es alto».'],
+ ['¿Cuál es la forma negativa de «I am happy»?','I am not happy',['I not am happy','I am no happy','I do not happy'],['i am not happy',"i'm not happy"],'En to be, el not va después del verbo.'],
+ ['¿Cómo se pregunta «¿Eres estudiante?» en inglés?','Are you a student?',['Do you be a student?','Is you a student?','Am you a student?'],['are you a student','are you a student?'],'En preguntas con to be, el verbo va antes del sujeto.'],
+ ['¿Cuál es la contracción de «It is»?',"It's",['Its','I is','Is it'],["it's"],'El apóstrofo reemplaza la letra i. Its sin apóstrofo significa «su».'],
+ ['Completa: We ___ from Costa Rica.','are',['is','am','be'],['are'],'Con we se usa are.']
+]};
+CATS.ing3={name:'Presente simple',qs:[
+ ['Completa: She ___ pizza. (like)','likes',['like','liking','is like'],['likes'],'Con he, she e it se agrega -s al verbo.'],
+ ['Completa: I ___ English every day. (study)','study',['studies','studying','studied'],['study'],'Con I no se agrega -s.'],
+ ['¿Qué auxiliar se usa en negativa con he, she e it?',"doesn't",["don't","isn't","hasn't"],["doesn't",'does not','doesnt'],'He does not play significa «Él no juega».'],
+ ['¿Qué auxiliar se usa en negativa con I, you, we y they?',"don't",["doesn't","isn't","aren't"],["don't",'do not','dont'],'I do not like significa «No me gusta».'],
+ ['¿Cómo se pregunta «¿Hablas inglés?» en inglés?','Do you speak English?',['Does you speak English?','You speak English do?','Are you speak English?'],['do you speak english','do you speak english?'],'Las preguntas en presente simple empiezan con Do o Does.'],
+ ['Completa: He ___ to school by bus. (go)','goes',['go','gos','going'],['goes'],'Los verbos que terminan en -o agregan -es: goes, does.'],
+ ['¿Qué significa «I work»?','Yo trabajo',['Yo trabajé','Yo trabajaré','Él trabaja'],['yo trabajo','trabajo'],'Work es trabajar y el presente simple habla de rutinas.'],
+ ['¿Qué verbo significa «comer»?','eat',['drink','cook','sleep'],['eat'],'Eat es comer.'],
+ ['¿Qué verbo significa «beber»?','drink',['eat','run','read'],['drink'],'Drink es beber.'],
+ ['¿Qué verbo significa «dormir»?','sleep',['sit','swim','sing'],['sleep'],'Sleep es dormir.'],
+ ['¿Qué verbo significa «leer»?','read',['write','run','walk'],['read'],'Read es leer y write es escribir.'],
+ ['Completa: Does she ___ coffee? (drink)','drink',['drinks','drinking','drank'],['drink'],'Después de does, el verbo va sin -s.']
+]};
+CATS.ing4={name:'Números y colores',qs:[
+ ['¿Cómo se dice 5 en inglés?','five',['four','six','fifteen'],['five'],'Five es cinco.'],
+ ['¿Cómo se dice 10 en inglés?','ten',['two','twenty','nine'],['ten'],'Ten es diez.'],
+ ['¿Cómo se dice 13 en inglés?','thirteen',['thirty','three','fourteen'],['thirteen'],'Los números del 13 al 19 terminan en -teen.'],
+ ['¿Cómo se dice 20 en inglés?','twenty',['twelve','two','thirty'],['twenty'],'Las decenas terminan en -ty: twenty, thirty, forty.'],
+ ['¿Cómo se dice «rojo» en inglés?','red',['blue','green','pink'],['red'],'Red es rojo.'],
+ ['¿Cómo se dice «azul» en inglés?','blue',['black','brown','white'],['blue'],'Blue es azul.'],
+ ['¿Cómo se dice «verde» en inglés?','green',['grey','yellow','red'],['green'],'Green es verde.'],
+ ['¿Cómo se dice «amarillo» en inglés?','yellow',['orange','white','pink'],['yellow'],'Yellow es amarillo.'],
+ ['¿Cómo se dice «lunes» en inglés?','Monday',['Tuesday','Sunday','Thursday'],['monday'],'Los días de la semana se escriben con mayúscula.'],
+ ['¿Cómo se dice «sábado» en inglés?','Saturday',['Sunday','Thursday','Tuesday'],['saturday'],'Saturday es sábado y Sunday es domingo.'],
+ ['¿Cómo se dice «enero» en inglés?','January',['June','July','March'],['january'],'Los meses también llevan mayúscula.'],
+ ['¿Cómo se dice «diciembre» en inglés?','December',['November','September','October'],['december'],'December es el mes doce.']
+]};
+CATS.ing5={name:'Artículos y plurales',qs:[
+ ['Completa: ___ apple.','an',['a','the','any'],['an'],'An va antes de vocales: an apple, an egg.'],
+ ['Completa: ___ book.','a',['an','some','of'],['a'],'A va antes de sonidos de consonante.'],
+ ['¿Cuál es el plural de «cat»?','cats',['cates','cat','caties'],['cats'],'La mayoría de plurales solo agregan -s.'],
+ ['¿Cuál es el plural de «box»?','boxes',['boxs','boxies','box'],['boxes'],'Las palabras que terminan en x, s, ch o sh agregan -es.'],
+ ['¿Cuál es el plural de «child»?','children',['childs','childes','childen'],['children'],'Es un plural irregular.'],
+ ['¿Cuál es el plural de «person»?','people',['persons','peoples','person'],['people'],'People es el plural usual de person.'],
+ ['Completa: The book is ___ the table. (encima)','on',['in','at','under'],['on'],'On significa «sobre» o «encima de».'],
+ ['Completa: The cat is ___ the box. (dentro)','in',['on','under','next'],['in'],'In significa «dentro de» o «en».'],
+ ['Completa: The ball is ___ the chair. (debajo)','under',['on','in','over'],['under'],'Under significa «debajo de».'],
+ ['¿Qué significa «this»?','Este / esto',['Ese','Aquel','Aquellos'],['este','esto','este / esto'],'This es para algo cercano y that para algo lejano.'],
+ ['¿Qué significa «my»?','Mi',['Tu','Su','Nuestro'],['mi'],'My es mi, your es tu y our es nuestro.'],
+ ['¿Qué significa «there is»?','Hay',['Allá','Es','Tiene'],['hay'],'There is es para uno y there are para varios.']
+]};
+CATS.ing6={name:'Vocabulario diario',qs:[
+ ['¿Cómo se dice «madre» en inglés?','mother',['sister','father','aunt'],['mother','mom'],'Mom es la forma informal.'],
+ ['¿Cómo se dice «hermano» en inglés?','brother',['father','uncle','cousin'],['brother'],'Brother es hermano y sister es hermana.'],
+ ['¿Cómo se dice «abuela» en inglés?','grandmother',['grandfather','aunt','mother'],['grandmother','grandma'],'Grandma es la forma informal.'],
+ ['¿Cómo se dice «agua» en inglés?','water',['milk','juice','tea'],['water'],'Water es agua.'],
+ ['¿Cómo se dice «pan» en inglés?','bread',['rice','cheese','butter'],['bread'],'Bread es pan.'],
+ ['¿Cómo se dice «manzana» en inglés?','apple',['banana','orange','grape'],['apple'],'Apple es manzana.'],
+ ['¿Cómo se dice «casa» en inglés?','house',['school','hospital','store'],['house','home'],'House es la construcción y home es el hogar.'],
+ ['¿Cómo se dice «escuela» en inglés?','school',['house','park','bank'],['school'],'School es escuela.'],
+ ['¿Cómo se dice «perro» en inglés?','dog',['cat','bird','fish'],['dog'],'Dog es perro y cat es gato.'],
+ ['¿Cómo se dice «libro» en inglés?','book',['pen','desk','door'],['book'],'Book es libro.'],
+ ['¿Cómo se dice «ojos» en inglés?','eyes',['ears','hands','nose'],['eyes'],'Eyes es el plural de eye.'],
+ ['¿Cómo se dice «mano» en inglés?','hand',['foot','arm','head'],['hand'],'Hand es mano y su plural es hands.']
+]};
+/* ---------- EXPANSIÓN AUTOMÁTICA DEL BANCO: más de 1.000 preguntas por área ---------- */
+(function expandQuestionBank(){
+  function add(cat, rows){ CATS[cat].qs=CATS[cat].qs.concat(rows); }
+  var mathRows=[], progRows=[], engRows=[];
+  // Matemáticas: ejercicios aritméticos con valores variados y solución calculada.
+  var ops=[
+    {sym:'+',fn:function(a,b){return a+b},name:'suma'},
+    {sym:'−',fn:function(a,b){return a-b},name:'resta'},
+    {sym:'×',fn:function(a,b){return a*b},name:'multiplicación'}
+  ];
+  for(var i=1;i<=1050;i++){
+    var op=ops[(i-1)%ops.length],a=2+((i*17)%97),b=1+((i*29)%43),ans=op.fn(a,b);
+    if(i%7===0){a=2+(i%18);b=2+(i%9);ans=a*b;op={sym:'×',fn:function(x,y){return x*y},name:'multiplicación'};}
+    if(i%11===0){a=2+(i%19);b=1+(i%a);ans=a-b;op={sym:'−',fn:function(x,y){return x-y},name:'resta'};}
+    var wrong=[ans+1,ans-2,ans+5].map(String); if(new Set(wrong.concat([String(ans)])).size<4)wrong=[ans+2,ans-3,ans+7].map(String);
+    mathRows.push(['Resuelve el ejercicio '+i+': ¿cuánto es '+a+' '+op.sym+' '+b+'?',String(ans),wrong, [String(ans)],'Se realiza la '+op.name+' indicada: '+a+' '+op.sym+' '+b+' = '+ans+'.']);
+  }
+  add('alg',mathRows);
+  // Programación: conceptos fundamentales, preguntados desde distintos enfoques.
+  var concepts=[
+    ['variable','Un espacio con nombre para guardar un dato'],['constante','Un valor que no debe cambiar durante su uso'],['entero','Un tipo de dato para números sin parte decimal'],['cadena','Una secuencia de caracteres de texto'],['booleano','Un dato que puede ser verdadero o falso'],['condicional','Una estructura que toma decisiones según una condición'],['bucle','Una estructura que repite instrucciones'],['función','Un bloque reutilizable que realiza una tarea'],['parámetro','Un dato que recibe una función'],['retorno','El valor que una función entrega al terminar'],['arreglo','Una colección ordenada de elementos'],['índice','La posición usada para acceder a un elemento'],['comentario','Texto del código que no se ejecuta como instrucción'],['compilador','Programa que traduce código fuente a código ejecutable'],['depuración','Proceso de encontrar y corregir errores'],['algoritmo','Una secuencia finita y ordenada de pasos'],['entrada','Datos que recibe un programa'],['salida','Información que muestra o entrega un programa'],['operador lógico','Un símbolo o palabra que combina condiciones'],['operador de comparación','Un operador que compara dos valores'],['recursividad','Cuando una función se llama a sí misma'],['clase','Una plantilla para crear objetos'],['objeto','Una instancia con datos y comportamientos'],['método','Una función asociada a un objeto o clase'],['HTML','Lenguaje de marcado que estructura páginas web'],['CSS','Lenguaje que define la presentación visual de una página'],['JavaScript','Lenguaje que añade comportamiento a páginas web'],['Python','Lenguaje de programación de sintaxis legible'],['C++','Lenguaje compilado de propósito general'],['DOM','Representación estructurada del documento HTML'],['evento','Una acción detectada por la aplicación'],['excepción','Una situación de error que puede manejarse'],['lista','Una colección de elementos que puede cambiar'],['pila','Estructura que funciona con último en entrar, primero en salir'],['cola','Estructura que funciona con primero en entrar, primero en salir'],['diccionario','Colección de pares clave y valor'],['módulo','Archivo o unidad que agrupa código reutilizable'],['biblioteca','Conjunto de herramientas listas para usar'],['prueba unitaria','Prueba de una parte pequeña del programa'],['sintaxis','Reglas de escritura válida de un lenguaje'],['tipo de dato','Clasificación del valor que almacena un dato'],['dependencia','Una librería o componente externo que el programa necesita'],['API','Interfaz para que dos programas se comuniquen'],['JSON','Formato de texto para intercambiar datos estructurados'],['HTTP','Protocolo de comunicación usado en la web'],['servidor','Sistema que responde solicitudes de clientes'],['cliente','Programa que solicita servicios a un servidor'],['base de datos','Sistema organizado para guardar y consultar información'],['consulta','Solicitud para obtener o modificar datos'],['Git','Sistema de control de versiones'],['repositorio','Lugar donde se guarda y versiona un proyecto'],['bucle while','Repetición que continúa mientras una condición sea verdadera'],['bucle for','Repetición que recorre una secuencia o rango']
+  ];
+  var progPrompts=[
+    function(n){return 'En programación, ¿qué es '+n+'?'},
+    function(n){return '¿Cuál es la función principal de '+n+'?'},
+    function(n){return '¿Qué definición describe mejor '+n+'?'},
+    function(n){return 'Si estudias programación, ¿cómo se define '+n+'?'},
+    function(n){return '¿Para qué sirve o qué representa '+n+' en informática?'},
+    function(n){return 'Selecciona el significado correcto de '+n+'.'},
+    function(n){return '¿Qué afirmación es correcta acerca de '+n+'?'},
+    function(n){return '¿Cuál opción explica correctamente el término '+n+'?'},
+    function(n){return 'En el desarrollo de software, ¿qué significa '+n+'?'},
+    function(n){return '¿Cómo se puede describir '+n+' con palabras sencillas?'}
+  ];
+  for(var j=0;j<1050;j++){
+    var c=concepts[j%concepts.length],variant=Math.floor(j/concepts.length)%progPrompts.length;
+    var distractors=[concepts[(j+7)%concepts.length][1],concepts[(j+19)%concepts.length][1],concepts[(j+31)%concepts.length][1]];
+    if(distractors.some(function(x){return x===c[1]}))distractors=[concepts[(j+11)%concepts.length][1],concepts[(j+23)%concepts.length][1],concepts[(j+37)%concepts.length][1]];
+    progRows.push([progPrompts[variant](c[0]),c[1],distractors,[c[1]],c[1]+'.']);
+  }
+  add('cpp',progRows);
+  // Inglés: vocabulario y frases frecuentes con traducción en ambas direcciones.
+  var words=[['hello','hola'],['goodbye','adiós'],['please','por favor'],['thank you','gracias'],['sorry','lo siento'],['water','agua'],['bread','pan'],['apple','manzana'],['book','libro'],['school','escuela'],['house','casa'],['dog','perro'],['cat','gato'],['bird','pájaro'],['friend','amigo'],['family','familia'],['mother','madre'],['father','padre'],['sister','hermana'],['brother','hermano'],['teacher','profesor'],['student','estudiante'],['computer','computadora'],['phone','teléfono'],['table','mesa'],['chair','silla'],['window','ventana'],['door','puerta'],['red','rojo'],['blue','azul'],['green','verde'],['yellow','amarillo'],['black','negro'],['white','blanco'],['one','uno'],['two','dos'],['three','tres'],['four','cuatro'],['five','cinco'],['six','seis'],['seven','siete'],['eight','ocho'],['nine','nueve'],['ten','diez'],['Monday','lunes'],['Tuesday','martes'],['Wednesday','miércoles'],['Thursday','jueves'],['Friday','viernes'],['Saturday','sábado'],['Sunday','domingo'],['morning','mañana'],['afternoon','tarde'],['night','noche'],['happy','feliz'],['tired','cansado'],['hungry','hambriento'],['thirsty','sediento'],['big','grande'],['small','pequeño'],['fast','rápido'],['slow','lento'],['hot','caliente'],['cold','frío'],['beautiful','hermoso'],['easy','fácil'],['difficult','difícil'],['read','leer'],['write','escribir'],['speak','hablar'],['listen','escuchar'],['learn','aprender'],['work','trabajar'],['play','jugar'],['eat','comer'],['drink','beber'],['sleep','dormir'],['walk','caminar'],['run','correr'],['open','abrir'],['close','cerrar'],['come','venir'],['go','ir'],['make','hacer'],['think','pensar'],['understand','entender'],['today','hoy'],['tomorrow','mañana'],['yesterday','ayer'],['where','dónde'],['when','cuándo'],['who','quién'],['what','qué'],['why','por qué'],['how','cómo'],['always','siempre'],['sometimes','a veces'],['never','nunca'],['because','porque'],['between','entre'],['behind','detrás de'],['under','debajo de'],['above','encima de'],['inside','dentro de'],['outside','afuera']];
+  var engPrompts=[
+    function(w){return '¿Cómo se dice «'+w[1]+'» en inglés?'},
+    function(w){return '¿Qué significa la palabra inglesa «'+w[0]+'» en español?'},
+    function(w){return 'Traduce al inglés la palabra española «'+w[1]+'».'},
+    function(w){return 'Elige la traducción correcta de «'+w[0]+'».'},
+    function(w){return 'En vocabulario básico, «'+w[0]+'» significa:'},
+    function(w){return '¿Cuál palabra en inglés corresponde a «'+w[1]+'»?'}
+  ];
+  for(var k=0;k<1050;k++){
+    var w=words[k%words.length],v=Math.floor(k/words.length)%engPrompts.length,correct=(v===0||v===2||v===5)?w[0]:w[1];
+    var bad=[words[(k+9)%words.length][(v===0||v===2||v===5)?0:1],words[(k+23)%words.length][(v===0||v===2||v===5)?0:1],words[(k+41)%words.length][(v===0||v===2||v===5)?0:1]];
+    if(bad.indexOf(correct)>=0)bad=[words[(k+13)%words.length][1],words[(k+29)%words.length][1],words[(k+53)%words.length][1]];
+    engRows.push([engPrompts[v](w),correct,bad,[correct],w[0]+' significa «'+w[1]+'».']);
+  }
+  add('ing1',engRows);
+})();
+
+PAIRS.ing1=[['Hello','Hola'],['Goodbye','Adiós'],['Thank you','Gracias'],['Please','Por favor'],['Sorry','Lo siento'],['Good morning','Buenos días'],['See you later','Hasta luego'],['Nice to meet you','Mucho gusto']];
+PAIRS.ing2=[['I am','Yo soy / estoy'],['You are','Tú eres / estás'],['He is','Él es / está'],['She is','Ella es / está'],['We are','Nosotros somos / estamos'],['They are','Ellos son / están'],['It is','Eso es / está'],['I am not','Yo no soy']];
+PAIRS.ing3=[['I eat','Yo como'],['She drinks','Ella bebe'],['He goes','Él va'],['They read','Ellos leen'],["I don't like",'No me gusta'],['Does she work?','¿Ella trabaja?'],['We study','Nosotros estudiamos'],['He sleeps','Él duerme']];
+PAIRS.ing4=[['Red','Rojo'],['Blue','Azul'],['Green','Verde'],['Yellow','Amarillo'],['Monday','Lunes'],['Saturday','Sábado'],['Seven','Siete'],['Twenty','Veinte']];
+PAIRS.ing5=[['A / An','Un / Una'],['The','El / La / Los / Las'],['On','Encima de'],['In','Dentro de / en'],['Under','Debajo de'],['Children','Niños (plural de child)'],['People','Personas / gente'],['There is','Hay']];
+PAIRS.ing6=[['Mother','Madre'],['Brother','Hermano'],['Grandfather','Abuelo'],['Water','Agua'],['Bread','Pan'],['House','Casa'],['School','Escuela'],['Dog','Perro']];
+
+/* ---------- APLICAR CAMBIOS DEL ADMINISTRADOR AL BANCO DE PREGUNTAS ---------- */
+var BASE_QS={},BASE_PAIRS={};
+Object.keys(CATS).forEach(function(c){BASE_QS[c]=CATS[c].qs.slice()});
+Object.keys(PAIRS).forEach(function(c){BASE_PAIRS[c]=PAIRS[c].slice()});
+function applyBankOverrides(){
+  Object.keys(CATS).forEach(function(c){
+    var o=ADM.qs[c],base=BASE_QS[c];
+    if(!o){CATS[c].qs=base.slice();return}
+    var del=o.del||[],ed=o.edit||{},out=[];
+    base.forEach(function(q,i){if(del.indexOf(i)>-1)return;out.push(ed[i]||q)});
+    (o.add||[]).forEach(function(q){out.push(q)});
+    CATS[c].qs=out;
+  });
+  Object.keys(BASE_PAIRS).forEach(function(c){var p=ADM.pairs[c];PAIRS[c]=(p&&p.length)?p:BASE_PAIRS[c].slice()});
+}
+var BANNER_DEF={mat:{sym:'∑   π   √   x²',title:'LABORATORIO DE MATEMÁTICAS'},prog:{sym:'{ }   </>   01',title:'LABORATORIO DE PROGRAMACIÓN'},ing:{sym:'A B C   ✦   Hello!',title:'LABORATORIO DE INGLÉS'}};
+var AREA_INTRO={mat:'Resuelve retos de álgebra, cálculo y estadística.',prog:'Practica lógica, pseudocódigo, Python, C++, HTML y JavaScript.',ing:'Aprende vocabulario, gramática y expresiones en inglés básico.'};
+var INTRO_TAIL=' Cada área tiene más de 1.000 preguntas disponibles; la figura 3D evoluciona cada 5 niveles.';
+function introDefault(a){return AREA_INTRO[a]+INTRO_TAIL}
+function introText(a){var v=ADM.intro[a];return(typeof v==='string'&&v!=='')?v:introDefault(a)}
+function cssEsc(s){return String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/[\r\n]+/g,' ')}
+function applyBanners(){
+  var st=document.getElementById('admBanner');
+  if(!st){st=document.createElement('style');st.id='admBanner';document.body.appendChild(st)}
+  var css='';
+  ['mat','prog','ing'].forEach(function(a){
+    var b=ADM.banner[a];if(!b)return;var d=BANNER_DEF[a];
+    var sym=(typeof b.sym==='string'&&b.sym!=='')?b.sym:d.sym,ti=(typeof b.title==='string'&&b.title!=='')?b.title:d.title;
+    css+='body.theme-'+a+' #menu:before{content:"'+cssEsc(sym)+'\\A '+cssEsc(ti)+'"}\n';
+  });
+  st.textContent=css;
+}
+applyBankOverrides();applyBanners();
+
+/* ---------- ÁREAS (cada categoría va separada, sin mezclar temas) ---------- */
+var AREAS={
+ mat:{name:'Laboratorio de Matemáticas',cats:['alg','calc','lin','est'],mix:'alg',rgb:0xff4fa3},
+ prog:{name:'Laboratorio de Programación',cats:['cpp','py','html','js','pseudo','func','bucles','arr'],mix:'cpp',rgb:0xff2d87},
+ ing:{name:'Laboratorio de Inglés',cats:['ing1','ing2','ing3','ing4','ing5','ing6'],mix:'ing1',rgb:0xff8cc6}
+};
+function catList(){var A=AREAS[area],k=[];A.cats.forEach(function(c){k.push([c,CATS[c].name])});return k}
+function isMix(c){return c==='mez'||c==='mez_prog'||c==='mez_ing'}
+function mixArea(c){return c==='mez_prog'?'prog':c==='mez_ing'?'ing':'mat'}
+function mk(q,name){return [q[0],q[1],q[2],q[3]||[],q[4]||'',name]}
+function questionDifficulty(q){
+  var text=norm([q[0],q[1],q[4]||''].join(' ')),score=0;
+  var advanced=[/derivad|integral|limite|logaritm|discriminante|ecuaci[oó]n cuadr[aá]tica|n[uú]mero complejo|unidad imaginaria|matriz|determinante|probabilidad condicional|desviaci[oó]n est[aá]ndar|recursi[oó]n|programaci[oó]n as[ií]ncrona|promesa|closure|prototipo|puntero|complejidad temporal|big o|consulta sql|normalizaci[oó]n|polimorfismo|herencia|encapsulamiento|dom virtual|event loop|expresi[oó]n regular|ordenamiento por|b[uú]squeda binaria|integraci[oó]n por partes|regla de l'h[oó]pital/];
+  var medium=[/fracci[oó]n|porcentaje|ecuaci[oó]n|factoriz|exponente|funci[oó]n|pendiente|sistema|algoritmo|arreglo|lista|bucle|condicional|par[aá]metro|argumento|variable|tipo de dato|etiqueta|atributo|selector|evento|tiempo verbal|pasado simple|presente perfecto|comparativo|superlativo|preposici[oó]n/];
+  advanced.forEach(function(re){if(re.test(text))score+=3});medium.forEach(function(re){if(re.test(text))score+=1});
+  if(/[√∫∑≤≥∞]|\b[a-z]\s*[²³]|\b\w+\s*\([^)]*\)\s*=/.test(text))score+=1;
+  if(text.length>145)score+=1;if(text.length>260)score+=1;
+  if(String(q[1]||'').length>38)score+=1;
+  return score;
+}
+function orderByDifficulty(list){return list.map(function(q,i){return {q:q,i:i,d:questionDifficulty(q)}}).sort(function(a,b){return a.d-b.d||a.i-b.i}).map(function(x){return x.q})}
+function qsFor(c){
+  if(isMix(c)){var ar=mixArea(c),all=[];AREAS[ar].cats.forEach(function(k){CATS[k].qs.forEach(function(q){all.push(mk(q,CATS[k].name))})});return all}
+  return CATS[c].qs.map(function(q){return mk(q,CATS[c].name)});
+}
+function pairsFor(c){
+  if(c==='mis')return [];
+  if(isMix(c)){var a=[];AREAS[mixArea(c)].cats.forEach(function(k){a=a.concat(PAIRS[k]||[])});return a}
+  return PAIRS[c]||[];
+}
+
+var MODES=[
+ {id:'clasico',name:'Clásico',desc:'Hasta 20 preguntas de opción múltiple. Algunas llevan reloj y otras no.',color:'#ff4fa3',rgb:0xff4fa3},
+ {id:'vf',name:'Verdadero o falso',desc:'Hasta 20 afirmaciones. Algunas llevan reloj y otras no.',color:'#ff8cc6',rgb:0xff8cc6},
+ {id:'reloj',name:'Contrarreloj',desc:'60 segundos. Acertar suma 2 s, fallar resta 5 s.',color:'#ff2d87',rgb:0xff2d87},
+ {id:'vidas',name:'Supervivencia',desc:'Tres vidas, sin fin. Algunas preguntas llevan reloj.',color:'#ff6fb5',rgb:0xff6fb5},
+ {id:'relampago',name:'Relámpago',desc:'Hasta 15 preguntas de 8 segundos cada una, más puntos si respondes rápido.',color:'#ff9ed0',rgb:0xff9ed0},
+ {id:'escribir',name:'Escribir',desc:'10 preguntas sin opciones: escribe la respuesta. Hay pista y algunas llevan reloj.',color:'#e63e9c',rgb:0xe63e9c},
+ {id:'parejas',name:'Parejas 3D',desc:'Voltea cartas y une cada término con su significado.',color:'#ffb3d9',rgb:0xffb3d9,wide:true}
+];
+var modeById=function(id){return MODES.filter(function(m){return m.id===id})[0]};
+
+/* ---------- SONIDO ---------- */
+var AC=null,muted=false;
+function beep(f,d,type,v,when){
+  if(muted)return;
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    var o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+(when||0);
+    o.type=type||'sine';o.frequency.value=f;o.connect(g);g.connect(AC.destination);
+    g.gain.setValueAtTime(v||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.start(t);o.stop(t+d+.02);
+  }catch(e){}
+}
+var musicOn=true,musicTimer=null,musicStep=0,musicGain=null;
+// Música ambiental electrónica original: pads suaves, notas espaciadas y un pulso lento.
+// Se sintetiza localmente con Web Audio; no necesita archivos de audio externos.
+var melody=[392.00,0,493.88,0,440.00,0,392.00,0,329.63,0,392.00,0,293.66,0,349.23,0];
+var chords=[[130.81,164.81,196.00],[110.00,146.83,174.61],[116.54,146.83,174.61],[98.00,123.47,146.83]];
+function ambientNote(freq,when,dur,vol){
+  try{
+    var o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();
+    o.type='triangle';o.frequency.setValueAtTime(freq,when);f.type='lowpass';f.frequency.setValueAtTime(1050,when);f.Q.value=.45;
+    g.gain.setValueAtTime(.0001,when);g.gain.linearRampToValueAtTime(vol,when+.18);g.gain.exponentialRampToValueAtTime(.0001,when+dur);
+    o.connect(f);f.connect(g);g.connect(musicGain);o.start(when);o.stop(when+dur+.03);
+  }catch(e){}
+}
+function padNote(freq,when,dur,vol){
+  try{var o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();o.type='sine';o.frequency.setValueAtTime(freq,when);f.type='lowpass';f.frequency.value=520;g.gain.setValueAtTime(.0001,when);g.gain.linearRampToValueAtTime(vol,when+.65);g.gain.setTargetAtTime(.0001,when+dur*.72,dur*.24);o.connect(f);f.connect(g);g.connect(musicGain);o.start(when);o.stop(when+dur+.25)}catch(e){}
+}
+function musicBeat(){
+  if(!musicOn||muted||!AC||!musicGain)return;
+  var now=AC.currentTime+.05,step=musicStep%16,ch=chords[Math.floor(musicStep/4)%4];
+  if(melody[step]>0)ambientNote(melody[step],now,1.35,.036);
+  if(step%4===0){ch.forEach(function(f){padNote(f,now,3.0,.020)});padNote(ch[0]/2,now,3.25,.028);ambientNote(ch[2]*2,now+.12,1.6,.016)}
+  musicStep++;
+}
+function startMusic(){
+  if(!musicOn||muted)return;
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();if(!musicGain){musicGain=AC.createGain();musicGain.gain.value=1.6;musicGain.connect(AC.destination)}if(musicTimer)clearInterval(musicTimer);musicBeat();musicTimer=setInterval(musicBeat,720)}catch(e){}
+}
+function stopMusic(){if(musicTimer){clearInterval(musicTimer);musicTimer=null}}
+var sfx={
+  ok:function(){beep(660,.12);beep(990,.16,'sine',.06,.09)},
+  bad:function(){beep(170,.3,'sawtooth',.05)},
+  flip:function(){beep(520,.06,'triangle',.05)},
+  tick:function(){beep(300,.05,'square',.02)},
+  win:function(){[523,659,784,1047].forEach(function(f,i){beep(f,.2,'triangle',.06,i*.12)})}
+};
+
+/* ---------- ESCENA 3D ---------- */
+var GL={pulse:function(){},burst:function(){},color:function(){},view:function(){},setLevel:function(){}};
+function initGL(){
+  if(!window.THREE){document.body.classList.add('nogl');return}
+  var T=THREE,canvas=$('#gl'),r;
+  try{r=new T.WebGLRenderer({canvas:canvas,antialias:true,alpha:true})}catch(e){document.body.classList.add('nogl');return}
+  r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  var scene=new T.Scene();scene.fog=new T.FogExp2(0x050205,.03);
+  var cam=new T.PerspectiveCamera(55,1,.1,200);cam.position.set(0,0,10);
+  scene.add(new T.AmbientLight(0xb06a98,.9));
+  var l1=new T.PointLight(0xff4fa3,2.4,70);l1.position.set(6,5,7);scene.add(l1);
+  var l2=new T.PointLight(0xff2d87,2,70);l2.position.set(-7,-4,6);scene.add(l2);
+
+  var hero=new T.Group();scene.add(hero);
+  var tint=new T.Color(0xff4fa3),tgt=new T.Color(0xff4fa3);
+  var core=new T.Mesh(new T.IcosahedronGeometry(1.7,1),new T.MeshStandardMaterial({color:tint,emissive:tint,emissiveIntensity:.3,metalness:.55,roughness:.22,flatShading:true}));
+  var wire=new T.Mesh(new T.IcosahedronGeometry(2.1,1),new T.MeshBasicMaterial({color:tint,wireframe:true,transparent:true,opacity:.35}));
+  hero.add(core,wire);
+  // Dos figuras 3D nuevas: un cristal facetado y un aro trenzado.
+  // Se mantienen separadas del núcleo para que se distingan mientras flotan.
+  var crystal=new T.Mesh(
+    new T.OctahedronGeometry(.92,1),
+    new T.MeshStandardMaterial({color:0xff8cc6,emissive:0xff2d87,emissiveIntensity:.42,metalness:.48,roughness:.2,flatShading:true})
+  );
+  crystal.position.set(-3.05,.18,.25);
+  var crystalWire=new T.Mesh(new T.OctahedronGeometry(1.04,1),new T.MeshBasicMaterial({color:0xffd1e8,wireframe:true,transparent:true,opacity:.55}));
+  crystal.add(crystalWire);
+  var knot=new T.Mesh(
+    new T.TorusKnotGeometry(.68,.2,100,12,2,3),
+    new T.MeshStandardMaterial({color:0xff6fb5,emissive:0xd01070,emissiveIntensity:.45,metalness:.58,roughness:.2})
+  );
+  knot.position.set(3.05,-.12,.2);
+  var knotWire=new T.Mesh(new T.TorusKnotGeometry(.76,.035,100,8,2,3),new T.MeshBasicMaterial({color:0xffd1e8,wireframe:true,transparent:true,opacity:.45}));
+  knot.add(knotWire);
+  hero.add(crystal,knot);
+  var rings=[];
+  for(var i=0;i<2;i++){var rg=new T.Mesh(new T.TorusGeometry(3+i*.55,.025,8,140),new T.MeshBasicMaterial({color:tint,transparent:true,opacity:.6}));rg.rotation.x=1.2+i*.7;rg.rotation.y=i*.9;hero.add(rg);rings.push(rg)}
+  var evolveLevel=1,evolveStage=0,extraRings=[];
+  var shapeFactories=[
+    function(){return new T.IcosahedronGeometry(1.7,1)},function(){return new T.OctahedronGeometry(1.75,1)},function(){return new T.DodecahedronGeometry(1.7,1)},function(){return new T.TetrahedronGeometry(1.85,1)},function(){return new T.IcosahedronGeometry(1.7,2)},function(){return new T.SphereGeometry(1.65,12,8)},function(){return new T.TorusKnotGeometry(1.1,.32,90,10)},function(){return new T.OctahedronGeometry(1.8,2)}
+  ];
+  GL.setLevel=function(level){
+    evolveLevel=Math.max(1,Math.min(1000,Number(level)||1));
+    var stage=Math.floor(evolveLevel/5);
+    if(stage!==evolveStage){
+      evolveStage=stage;
+      var factory=shapeFactories[stage%shapeFactories.length],newCore=factory(),newWire=factory();
+      core.geometry.dispose();wire.geometry.dispose();core.geometry=newCore;wire.geometry=newWire;
+      core.scale.setScalar(1+(stage%4)*.045);wire.scale.setScalar(1.02+(stage%3)*.025);
+      while(extraRings.length<Math.min(8,Math.floor(stage/2)+1)){
+        var ix=extraRings.length,rg=new T.Mesh(new T.TorusGeometry(3.15+ix*.17,.018+Math.min(stage,20)*.0005,8,120),new T.MeshBasicMaterial({color:tint,transparent:true,opacity:.32}));
+        rg.rotation.set(1.1+ix*.37,ix*.53,ix*.22);hero.add(rg);extraRings.push(rg);
+      }
+      hero.scale.setScalar(1+Math.min(stage,39)*.006);
+      var hue=new T.Color().setHSL(.9+(stage%6)*.014,.9,.62);tgt.copy(hue);
+      l1.color.copy(hue);
+    }
+    var progress=evolveLevel%5;
+    if(progress===0&&evolveLevel<1000)toast(tm('evolve',{n:evolveLevel}));
+  };
+  var moons=[];
+  for(var m=0;m<3;m++){var mo=new T.Mesh(new T.OctahedronGeometry(.22),new T.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.4,flatShading:true}));hero.add(mo);moons.push(mo)}
+
+  var pal=[0xff4fa3,0xff8cc6,0xff2d87,0xffb3d9,0xd6197a],floaters=[];
+  var geos=[new T.TetrahedronGeometry(.5),new T.BoxGeometry(.6,.6,.6),new T.OctahedronGeometry(.5),new T.TorusGeometry(.4,.12,8,20)];
+  for(var f=0;f<46;f++){
+    var fm=new T.Mesh(geos[f%4],new T.MeshStandardMaterial({color:pal[f%5],metalness:.4,roughness:.35,flatShading:true,transparent:true,opacity:.85}));
+    var rad=9+Math.random()*16,a=Math.random()*6.283,y=(Math.random()-.5)*18;
+    fm.position.set(Math.cos(a)*rad,y,Math.sin(a)*rad-8);
+    fm.userData={sx:(Math.random()-.5)*.02,sy:(Math.random()-.5)*.02,ph:Math.random()*6,by:y};
+    scene.add(fm);floaters.push(fm);
+  }
+  var sp=new Float32Array(1600*3);
+  for(var s=0;s<1600;s++){var rr=30+Math.random()*70,th=Math.random()*6.283,ph=Math.acos(2*Math.random()-1);sp[s*3]=rr*Math.sin(ph)*Math.cos(th);sp[s*3+1]=rr*Math.sin(ph)*Math.sin(th);sp[s*3+2]=rr*Math.cos(ph)}
+  var sg=new T.BufferGeometry();sg.setAttribute('position',new T.BufferAttribute(sp,3));
+  var stars=new T.Points(sg,new T.PointsMaterial({color:0xffc2e0,size:.22,transparent:true,opacity:.8,depthWrite:false}));scene.add(stars);
+
+  var N=180,bp=new Float32Array(N*3),bv=new Float32Array(N*3),bg=new T.BufferGeometry();
+  bg.setAttribute('position',new T.BufferAttribute(bp,3));
+  var bm=new T.PointsMaterial({color:0xffffff,size:.16,transparent:true,opacity:0,depthWrite:false,blending:T.AdditiveBlending});
+  var bpts=new T.Points(bg,bm);bpts.frustumCulled=false;scene.add(bpts);var bl=0;
+
+  var spin={x:.004,y:.008},drag=false,lx=0,ly=0,shake=0,pul=0,mx=0,my=0,t0=0;
+  var vpos=new T.Vector3(),vscale=1,vt={p:new T.Vector3(3.6,0,0),s:1};
+  function layout(){
+    var w=innerWidth,h=innerHeight;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();
+    GL.view(GL._v||'menu');
+  }
+  GL.view=function(v){
+    GL._v=v;var wide=innerWidth/innerHeight>1.15;
+    if(wide){vt.p.set(v==='menu'?4.3:5.2,v==='menu'?0:-.6,v==='menu'?0:-1.5);vt.s=v==='menu'?1:.75}
+    else{vt.p.set(0,v==='menu'?3.6:4.2,-4);vt.s=.6}
+  };
+  GL.color=function(hex){tgt.setHex(hex);l1.color.setHex(hex)};
+  GL.burst=function(hex,n){
+    bm.color.setHex(hex);bl=1;n=n||N;
+    for(var i=0;i<N;i++){
+      bp[i*3]=hero.position.x;bp[i*3+1]=hero.position.y;bp[i*3+2]=hero.position.z;
+      var a=Math.random()*6.283,b=Math.acos(2*Math.random()-1),sp2=(.08+Math.random()*.22)*(i<n?1:0);
+      bv[i*3]=Math.sin(b)*Math.cos(a)*sp2;bv[i*3+1]=Math.sin(b)*Math.sin(a)*sp2;bv[i*3+2]=Math.cos(b)*sp2;
+    }
+  };
+  GL.pulse=function(ok){
+    if(ok){pul=1;spin.y+=.05;GL.burst(0xffb3d9)}
+    else{shake=1;GL.burst(0xff5d5d,90)}
+  };
+  addEventListener('resize',layout);layout();
+
+  var ray=new T.Raycaster(),mv=new T.Vector2();
+  canvas.addEventListener('pointerdown',function(e){
+    drag=true;lx=e.clientX;ly=e.clientY;
+    mv.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(mv,cam);
+    if(ray.intersectObject(core).length){var c=pal[Math.floor(Math.random()*pal.length)];GL.color(c);GL.burst(c,120);spin.y+=.12;sfx.flip()}
+  });
+  addEventListener('pointerup',function(){drag=false});
+  addEventListener('pointermove',function(e){
+    mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;
+    if(drag){spin.y+=(e.clientX-lx)*.0009;spin.x+=(e.clientY-ly)*.0009;lx=e.clientX;ly=e.clientY}
+  });
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  (function loop(t){
+    requestAnimationFrame(loop);
+    var dt=t-t0;t0=t;t*=.001;
+    spin.x+=(.003-spin.x)*.03;spin.y+=(.007-spin.y)*.03;
+    var k=reduce?.2:1;
+    core.rotation.x+=spin.x*k;core.rotation.y+=spin.y*k;wire.rotation.x-=spin.x*.6*k;wire.rotation.y-=spin.y*.6*k;
+    crystal.rotation.x+=.009*k;crystal.rotation.y+=.012*k;crystal.position.y=.18+Math.sin(t*1.25)*.22;
+    knot.rotation.x+=.008*k;knot.rotation.y-=.013*k;knot.position.y=-.12+Math.sin(t*1.1+1.8)*.24;
+    rings.forEach(function(g,i){g.rotation.z+=.004*(i?-1:1)*k});extraRings.forEach(function(g,i){g.rotation.z+=.0025*(i%2?-1:1)*k;g.rotation.x+=.0008*k});
+    moons.forEach(function(mo,i){var a=t*.8*k+i*2.1,rd=2.9+i*.3;mo.position.set(Math.cos(a)*rd,Math.sin(a*1.3+i)*1.3,Math.sin(a)*rd)});
+    pul*=.92;shake*=.93;
+    var sc=vt.s*(1+pul*.28);hero.scale.setScalar(sc);
+    hero.position.lerp(vt.p,.06);
+    hero.position.x+=Math.sin(t*60)*shake*.12;
+    tint.lerp(tgt,.07);core.material.emissive.copy(tint);wire.material.color.copy(tint);rings.forEach(function(g){g.material.color.copy(tint)});
+    floaters.forEach(function(m){var u=m.userData;m.rotation.x+=u.sx*k*dt*.06;m.rotation.y+=u.sy*k*dt*.06;m.position.y=u.by+Math.sin(t*.5+u.ph)*.8*k});
+    stars.rotation.y+=.0002*k;
+    if(bl>0){
+      bl-=.016;bm.opacity=Math.max(0,bl);
+      for(var i=0;i<N;i++){bp[i*3]+=bv[i*3];bp[i*3+1]+=bv[i*3+1];bp[i*3+2]+=bv[i*3+2];bv[i*3]*=.97;bv[i*3+1]*=.97;bv[i*3+2]*=.97}
+      bg.attributes.position.needsUpdate=true;
+    }
+    cam.position.x+=(mx*2.2-cam.position.x)*.05;cam.position.y+=(-my*1.6-cam.position.y)*.05;cam.lookAt(0,0,0);
+    r.render(scene,cam);
+  })(0);
+}
+
+/* ---------- INCLINACIÓN 3D DE LOS PANELES ---------- */
+var tiltEl=null;
+function untilt(){if(tiltEl){tiltEl.style.transform='';tiltEl=null}}
+document.addEventListener('pointermove',function(e){
+  var t=e.target.closest?e.target.closest('[data-tilt]'):null;
+  if(tiltEl&&tiltEl!==t)untilt();
+  if(!t||e.pointerType==='touch')return;
+  var b=t.getBoundingClientRect(),x=(e.clientX-b.left)/b.width-.5,y=(e.clientY-b.top)/b.height-.5;
+  var big=t.classList.contains('qcard')?5:10;
+  t.style.transform='perspective(800px) rotateX('+(-y*big).toFixed(2)+'deg) rotateY('+(x*big*1.4).toFixed(2)+'deg) translateZ(6px)';tiltEl=t;
+});
+document.addEventListener('pointerleave',untilt);
+
+/* ---------- UI GENERAL ---------- */
+var toastT;
+function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},2200)}
+var screens=['login','menu','game','pairs','end','ranking'];
+function show(id){
+  screens.forEach(function(s){$('#'+s).hidden=(s!==id)});
+  $('#appHeader').hidden=(id==='login');
+  $('#bBackTop').hidden=(id!=='menu');
+  GL.view(id==='menu'?'menu':'game');
+  $('#hLivesW').hidden=!(id==='game'&&G&&G.mode==='vidas');
+  $('#menuActions').hidden=true;$('#bMenuActions').setAttribute('aria-expanded','false');
+  document.querySelectorAll('[data-back]').forEach(function(b){b.hidden=(id==='login'||id==='menu')});
+  window.scrollTo(0,0);
+}
+var area=store.get('q3d_area','mat');if(!AREAS[area])area='mat';
+var cat=AREAS[area].mix;
+var levelData=store.get('q3d_levels',{});
+function applyAreaTheme(){document.body.classList.remove('theme-mat','theme-prog','theme-ing');document.body.classList.add('theme-'+(area==='mat'?'mat':area==='prog'?'prog':'ing'));}
+function currentLevel(){return Math.max(1,Math.min(1000,Number(levelData[area])||1))}
+function setLevel(n){levelData[area]=Math.max(1,Math.min(1000,n));store.set('q3d_levels',levelData);$('#hLevel').textContent=levelData[area];if(GL.setLevel)GL.setLevel(levelData[area]);}
+
+function bestKey(m){return m+'|'+cat}
+function renderMenu(){
+  $('#subjectTitle').textContent=AREAS[area].name;
+  var descriptions={mat:'Resuelve retos de álgebra, cálculo y estadística.',prog:'Practica lógica, pseudocódigo, Python, C++, HTML y JavaScript.',ing:'Aprende vocabulario, gramática y expresiones en inglés básico.'};
+  $('#subjectIntro').textContent=introText(area);
+  applyAreaTheme();
+  var cats=$('#cats');cats.innerHTML='';
+  catList().forEach(function(c){
+    var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=c[1];b.setAttribute('aria-pressed',String(c[0]===cat));
+    b.onclick=function(){cat=c[0];renderMenu()};cats.appendChild(b);
+  });
+  $('#qCount').textContent=tm('qCount',{n:qsFor(cat).length});
+  var best=store.get('q3d_best',{}),box=$('#modes');box.innerHTML='';
+  MODES.forEach(function(m){
+    var sv=getSave(m.id);
+    var d=document.createElement('div');d.className='mode'+(m.wide?' wide':'');d.style.setProperty('--c',m.color);d.setAttribute('data-tilt','');
+    var h=document.createElement('h3');h.textContent=m.name;
+    var p=document.createElement('p');p.textContent=m.desc;
+    var s=document.createElement('small');s.textContent=best[bestKey(m.id)]?tm('record',{n:best[bestKey(m.id)]}):'Sin récord todavía';
+    d.append(h,p,s);
+    var row=document.createElement('div');row.className='mrow';
+    if(sv){
+      var st=document.createElement('small');st.className='saved';
+      st.textContent=sv.pairs?tm('savedPairs',{f:sv.found,m:sv.moves}):tm('savedQ',{n:sv.i+1,s:sv.score});
+      d.insertBefore(st,s);
+      var b1=document.createElement('button');b1.type='button';b1.className='btn primary sm';b1.textContent='Continuar';b1.onclick=function(){start(m.id,true)};
+      var b2=document.createElement('button');b2.type='button';b2.className='btn sm';b2.textContent='Empezar de nuevo';b2.onclick=function(){start(m.id,false)};
+      row.append(b1,b2);
+    }else{
+      var b3=document.createElement('button');b3.type='button';b3.className='btn primary sm';b3.textContent='Jugar';b3.onclick=function(){start(m.id,false)};
+      row.append(b3);
+    }
+    d.appendChild(row);
+    d.onclick=function(e){if(e.target.closest('button'))return;start(m.id,!!sv)};
+    d.onpointerenter=function(){GL.color(m.rgb)};
+    box.appendChild(d);
+  });
+}
+
+/* ---------- JUEGO ---------- */
+var G=null,P=null,cur=null,tmr=null;
+var LEN={clasico:20,vf:20,relampago:15,escribir:10};
+var TIMED={clasico:15,vf:10,vidas:15,escribir:30};
+function getSaves(){return store.get('q3d_save',{})}
+function getSave(id){return getSaves()[id+'|'+cat]||null}
+function putSave(id,c,obj){var s=getSaves();s[id+'|'+c]=obj;store.set('q3d_save',s)}
+function clearSave(id,c){var s=getSaves();delete s[id+'|'+c];store.set('q3d_save',s)}
+function setHud(){
+  $('#hScore').textContent=G?G.score:0;$('#hStreak').textContent=G?G.streak:0;$('#hLevel').textContent=currentLevel();
+  if(G&&G.mode==='vidas')$('#hLives').textContent=G.lives;
+}
+function isDone(){
+  if(G.mode==='vidas')return G.lives<=0;
+  if(G.mode==='reloj')return G.left<=0;
+  return G.i+1>=G.pool.length;
+}
+function saveGame(idx){
+  if(!G||G.over||G.mode==='parejas')return;
+  putSave(G.mode,G.cat,{mode:G.mode,cat:G.cat,pool:G.pool,i:idx==null?G.i:idx,score:G.score,streak:G.streak,maxStreak:G.maxStreak,ok:G.ok,total:G.total,lives:G.lives,left:G.left,elapsed:G.elapsed,fifty:G.fifty,ts:Date.now()});
+}
+function start(id,resume){
+  stop();
+  var m=modeById(id),sv=resume?getSave(id):null;
+  GL.color(m.rgb);if(GL.setLevel)GL.setLevel(currentLevel());document.querySelector('.brand i').style.background=m.color;
+  document.documentElement.style.setProperty('--acc',m.color);
+  if(id==='parejas')return startPairs(m,sv);
+  var pool;
+  if(sv){pool=sv.pool}
+  else{
+    pool=orderByDifficulty(qsFor(cat));
+    if(id==='escribir')pool=pool.filter(function(q){return q[3]&&q[3].length});
+    if((pool.length<2&&id!=='escribir')||!pool.length){toast('No hay suficientes preguntas para este modo.');return}
+    if(LEN[id])pool=pool.slice(0,LEN[id]);
+    clearSave(id,cat);
+  }
+  G={mode:id,m:m,cat:cat,pool:pool,i:0,score:0,streak:0,maxStreak:0,ok:0,total:0,lives:3,left:60,qleft:0,qmax:0,elapsed:0,locked:false,over:false,fifty:2,hinted:false,paused:false,last:performance.now()};
+  if(sv){['i','score','streak','maxStreak','ok','total','lives','left','elapsed','fifty'].forEach(function(k){if(sv[k]!=null)G[k]=sv[k]})}
+  $('#gMode').textContent=m.name;
+  $('#opts').hidden=(id==='escribir');$('#wBox').hidden=(id!=='escribir');
+  $('#b50').hidden=(id==='escribir'||id==='vf');$('#b50').textContent=tm('fifty',{n:G.fifty});
+  setHud();show('game');showQ();
+  tmr=setInterval(tick,100);
+  if(sv)toast(tm('resumeQ',{n:G.i+1}));
+}
+function stop(){clearInterval(tmr);tmr=null}
+function setBar(frac,txt){
+  var b=$('#gBar');b.firstElementChild.style.width=Math.max(0,Math.min(1,frac))*100+'%';
+  b.classList.toggle('low',frac<.25&&(G.mode==='reloj'||G.qmax>0));
+  $('#gTime').textContent=txt;
+}
+function tick(){
+  if(!G||G.over||G.mode==='parejas')return;
+  var now=performance.now(),dt=(now-G.last)/1000;G.last=now;
+  if(G.paused)return;
+  G.elapsed+=dt;
+  if(G.mode==='reloj'){
+    G.left-=dt;setBar(G.left/60,Math.max(0,Math.ceil(G.left))+' s');
+    if(G.left<=0){G.left=0;return finish()}
+    if(G.left<6&&Math.floor(G.left*10)%10===0)sfx.tick();
+  }else if(G.qmax>0){
+    if(!G.locked){G.qleft-=dt;if(G.qleft<=0){G.qleft=0;setBar(0,'0 s');return timeUp()}}
+    setBar(G.qleft/G.qmax,Math.ceil(G.qleft)+' s');
+  }else{
+    setBar((G.i%G.pool.length)/G.pool.length,'Libre');
+  }
+}
+function showQ(){
+  var q=G.pool[G.i%G.pool.length];
+  G.locked=false;G.paused=false;G.hinted=false;G.last=performance.now();
+  $('#ctx').hidden=true;$('#cp').hidden=true;$('#fb').textContent='';$('#fb').className='fb grow';
+  cur={q:q[0],a:q[1],x:q[2],w:q[3]||[],e:q[4]||'',cat:q[5]||'Mis preguntas'};
+  G.qmax=0;
+  if(G.mode==='relampago')G.qmax=8;
+  else if(TIMED[G.mode]&&Math.random()<.45)G.qmax=TIMED[G.mode];
+  G.qleft=G.qmax;
+  var bd=$('#qBadge');
+  if(G.mode==='reloj'){bd.textContent='Reloj global';bd.className='badge timed'}
+  else if(G.qmax>0){bd.textContent=tm('timed',{n:G.qmax});bd.className='badge timed'}
+  else{bd.textContent='Sin límite de tiempo';bd.className='badge'}
+  var fixed=(G.mode==='clasico'||G.mode==='vf'||G.mode==='relampago'||G.mode==='escribir');
+  $('#gN').textContent=(G.i+1)+(fixed?' / '+G.pool.length:'');
+  $('#qCat').textContent=cur.cat;
+  var box=$('#opts');box.innerHTML='';
+  if(G.mode==='escribir'){
+    $('#qText').textContent=cur.q;$('#qSub').textContent='Escribe la respuesta y presiona Enter.';
+    var inp=$('#wIn');inp.value='';inp.placeholder=ov('Escribe tu respuesta');inp.disabled=false;$('#wGo').disabled=false;$('#wHint').disabled=false;
+    setTimeout(function(){try{inp.focus()}catch(e){}},50);return;
+  }
+  if(G.mode==='vf'){
+    var truth=Math.random()<.5,shown=truth?cur.a:cur.x[Math.floor(Math.random()*cur.x.length)];
+    cur.truth=truth;
+    $('#qText').textContent=cur.q;$('#qSub').textContent=tm('vfSub',{t:shown});
+    [['Verdadero',true],['Falso',false]].forEach(function(o){
+      var b=document.createElement('button');b.type='button';b.className='opt vf';b.setAttribute('data-tilt','');b.textContent=o[0];
+      b.onclick=function(){pickVF(b,o[1])};box.appendChild(b);
+    });
+    return;
+  }
+  $('#qText').textContent=cur.q;$('#qSub').textContent='';
+  cur.opts=shuffle([cur.a].concat(cur.x));
+  cur.opts.forEach(function(t,i){
+    var b=document.createElement('button');b.type='button';b.className='opt';b.setAttribute('data-tilt','');
+    var k=document.createElement('kbd');k.textContent=i+1;var s=document.createElement('span');s.textContent=t;b.append(k,s);
+    b.onclick=function(){pick(b,t)};box.appendChild(b);
+  });
+  $('#b50').disabled=G.fifty<=0;
+}
+function lockOpts(){Array.prototype.forEach.call($('#opts').children,function(b){b.disabled=true;b.style.transform=''})}
+function answerText(){
+  if(G.mode==='vf')return cur.truth?tm('vfTrue',{a:cur.a}):tm('vfFalse',{a:cur.a});
+  return cur.a;
+}
+function pick(btn,text){
+  if(G.locked)return;
+  var ok=text===cur.a;lockOpts();
+  btn.classList.add(ok?'ok':'bad');
+  if(!ok)Array.prototype.forEach.call($('#opts').children,function(b){if(b.lastChild.textContent===cur.a)b.classList.add('ok')});
+  resolve(ok,cur.a);
+}
+function pickVF(btn,val){
+  if(G.locked)return;
+  var ok=val===cur.truth;lockOpts();
+  btn.classList.add(ok?'ok':'bad');
+  if(!ok)Array.prototype.forEach.call($('#opts').children,function(b){if(b!==btn)b.classList.add('ok')});
+  resolve(ok,answerText());
+}
+function checkWrite(){
+  if(G.locked||G.mode!=='escribir')return;
+  var v=norm($('#wIn').value);if(!v){toast('Escribe algo primero.');return}
+  var acc=(cur.w.length?cur.w:[cur.a]).map(norm),ok=acc.indexOf(v)>-1;
+  $('#wIn').disabled=true;$('#wGo').disabled=true;$('#wHint').disabled=true;
+  resolve(ok,cur.a);
+}
+function timeUp(){
+  if(!G||G.locked||G.over)return;
+  if(G.mode==='escribir'){$('#wIn').disabled=true;$('#wGo').disabled=true;$('#wHint').disabled=true}
+  else{
+    lockOpts();var kids=$('#opts').children;
+    if(G.mode==='vf')kids[cur.truth?0:1].classList.add('ok');
+    else Array.prototype.forEach.call(kids,function(b){if(b.lastChild.textContent===cur.a)b.classList.add('ok')});
+  }
+  resolve(false,answerText(),true);
+}
+function resolve(ok,reveal,timeout){
+  if(G.locked||G.over)return;
+  G.locked=true;G.paused=true;G.total++;
+  var pts=0,fb=$('#fb');
+  if(ok){
+    setLevel(currentLevel()+1);
+    G.ok++;G.streak++;G.maxStreak=Math.max(G.maxStreak,G.streak);
+    pts=(G.hinted?60:100)+Math.min(G.streak,10)*10;
+    if(G.qmax>0)pts+=Math.ceil(G.qleft)*(G.mode==='relampago'?10:2);
+    if(G.mode==='reloj')G.left+=2;
+    G.score+=pts;sfx.ok();GL.pulse(true);
+    fb.textContent=tm('correct',{p:pts})+(G.streak>2?tm('streak',{n:G.streak}):'');fb.className='fb grow ok';
+  }else{
+    G.streak=0;if(G.mode==='vidas')G.lives--;if(G.mode==='reloj')G.left-=5;
+    sfx.bad();GL.pulse(false);
+    fb.textContent=(timeout?tm('timeout'):'')+tm('answer',{a:reveal});fb.className='fb grow bad';
+  }
+  setHud();
+  var c=$('#ctx');c.hidden=false;c.className='panel ctx '+(ok?'good':'bad');
+  $('#ctxL').textContent=ok?'Contexto · ¡acertaste!':'Contexto · para repasar';
+  $('#ctxT').textContent=cur.e||tm('ctxFallback',{a:cur.a});
+  $('#bNext').textContent=isDone()?'Ver resultado':'Siguiente';
+  try{$('#bNext').focus({preventScroll:true})}catch(e){}
+}
+function onNext(){
+  if(!G||G.over)return;
+  $('#ctx').hidden=true;
+  if(isDone())return finish();
+  if(G.mode!=='reloj'&&G.total%5===0)return showCP();
+  goNext();
+}
+function goNext(){
+  G.i++;
+  if((G.mode==='vidas'||G.mode==='reloj')&&G.i%G.pool.length===0)G.pool=orderByDifficulty(qsFor(G.cat));
+  showQ();saveGame();
+}
+function showCP(){
+  $('#cpT').textContent=tm('checkpoint',{t:G.total,ok:G.ok,s:G.score});
+  $('#cp').hidden=false;
+  try{$('#cpGo').focus({preventScroll:true})}catch(e){}
+}
+function saveAndExit(){
+  if(G&&!G.over){
+    if(G.mode==='parejas')savePairs();
+    else{
+      if(G.locked&&isDone())return finish();
+      saveGame(G.locked?G.i+1:G.i);
+    }
+    toast('Avance guardado. Puedes continuar desde el menú.');
+  }
+  stop();G=null;P=null;renderMenu();show('menu');
+}
+function fifty(){
+  if(!G||G.locked||G.fifty<=0||!cur.opts)return;
+  G.fifty--;var wrong=[];
+  Array.prototype.forEach.call($('#opts').children,function(b){if(b.lastChild.textContent!==cur.a&&!b.classList.contains('gone'))wrong.push(b)});
+  shuffle(wrong).slice(0,2).forEach(function(b){b.classList.add('gone');b.disabled=true});
+  $('#b50').textContent=tm('fifty',{n:G.fifty});$('#b50').disabled=G.fifty<=0;sfx.flip();
+}
+function hint(){
+  if(!G||G.locked)return;
+  var a=cur.w.length?cur.w[0]:cur.a;G.hinted=true;
+  $('#wIn').placeholder=tm('hint',{c:a.charAt(0).toUpperCase(),n:a.length});
+  $('#wHint').disabled=true;sfx.flip();
+}
+
+/* ---------- PAREJAS ---------- */
+function savePairs(){
+  if(!G||!P)return;
+  putSave('parejas',G.cat,{pairs:true,cat:G.cat,cards:P.cards,done:P.done,moves:P.moves,found:P.found,elapsed:G.elapsed,score:0,ts:Date.now()});
+}
+function startPairs(m,sv){
+  var cards;
+  if(sv){cards=sv.cards}
+  else{
+    var src=pairsFor(cat);
+    if(src.length<6){toast('Este modo usa las categorías con parejas. Elige otra.');return}
+    var pick6=shuffle(src).slice(0,6);cards=[];
+    pick6.forEach(function(p,i){cards.push({id:i,t:p[0]});cards.push({id:i,t:p[1]})});
+    cards=shuffle(cards);clearSave('parejas',cat);
+  }
+  G={mode:'parejas',m:m,cat:cat,score:0,streak:0,maxStreak:0,ok:0,total:0,lives:3,elapsed:sv?sv.elapsed:0,over:false,locked:false,paused:false};
+  P={first:null,lock:false,moves:sv?sv.moves:0,found:sv?sv.found:0,t0:performance.now()-(sv?sv.elapsed*1000:0),cards:cards,done:sv?sv.done.slice():[]};
+  G.ok=P.found;
+  var grid=$('#pgrid');grid.innerHTML='';
+  cards.forEach(function(c,idx){
+    var b=document.createElement('button');b.type='button';b.className='pcard';b.setAttribute('aria-label','Carta');
+    var inn=document.createElement('div');inn.className='in';
+    var bk=document.createElement('div');bk.className='face back';bk.textContent='?';
+    var ft=document.createElement('div');ft.className='face front';ft.textContent=c.t;
+    inn.append(bk,ft);b.appendChild(inn);b.onclick=function(){flipCard(b,c,idx)};
+    if(P.done.indexOf(idx)>-1)b.classList.add('flip','done');
+    grid.appendChild(b);
+  });
+  $('#pMoves').textContent=P.moves;$('#pFound').textContent=P.found+'/6';$('#pTime').textContent=Math.floor(G.elapsed)+' s';
+  setHud();show('pairs');
+  tmr=setInterval(function(){if(!P||G.over)return;G.elapsed=(performance.now()-P.t0)/1000;$('#pTime').textContent=Math.floor(G.elapsed)+' s'},250);
+  if(sv)toast(tm('resumePairs',{n:P.found}));
+}
+function flipCard(el,c,idx){
+  if(P.lock||el.classList.contains('flip')||G.over)return;
+  el.classList.add('flip');sfx.flip();
+  if(!P.first){P.first={el:el,c:c,idx:idx};return}
+  P.moves++;$('#pMoves').textContent=P.moves;
+  var a=P.first;P.first=null;
+  if(a.c.id===c.id){
+    a.el.classList.add('done');el.classList.add('done');P.done.push(a.idx,idx);P.found++;G.ok++;G.streak++;G.maxStreak=Math.max(G.maxStreak,G.streak);
+    $('#pFound').textContent=P.found+'/6';sfx.ok();GL.pulse(true);setHud();savePairs();
+    if(P.found===6){
+      G.total=P.moves;
+      G.score=Math.max(100,Math.round(1200-P.moves*30-G.elapsed*6));
+      setTimeout(finish,900);
+    }
+  }else{
+    P.lock=true;G.streak=0;setHud();a.el.classList.add('no');el.classList.add('no');sfx.bad();GL.pulse(false);savePairs();
+    setTimeout(function(){a.el.classList.remove('flip','no');el.classList.remove('flip','no');P.lock=false},850);
+  }
+}
+
+/* ---------- RANKING GLOBAL (servidor Java: /api/ranking) ---------- */
+/* Dirección del servidor Java (ServidorRanking).
+   - Si abres el juego desde el servidor (http://localhost:8080 o tu dirección publicada), usa la misma dirección automáticamente.
+   - Si abres el archivo suelto con doble clic, se conecta al servidor de tu computadora (localhost:8080).
+   - Si el servidor está en otra dirección, escríbela aquí, por ejemplo: 'https://mi-servidor.onrender.com/api/ranking'. */
+var RANKING={url:(/^https?:$/.test(location.protocol)?'/api/ranking':'http://localhost:8080/api/ranking'),max:50};
+function rkOn(){return !!RANKING.url}
+function rkName(){try{var v=JSON.parse(localStorage.getItem('q3d_user')||'""');return String(v||'').trim().slice(0,24)}catch(e){return ''}}
+/* Envía un puntaje: POST {jugador, area, modo, puntaje} */
+function rkSubmit(area,modo,puntaje){
+  if(!rkOn()||!rkName()||!(puntaje>0))return Promise.resolve(false);
+  return fetch(RANKING.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jugador:rkName(),area:area,modo:modo,puntaje:Math.round(puntaje)})})
+    .then(function(r){return r.ok}).catch(function(){return false});
+}
+/* Lee el ranking: GET ?area=..&modo=.. → [{jugador, puntaje, ...}].
+   Si el servidor devuelve más de lo pedido, aquí se filtra, se quita a los repetidos y se ordena. */
+function rkLoad(area,modo){
+  return fetch(RANKING.url+'?area='+encodeURIComponent(area)+'&modo='+encodeURIComponent(modo))
+    .then(function(r){if(!r.ok)throw new Error('http');return r.json()})
+    .then(function(rows){
+      if(!Array.isArray(rows))return [];
+      var seen={},out=[];
+      rows.filter(function(r){return r&&(r.area===undefined||r.area===area)&&(r.modo===undefined||r.modo===modo)})
+        .map(function(r){return {jugador:String(r.jugador!=null?r.jugador:(r.nombre||'')),puntaje:Number(r.puntaje!=null?r.puntaje:r.puntos)||0}})
+        .sort(function(x,y){return y.puntaje-x.puntaje})
+        .forEach(function(r){var k=r.jugador.toLocaleLowerCase();if(!k||seen[k])return;seen[k]=1;out.push(r)});
+      return out.slice(0,RANKING.max);
+    });
+}
+var rkSt={area:'mat',modo:'clasico',token:0};
+function rkChips(box,items,cur,onPick){
+  box.innerHTML='';
+  items.forEach(function(it){
+    var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=it[1];b.setAttribute('aria-pressed',String(cur===it[0]));
+    b.onclick=function(){onPick(it[0])};box.appendChild(b);
+  });
+}
+function renderRanking(){
+  rkChips($('#rkAreas'),Object.keys(AREAS).map(function(a){return [a,AREAS[a].name.replace('Laboratorio de ','')]}),rkSt.area,function(a){rkSt.area=a;renderRanking()});
+  rkChips($('#rkModes'),MODES.map(function(m){return [m.id,m.name]}),rkSt.modo,function(m){rkSt.modo=m;renderRanking()});
+  var list=$('#rkList'),msg=$('#rkMsg');list.innerHTML='';
+  if(!rkOn()){msg.textContent='El ranking global todavía no está activado.';return}
+  msg.textContent='Cargando ranking…';
+  var my=++rkSt.token;
+  rkLoad(rkSt.area,rkSt.modo).then(function(rows){
+    if(my!==rkSt.token)return;
+    list.innerHTML='';
+    if(!rows.length){msg.textContent='Aún no hay puntajes en este modo. ¡Sé el primero!';return}
+    msg.textContent='';
+    var me=rkName().toLocaleLowerCase();
+    rows.forEach(function(r,i){
+      var row=document.createElement('div');row.className='rk-row'+(i<3?' top':'')+(r.jugador.toLocaleLowerCase()===me?' me':'');
+      var a=document.createElement('b');a.textContent=String(i+1);
+      var n=document.createElement('span');n.textContent=r.jugador;
+      var p=document.createElement('span');p.textContent=r.puntaje.toLocaleString('es');
+      row.appendChild(a);row.appendChild(n);row.appendChild(p);list.appendChild(row);
+    });
+  }).catch(function(){if(my!==rkSt.token)return;list.innerHTML='';msg.textContent='No se pudo cargar el ranking. Revisa tu conexión.'});
+}
+function openRanking(a,m){
+  stop();
+  if(a&&AREAS[a])rkSt.area=a;else rkSt.area=area;
+  rkSt.modo=m||rkSt.modo||'clasico';
+  show('ranking');renderRanking();
+}
+
+/* ---------- FINAL ---------- */
+function finish(){
+  if(!G||G.over)return;G.over=true;stop();clearSave(G.mode,G.cat);
+  var best=store.get('q3d_best',{}),k=bestKey(G.mode),prev=best[k]||0,rec=G.score>prev;
+  if(rec){best[k]=G.score;store.set('q3d_best',best)}
+  var pct=G.mode==='parejas'?(G.score>800?1:G.score>500?.6:.3):(G.total?G.ok/G.total:0);
+  $('#eTitle').textContent=pct>=.9?'Nivel maestro':pct>=.6?'Muy buen resultado':pct>=.3?'Vas por buen camino':'A seguir practicando';
+  $('#eScore').textContent=G.score;
+  $('#eRec').textContent=rec&&G.score>0?tm('newRecord',{m:G.m.name}):tm('yourRecord',{n:Math.max(prev,G.score)});
+  $('#eRec').style.color=rec?'var(--ok)':'var(--mute)';
+  $('#eOk').textContent=G.mode==='parejas'?tm('pairsOk',{n:G.ok}):G.ok+' / '+G.total;
+  $('#eStreak').textContent=G.maxStreak;$('#eTime').textContent=Math.floor(G.elapsed)+' s';
+  show('end');
+  var rk=$('#eRank');rk.textContent='';
+  if(rec&&G.score>0&&rkOn()&&rkName()){
+    rk.textContent='Enviando tu puntaje al ranking global…';
+    var sA=area,sM=G.mode,sP=G.score;
+    rkSubmit(sA,sM,sP).then(function(ok){rk.textContent=ok?'Puntaje enviado al ranking global.':'No se pudo enviar el puntaje al ranking.'});
+  }
+  if(pct>=.6){sfx.win();GL.burst(0xff8cc6)}else{GL.burst(0xe63e9c,100)}
+}
+
+
+/* ---------- EVENTOS ---------- */
+function toMenu(){stop();G=null;P=null;renderMenu();show('menu')}
+function chooseArea(k){if(!AREAS[k])return;area=k;cat=AREAS[k].mix;store.set('q3d_area',k);GL.color(AREAS[k].rgb);setLevel(currentLevel());applyAreaTheme();toMenu()}
+$('#loginForm').addEventListener('submit',function(e){e.preventDefault();var u=$('#loginUser').value.trim();if(!u){toast('Escribe tu usuario para continuar.');return}if(u.toLowerCase()==='mielametio'){window.location.href='Juega_y_Aprende_admin.html';return}activateProfile(u);store.set('q3d_user',u);area=store.get('q3d_area','mat');if(!AREAS[area])area='mat';cat=AREAS[area].mix;levelData=store.get('q3d_levels',{});$('#hLevel').textContent=currentLevel();if(GL.setLevel)GL.setLevel(currentLevel());GL.color(AREAS[area].rgb);applyAreaTheme();renderMenu();$('#loginForm').hidden=true;$('#subjectChooser').hidden=false;$('#login h1').textContent=tm('hello',{u:u});if(musicOn&&!muted)startMusic();});
+document.querySelectorAll('[data-area]').forEach(function(b){b.addEventListener('click',function(){chooseArea(b.getAttribute('data-area'))})});
+function toggleActions(){var panel=$('#menuActions'),open=panel.hidden;panel.hidden=!open;$('#bMenuActions').setAttribute('aria-expanded',String(open))}
+$('#bMenuActions').onclick=toggleActions;
+document.addEventListener('click',function(e){if(e.target.closest('#languageLabel'))return;if(!e.target.closest('#menuActions')&&!e.target.closest('#bMenuActions')){$('#menuActions').hidden=true;$('#bMenuActions').setAttribute('aria-expanded','false')}});
+document.querySelectorAll('[data-language]').forEach(function(btn){btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();setLanguage(btn.getAttribute('data-language'));$('#menuActions').hidden=false;$('#bMenuActions').setAttribute('aria-expanded','true')})});
+$('#bBackTop').onclick=function(){
+  $('#menuActions').hidden=true;
+  if(!$('#menu').hidden){
+    // Desde la pantalla de la materia, vuelve al selector de áreas sin pedir la contraseña otra vez.
+    $('#loginForm').hidden=true;$('#subjectChooser').hidden=false;$('#login h1').textContent='Elige tu área de estudio';show('login');return;
+  }
+  if(G&&!G.over&&(!$('#game').hidden||!$('#pairs').hidden)){saveAndExit();return;}
+  toMenu();
+};
+$('#bSound').onclick=function(){muted=!muted;this.textContent='Efectos: '+(muted?'no':'sí');this.setAttribute('aria-pressed',String(!muted));applyLanguage();if(muted)stopMusic();else{if(musicOn)startMusic();sfx.flip()}};
+$('#bMusic').onclick=function(){musicOn=!musicOn;this.textContent='Música: '+(musicOn?'sí':'no');this.setAttribute('aria-pressed',String(musicOn));applyLanguage();if(musicOn&&!muted)startMusic();else stopMusic();if(!muted)sfx.flip()};
+document.querySelectorAll('[data-back]').forEach(function(b){b.onclick=function(){if(G&&!G.over&&(!$('#game').hidden||!$('#pairs').hidden))saveAndExit();else toMenu()}});
+$('#eMenu').onclick=toMenu;
+$('#bRank').onclick=function(){
+  $('#menuActions').hidden=true;$('#bMenuActions').setAttribute('aria-expanded','false');
+  if(G&&!G.over&&(!$('#game').hidden||!$('#pairs').hidden))saveAndExit();
+  openRanking(area);
+};
+$('#eRanking').onclick=function(){openRanking(area,G&&G.mode)};
+$('#rkRefresh').onclick=renderRanking;
+$('#eAgain').onclick=function(){start(G.mode,false)};
+$('#b50').onclick=fifty;$('#wGo').onclick=checkWrite;$('#wHint').onclick=hint;
+$('#bNext').onclick=onNext;
+$('#cpGo').onclick=function(){$('#cp').hidden=true;goNext()};
+$('#cpSave').onclick=saveAndExit;
+$('#wIn').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();checkWrite()}});
+document.addEventListener('keydown',function(e){
+  if(e.target&&e.target.tagName==='INPUT')return;
+  if(e.key==='Escape'&&$('#menu').hidden){if(G&&!G.over&&(!$('#game').hidden||!$('#pairs').hidden))saveAndExit();else toMenu();return}
+  if(!G||$('#game').hidden||G.locked)return;
+  var n=parseInt(e.key,10);
+  if(n>=1&&n<=4){var o=$('#opts').children[n-1];if(o&&!o.disabled)o.click()}
+  if(G.mode==='vf'){if(e.key==='v'||e.key==='V')$('#opts').children[0].click();if(e.key==='f'||e.key==='F')$('#opts').children[1].click()}
+});
+
+try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e){currentLang='es'}if(!UI_LANGS[currentLang])currentLang='es';var uiObserver=new MutationObserver(function(){translateTextNodes(document.body)});uiObserver.observe(document.body,{subtree:true,childList:true});initGL();$('#hLevel').textContent=currentLevel();if(GL.setLevel)GL.setLevel(currentLevel());applyAreaTheme();renderMenu();applyLanguage();var savedUser=store.get('q3d_user','');if(savedUser){$('#loginUser').value=savedUser;$('#login h1').textContent='¡Bienvenido de nuevo!';}$('#loginForm').hidden=false;$('#subjectChooser').hidden=true;show('login');
+})();
+</script>
+
+</body></html>

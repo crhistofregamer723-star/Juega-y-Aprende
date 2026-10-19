@@ -1,0 +1,13 @@
+{
+  "name": "juega-y-aprende",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Juega y Aprende: juego educativo con ranking global en Netlify Functions",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
