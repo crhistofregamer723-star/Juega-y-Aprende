@@ -11,3 +11,14 @@
     Cache-Control = "public, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Acceso corto al administrador: tu-sitio.netlify.app/admin
+[[redirects]]
+  from = "/admin"
+  to = "/Juega_y_Aprende_admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/"
+  to = "/Juega_y_Aprende_admin.html"
+  status = 200
