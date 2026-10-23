@@ -2,7 +2,12 @@
 // Misma API que el servidor Java:
 //   GET  /api/ranking?area=mat&modo=clasico  -> los 50 mejores de esa materia y modo
 //   POST /api/ranking  {"jugador":"Ana","area":"mat","modo":"clasico","puntaje":760}
-// Los puntajes se guardan en Netlify Blobs (no hace falta base de datos ni claves).
+// Ranking por ÁREA (suma de todos los puntos de las categorías) y por NIVEL:
+//   GET  /api/ranking?area=mat&orden=puntos|nivel   -> top 50 [{jugador,puntos,nivel,preguntas}]
+//   GET  /api/ranking?jugador=Ana                   -> {jugador, areas:{mat:{puntos,nivel,preguntas},prog:{..},ing:{..}}}
+//   POST /api/ranking {"jugador":"Ana","area":"mat","puntos":5200,"nivel":12,"preguntas":130}
+// (También sigue aceptando el formato anterior por modo: area+modo+puntaje.)
+// Los datos se guardan en Netlify Blobs (no hace falta base de datos ni claves).
 import { getStore } from "@netlify/blobs";
 
 const AREAS = new Set(["mat", "prog", "ing"]);
@@ -11,6 +16,9 @@ const MAX_GUARDADOS = 100;
 const MAX_DEVUELTOS = 50;
 const MAX_PUNTAJE = 1_000_000;
 const MAX_CUERPO = 4096;
+const MAX_JUGADORES = 5000;
+const MAX_PUNTOS = 100_000_000;
+const MAX_NIVEL = 1000;
 const MAX_POST_POR_MINUTO = 60;
 
 export const config = { path: "/api/ranking" };
@@ -54,6 +62,15 @@ async function leer(store) {
   );
 }
 
+async function leerPerfiles(store) {
+  const d = await store.get("perfiles", { type: "json" });
+  return d && d.jugadores && typeof d.jugadores === "object" ? d.jugadores : {};
+}
+const entero = (v, max) => {
+  v = typeof v === "string" ? Number(v.trim()) : v;
+  return Number.isInteger(v) && v >= 0 && v <= max ? v : null;
+};
+
 export default async (req, context) => {
   try {
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
@@ -62,6 +79,27 @@ export default async (req, context) => {
 
     if (req.method === "GET") {
       const q = new URL(req.url).searchParams;
+      const jug = q.get("jugador"), orden = q.get("orden");
+      if (jug !== null || orden !== null) {
+        const perfiles = await leerPerfiles(store);
+        if (jug !== null) {
+          const p = perfiles[jug.trim().toLowerCase()];
+          const areas = {};
+          for (const a of AREAS) areas[a] = { puntos: p?.[a]?.puntos || 0, nivel: p?.[a]?.nivel || 1, preguntas: p?.[a]?.preguntas || 0 };
+          return json({ jugador: p?.jugador || jug.trim(), areas });
+        }
+        const a = q.get("area");
+        if (!AREAS.has(a)) return error(400, "Materia inválida");
+        if (orden !== "puntos" && orden !== "nivel") return error(400, "Orden inválido");
+        const filas = Object.values(perfiles)
+          .filter((p) => p[a] && p[a].puntos > 0)
+          .map((p) => ({ jugador: p.jugador, puntos: p[a].puntos, nivel: p[a].nivel || 1, preguntas: p[a].preguntas || 0 }))
+          .sort((x, y) => orden === "nivel"
+            ? (y.nivel - x.nivel) || (y.preguntas - x.preguntas) || (y.puntos - x.puntos)
+            : (y.puntos - x.puntos) || (y.nivel - x.nivel))
+          .slice(0, MAX_DEVUELTOS);
+        return json(filas);
+      }
       const area = q.get("area"), modo = q.get("modo");
       if (area !== null && !AREAS.has(area)) return error(400, "Materia inválida");
       if (modo !== null && !MODOS.has(modo)) return error(400, "Modo inválido");
@@ -83,6 +121,31 @@ export default async (req, context) => {
       let d;
       try { d = JSON.parse(texto); } catch { return error(400, "JSON inválido"); }
       if (!d || typeof d !== "object" || Array.isArray(d)) return error(400, "JSON inválido");
+
+      if (d.puntos !== undefined) {
+        let nombre = typeof d.jugador === "string" ? d.jugador.trim() : "";
+        if (!nombre || [...nombre].length > 24 || /[\u0000-\u001f\u007f-\u009f]/.test(nombre)) return error(400, "Nombre inválido");
+        if (!AREAS.has(d.area)) return error(400, "Materia inválida");
+        const puntos = entero(d.puntos, MAX_PUNTOS), nivel = entero(d.nivel, MAX_NIVEL), preguntas = entero(d.preguntas, 1_000_000);
+        if (puntos === null || nivel === null || preguntas === null || nivel < 1) return error(400, "Datos inválidos");
+        const perfiles = await leerPerfiles(store);
+        const k = nombre.toLowerCase();
+        const p = perfiles[k] || (perfiles[k] = { jugador: nombre });
+        p.jugador = nombre;
+        const a = p[d.area] || (p[d.area] = { puntos: 0, nivel: 1, preguntas: 0 });
+        // Los totales solo suben (un envío repetido o atrasado no los baja).
+        a.puntos = Math.max(a.puntos, puntos);
+        a.nivel = Math.max(a.nivel, nivel);
+        a.preguntas = Math.max(a.preguntas, preguntas);
+        p.t = Date.now();
+        const claves = Object.keys(perfiles);
+        if (claves.length > MAX_JUGADORES) {
+          claves.sort((x, y) => (perfiles[x].t || 0) - (perfiles[y].t || 0));
+          for (const x of claves.slice(0, claves.length - MAX_JUGADORES)) delete perfiles[x];
+        }
+        await store.setJSON("perfiles", { jugadores: perfiles });
+        return json({ status: "ok" });
+      }
 
       const { area, modo } = d;
       let { jugador, puntaje } = d;

@@ -213,6 +213,9 @@ body #menu:before{text-align:center}
 .rk-row.top{border-color:var(--acc);box-shadow:0 0 18px color-mix(in srgb,var(--acc) 22%,transparent)}
 .rk-row.me{background:var(--panel2);border-color:var(--acc)}
 .rk-row.me span:nth-child(2):after{content:' · tú';color:var(--acc);font-weight:600}
+.rk-row{width:100%;font:inherit;color:inherit;cursor:pointer}
+.rk-profile{margin:14px 0;padding:14px;display:grid;gap:8px}
+.rk-profile h3{text-align:center;margin:0}
 .rk-msg{text-align:center;color:var(--mute);margin:8px auto;max-width:46ch}
 #eRank{text-align:center;min-height:1.5em;font-size:13px;margin:0 auto}
 
@@ -261,6 +264,7 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
       <span class="stat">Puntos<b id="hScore">0</b></span>
       <span class="stat">Racha<b id="hStreak">0</b></span>
       <span class="stat">Nivel<b id="hLevel">1</b></span>
+      <span class="stat">Respondidas<b id="hAns">0</b></span>
       <span class="stat" id="hLivesW" hidden>Vidas<b id="hLives">3</b></span>
       <button class="btn" id="bMenuActions" type="button" aria-expanded="false" aria-controls="menuActions">☰ Menú</button>
       <div class="action-menu" id="menuActions" hidden>
@@ -357,10 +361,11 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
   </section>
   <section id="ranking" hidden>
     <div class="screen-heading"><button class="btn screen-back" type="button" data-back>← Volver</button><span class="label">Ranking global</span></div>
-    <h2>Los mejores puntajes</h2>
+    <h2>Los mejores del área</h2>
     <div class="chips rk-modes" id="rkAreas" role="group" aria-label="Área"></div>
-    <div class="chips rk-modes" id="rkModes" role="group" aria-label="Modo de juego"></div>
+    <div class="chips rk-modes" id="rkModes" role="group" aria-label="Ordenar por"></div>
     <div class="rk-list" id="rkList" aria-live="polite"></div>
+    <div class="panel rk-profile" id="rkProfile" hidden></div>
     <p class="rk-msg" id="rkMsg"></p>
     <div class="row"><button class="btn" id="rkRefresh" type="button">Actualizar</button></div>
   </section>
@@ -1225,11 +1230,23 @@ function show(id){
 }
 var area=store.get('q3d_area','mat');if(!AREAS[area])area='mat';
 var cat=AREAS[area].mix;
-var levelData=store.get('q3d_levels',{});
+var progData=store.get('q3d_prog',{});
+function djb(t){var h=5381;t=String(t);for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return (h>>>0).toString(36)}
+function AP(a){a=a||area;var p=progData[a];if(!p||typeof p!=='object')p=progData[a]={pts:0,ans:0,done:{}};if(!p.done||typeof p.done!=='object')p.done={};return p}
+function saveProg(){store.set('q3d_prog',progData)}
+function doneCount(a){return Object.keys(AP(a).done).length}
+function levelOf(n){return Math.max(1,Math.min(1000,Math.floor(n/10)+1))}
 function applyAreaTheme(){document.body.classList.remove('theme-mat','theme-prog','theme-ing');document.body.classList.add('theme-'+(area==='mat'?'mat':area==='prog'?'prog':'ing'));}
-function currentLevel(){return Math.max(1,Math.min(1000,Number(levelData[area])||1))}
-function setLevel(n){levelData[area]=Math.max(1,Math.min(1000,n));store.set('q3d_levels',levelData);$('#hLevel').textContent=levelData[area];if(GL.setLevel)GL.setLevel(levelData[area]);}
-
+function currentLevel(){return levelOf(doneCount())}
+function setLevel(){var l=currentLevel();$('#hLevel').textContent=l;$('#hAns').textContent=AP().ans;if(GL.setLevel)GL.setLevel(l);}
+/* Cada nivel desbloquea 10 preguntas nuevas (de la más fácil a la más difícil). Se avanza al acertar las 10 del nivel. */
+function levelPool(c){
+  var L=orderByDifficulty(qsFor(c)),d=AP().done;
+  var got=0;L.forEach(function(q){if(d[djb(q[0])])got++});
+  var lvl=Math.floor(got/10)+1,open=L.slice(0,Math.min(L.length,lvl*10));
+  var fresh=open.filter(function(q){return !d[djb(q[0])]}),old=shuffle(open.filter(function(q){return d[djb(q[0])]}));
+  return fresh.concat(old);
+}
 function bestKey(m){return m+'|'+cat}
 function renderMenu(){
   $('#subjectTitle').textContent=AREAS[area].name;
@@ -1241,7 +1258,8 @@ function renderMenu(){
     var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=c[1];b.setAttribute('aria-pressed',String(c[0]===cat));
     b.onclick=function(){cat=c[0];renderMenu()};cats.appendChild(b);
   });
-  $('#qCount').textContent=tm('qCount',{n:qsFor(cat).length});
+  var tot=qsFor(cat).length,dn=AP().done,gotC=0;qsFor(cat).forEach(function(q){if(dn[djb(q[0])])gotC++});
+  $('#qCount').textContent=tm('qCount',{n:tot})+' · Nivel '+currentLevel()+': '+Math.min(tot,(Math.floor(gotC/10)+1)*10)+' desbloqueadas · '+gotC+' dominadas · '+AP().ans+' respondidas en total';
   var best=store.get('q3d_best',{}),box=$('#modes');box.innerHTML='';
   MODES.forEach(function(m){
     var sv=getSave(m.id);
@@ -1278,7 +1296,7 @@ function getSave(id){return getSaves()[id+'|'+cat]||null}
 function putSave(id,c,obj){var s=getSaves();s[id+'|'+c]=obj;store.set('q3d_save',s)}
 function clearSave(id,c){var s=getSaves();delete s[id+'|'+c];store.set('q3d_save',s)}
 function setHud(){
-  $('#hScore').textContent=G?G.score:0;$('#hStreak').textContent=G?G.streak:0;$('#hLevel').textContent=currentLevel();
+  $('#hScore').textContent=G?G.score:0;$('#hStreak').textContent=G?G.streak:0;$('#hLevel').textContent=currentLevel();$('#hAns').textContent=AP().ans;
   if(G&&G.mode==='vidas')$('#hLives').textContent=G.lives;
 }
 function isDone(){
@@ -1299,7 +1317,7 @@ function start(id,resume){
   var pool;
   if(sv){pool=sv.pool}
   else{
-    pool=orderByDifficulty(qsFor(cat));
+    pool=levelPool(cat);
     if(id==='escribir')pool=pool.filter(function(q){return q[3]&&q[3].length});
     if((pool.length<2&&id!=='escribir')||!pool.length){toast('No hay suficientes preguntas para este modo.');return}
     if(LEN[id])pool=pool.slice(0,LEN[id]);
@@ -1417,19 +1435,22 @@ function resolve(ok,reveal,timeout){
   if(G.locked||G.over)return;
   G.locked=true;G.paused=true;G.total++;
   var pts=0,fb=$('#fb');
+  var prog=AP(),lvBefore=currentLevel();prog.ans++;
   if(ok){
-    setLevel(currentLevel()+1);
+    var qk=djb(cur.q);if(!prog.done[qk])prog.done[qk]=1;
     G.ok++;G.streak++;G.maxStreak=Math.max(G.maxStreak,G.streak);
     pts=(G.hinted?60:100)+Math.min(G.streak,10)*10;
     if(G.qmax>0)pts+=Math.ceil(G.qleft)*(G.mode==='relampago'?10:2);
     if(G.mode==='reloj')G.left+=2;
-    G.score+=pts;sfx.ok();GL.pulse(true);
+    G.score+=pts;prog.pts+=pts;sfx.ok();GL.pulse(true);
     fb.textContent=tm('correct',{p:pts})+(G.streak>2?tm('streak',{n:G.streak}):'');fb.className='fb grow ok';
   }else{
     G.streak=0;if(G.mode==='vidas')G.lives--;if(G.mode==='reloj')G.left-=5;
     sfx.bad();GL.pulse(false);
     fb.textContent=(timeout?tm('timeout'):'')+tm('answer',{a:reveal});fb.className='fb grow bad';
   }
+  saveProg();setLevel();
+  if(currentLevel()>lvBefore){toast('¡Subiste al nivel '+currentLevel()+'! Se desbloquearon 10 preguntas nuevas.');rkSync()}
   setHud();
   var c=$('#ctx');c.hidden=false;c.className='panel ctx '+(ok?'good':'bad');
   $('#ctxL').textContent=ok?'Contexto · ¡acertaste!':'Contexto · para repasar';
@@ -1446,7 +1467,7 @@ function onNext(){
 }
 function goNext(){
   G.i++;
-  if((G.mode==='vidas'||G.mode==='reloj')&&G.i%G.pool.length===0)G.pool=orderByDifficulty(qsFor(G.cat));
+  if((G.mode==='vidas'||G.mode==='reloj')&&G.i%G.pool.length===0)G.pool=levelPool(G.cat);
   showQ();saveGame();
 }
 function showCP(){
@@ -1461,7 +1482,7 @@ function saveAndExit(){
       if(G.locked&&isDone())return finish();
       saveGame(G.locked?G.i+1:G.i);
     }
-    toast('Avance guardado. Puedes continuar desde el menú.');
+    toast('Avance guardado. Puedes continuar desde el menú.');rkSync();
   }
   stop();G=null;P=null;renderMenu();show('menu');
 }
@@ -1540,28 +1561,24 @@ function flipCard(el,c,idx){
 var RANKING={url:(/^https?:$/.test(location.protocol)?'/api/ranking':'http://localhost:8080/api/ranking'),max:50};
 function rkOn(){return !!RANKING.url}
 function rkName(){try{var v=JSON.parse(localStorage.getItem('q3d_user')||'""');return String(v||'').trim().slice(0,24)}catch(e){return ''}}
-/* Envía un puntaje: POST {jugador, area, modo, puntaje} */
-function rkSubmit(area,modo,puntaje){
-  if(!rkOn()||!rkName()||!(puntaje>0))return Promise.resolve(false);
-  return fetch(RANKING.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jugador:rkName(),area:area,modo:modo,puntaje:Math.round(puntaje)})})
+/* Envía tu progreso del área (puntos totales sumando todas las categorías, nivel y preguntas respondidas). */
+function rkSync(a){
+  a=a||area;
+  if(!rkOn()||!rkName())return Promise.resolve(false);
+  var p=AP(a);if(!(p.pts>0))return Promise.resolve(false);
+  return fetch(RANKING.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jugador:rkName(),area:a,puntos:Math.round(p.pts),nivel:levelOf(Object.keys(p.done).length),preguntas:p.ans})})
     .then(function(r){return r.ok}).catch(function(){return false});
 }
-/* Lee el ranking: GET ?area=..&modo=.. → [{jugador, puntaje, ...}].
-   Si el servidor devuelve más de lo pedido, aquí se filtra, se quita a los repetidos y se ordena. */
-function rkLoad(area,modo){
-  return fetch(RANKING.url+'?area='+encodeURIComponent(area)+'&modo='+encodeURIComponent(modo))
+/* Lee el ranking de un área: GET ?area=..&orden=puntos|nivel */
+function rkLoad(a,orden){
+  return fetch(RANKING.url+'?area='+encodeURIComponent(a)+'&orden='+encodeURIComponent(orden))
     .then(function(r){if(!r.ok)throw new Error('http');return r.json()})
-    .then(function(rows){
-      if(!Array.isArray(rows))return [];
-      var seen={},out=[];
-      rows.filter(function(r){return r&&(r.area===undefined||r.area===area)&&(r.modo===undefined||r.modo===modo)})
-        .map(function(r){return {jugador:String(r.jugador!=null?r.jugador:(r.nombre||'')),puntaje:Number(r.puntaje!=null?r.puntaje:r.puntos)||0}})
-        .sort(function(x,y){return y.puntaje-x.puntaje})
-        .forEach(function(r){var k=r.jugador.toLocaleLowerCase();if(!k||seen[k])return;seen[k]=1;out.push(r)});
-      return out.slice(0,RANKING.max);
-    });
+    .then(function(rows){return Array.isArray(rows)?rows.slice(0,RANKING.max):[]});
 }
-var rkSt={area:'mat',modo:'clasico',token:0};
+function rkProfile(name){
+  return fetch(RANKING.url+'?jugador='+encodeURIComponent(name)).then(function(r){if(!r.ok)throw new Error('http');return r.json()});
+}
+var rkSt={area:'mat',orden:'puntos',token:0};
 function rkChips(box,items,cur,onPick){
   box.innerHTML='';
   items.forEach(function(it){
@@ -1569,32 +1586,56 @@ function rkChips(box,items,cur,onPick){
     b.onclick=function(){onPick(it[0])};box.appendChild(b);
   });
 }
+function fmt(n){return Number(n||0).toLocaleString('es')}
+function showProfile(name){
+  var box=$('#rkProfile');box.hidden=false;box.innerHTML='';
+  var h=document.createElement('h3');h.textContent=name;box.appendChild(h);
+  var m=document.createElement('p');m.className='rk-msg';m.textContent='Cargando perfil…';box.appendChild(m);
+  rkProfile(name).then(function(d){
+    box.innerHTML='';
+    var t=document.createElement('h3');t.textContent=d.jugador||name;box.appendChild(t);
+    var best=null,max=0;
+    Object.keys(AREAS).forEach(function(a){var x=d.areas&&d.areas[a]||{puntos:0};if(x.puntos>max){max=x.puntos;best=a}});
+    Object.keys(AREAS).forEach(function(a){
+      var x=d.areas&&d.areas[a]||{puntos:0,nivel:1,preguntas:0};
+      var row=document.createElement('div');row.className='rk-row'+(a===best?' top':'');
+      var ic=document.createElement('b');ic.textContent=a===best?'★':'';
+      var nm=document.createElement('span');nm.textContent=AREAS[a].name.replace('Laboratorio de ','');
+      var pt=document.createElement('span');pt.textContent=fmt(x.puntos)+' pts · nivel '+x.nivel+' · '+fmt(x.preguntas)+' resp.';
+      row.append(ic,nm,pt);box.appendChild(row);
+    });
+    var note=document.createElement('p');note.className='rk-msg';
+    note.textContent=best?'Pasa más tiempo jugando en '+AREAS[best].name.replace('Laboratorio de ','')+'.':'Todavía no tiene puntos.';
+    box.appendChild(note);
+    var c=document.createElement('button');c.type='button';c.className='btn sm';c.textContent='Cerrar';c.onclick=function(){box.hidden=true};box.appendChild(c);
+  }).catch(function(){m.textContent='No se pudo cargar el perfil.'});
+  try{box.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}
+}
 function renderRanking(){
   rkChips($('#rkAreas'),Object.keys(AREAS).map(function(a){return [a,AREAS[a].name.replace('Laboratorio de ','')]}),rkSt.area,function(a){rkSt.area=a;renderRanking()});
-  rkChips($('#rkModes'),MODES.map(function(m){return [m.id,m.name]}),rkSt.modo,function(m){rkSt.modo=m;renderRanking()});
-  var list=$('#rkList'),msg=$('#rkMsg');list.innerHTML='';
+  rkChips($('#rkModes'),[['puntos','Por puntos'],['nivel','Por nivel']],rkSt.orden,function(o){rkSt.orden=o;renderRanking()});
+  var list=$('#rkList'),msg=$('#rkMsg');list.innerHTML='';$('#rkProfile').hidden=true;
   if(!rkOn()){msg.textContent='El ranking global todavía no está activado.';return}
   msg.textContent='Cargando ranking…';
   var my=++rkSt.token;
-  rkLoad(rkSt.area,rkSt.modo).then(function(rows){
+  rkLoad(rkSt.area,rkSt.orden).then(function(rows){
     if(my!==rkSt.token)return;
     list.innerHTML='';
-    if(!rows.length){msg.textContent='Aún no hay puntajes en este modo. ¡Sé el primero!';return}
-    msg.textContent='';
+    if(!rows.length){msg.textContent='Aún no hay jugadores en esta área. ¡Sé el primero!';return}
+    msg.textContent='Toca un jugador para ver sus puntos en cada área.';
     var me=rkName().toLocaleLowerCase();
     rows.forEach(function(r,i){
-      var row=document.createElement('div');row.className='rk-row'+(i<3?' top':'')+(r.jugador.toLocaleLowerCase()===me?' me':'');
+      var row=document.createElement('button');row.type='button';row.className='rk-row'+(i<3?' top':'')+(String(r.jugador).toLocaleLowerCase()===me?' me':'');
       var a=document.createElement('b');a.textContent=String(i+1);
       var n=document.createElement('span');n.textContent=r.jugador;
-      var p=document.createElement('span');p.textContent=r.puntaje.toLocaleString('es');
-      row.appendChild(a);row.appendChild(n);row.appendChild(p);list.appendChild(row);
+      var p=document.createElement('span');p.textContent=rkSt.orden==='nivel'?'Nivel '+r.nivel+' · '+fmt(r.puntos)+' pts':fmt(r.puntos)+' pts · nivel '+r.nivel;
+      row.appendChild(a);row.appendChild(n);row.appendChild(p);row.onclick=function(){showProfile(r.jugador)};list.appendChild(row);
     });
   }).catch(function(){if(my!==rkSt.token)return;list.innerHTML='';msg.textContent='No se pudo cargar el ranking. Revisa tu conexión.'});
 }
-function openRanking(a,m){
+function openRanking(a){
   stop();
-  if(a&&AREAS[a])rkSt.area=a;else rkSt.area=area;
-  rkSt.modo=m||rkSt.modo||'clasico';
+  rkSt.area=(a&&AREAS[a])?a:area;
   show('ranking');renderRanking();
 }
 
@@ -1612,10 +1653,9 @@ function finish(){
   $('#eStreak').textContent=G.maxStreak;$('#eTime').textContent=Math.floor(G.elapsed)+' s';
   show('end');
   var rk=$('#eRank');rk.textContent='';
-  if(G.score>0&&rkOn()&&rkName()){
-    rk.textContent='Enviando tu puntaje al ranking global…';
-    var sA=area,sM=G.mode,sP=G.score;
-    rkSubmit(sA,sM,sP).then(function(ok){rk.textContent=ok?'Puntaje enviado al ranking global.':'No se pudo enviar el puntaje al ranking.'});
+  if(rkOn()&&rkName()&&AP().pts>0){
+    rk.textContent='Enviando tu progreso al ranking global…';
+    rkSync().then(function(ok){rk.textContent=ok?'Progreso enviado al ranking global.':'No se pudo enviar el progreso al ranking.'});
   }
   if(pct>=.6){sfx.win();GL.burst(0xff8cc6)}else{GL.burst(0xe63e9c,100)}
 }
@@ -1623,8 +1663,8 @@ function finish(){
 
 /* ---------- EVENTOS ---------- */
 function toMenu(){stop();G=null;P=null;renderMenu();show('menu')}
-function chooseArea(k){if(!AREAS[k])return;area=k;cat=AREAS[k].mix;store.set('q3d_area',k);GL.color(AREAS[k].rgb);setLevel(currentLevel());applyAreaTheme();toMenu()}
-$('#loginForm').addEventListener('submit',function(e){e.preventDefault();var u=$('#loginUser').value.trim();if(!u){toast('Escribe tu usuario para continuar.');return}if(u.toLowerCase()==='mielametio'){window.location.href='Juega_y_Aprende_admin.html';return}activateProfile(u);store.set('q3d_user',u);area=store.get('q3d_area','mat');if(!AREAS[area])area='mat';cat=AREAS[area].mix;levelData=store.get('q3d_levels',{});$('#hLevel').textContent=currentLevel();if(GL.setLevel)GL.setLevel(currentLevel());GL.color(AREAS[area].rgb);applyAreaTheme();renderMenu();$('#loginForm').hidden=true;$('#subjectChooser').hidden=false;$('#login h1').textContent=tm('hello',{u:u});if(musicOn&&!muted)startMusic();});
+function chooseArea(k){if(!AREAS[k])return;area=k;cat=AREAS[k].mix;store.set('q3d_area',k);GL.color(AREAS[k].rgb);setLevel();applyAreaTheme();toMenu()}
+$('#loginForm').addEventListener('submit',function(e){e.preventDefault();var u=$('#loginUser').value.trim();if(!u){toast('Escribe tu usuario para continuar.');return}if(u.toLowerCase()==='mielametio'){window.location.href='Juega_y_Aprende_admin.html';return}activateProfile(u);store.set('q3d_user',u);area=store.get('q3d_area','mat');if(!AREAS[area])area='mat';cat=AREAS[area].mix;progData=store.get('q3d_prog',{});setLevel();GL.color(AREAS[area].rgb);applyAreaTheme();renderMenu();$('#loginForm').hidden=true;$('#subjectChooser').hidden=false;$('#login h1').textContent=tm('hello',{u:u});if(musicOn&&!muted)startMusic();});
 document.querySelectorAll('[data-area]').forEach(function(b){b.addEventListener('click',function(){chooseArea(b.getAttribute('data-area'))})});
 function toggleActions(){var panel=$('#menuActions'),open=panel.hidden;panel.hidden=!open;$('#bMenuActions').setAttribute('aria-expanded',String(open))}
 $('#bMenuActions').onclick=toggleActions;
@@ -1648,7 +1688,7 @@ $('#bRank').onclick=function(){
   if(G&&!G.over&&(!$('#game').hidden||!$('#pairs').hidden))saveAndExit();
   openRanking(area);
 };
-$('#eRanking').onclick=function(){openRanking(area,G&&G.mode)};
+$('#eRanking').onclick=function(){openRanking(area)};
 $('#rkRefresh').onclick=renderRanking;
 $('#eAgain').onclick=function(){start(G.mode,false)};
 $('#b50').onclick=fifty;$('#wGo').onclick=checkWrite;$('#wHint').onclick=hint;
