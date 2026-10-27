@@ -329,7 +329,7 @@ var MSG_LABEL={
 function tm(k,v){var t=(typeof ADM.msg[k]==='string'&&ADM.msg[k]!=='')?ADM.msg[k]:MSG_DEFAULT[k];return String(t).replace(/\{(\w+)\}/g,function(m,n){return(v&&v[n]!=null)?v[n]:m})}
 var BANNER_DEF={mat:{sym:'∑   π   √   x²',title:'LABORATORIO DE MATEMÁTICAS'},prog:{sym:'{ }   </>   01',title:'LABORATORIO DE PROGRAMACIÓN'},ing:{sym:'A B C   ✦   Hello!',title:'LABORATORIO DE INGLÉS'}};
 var AREA_INTRO={mat:'Resuelve retos de álgebra, cálculo y estadística.',prog:'Practica lógica, pseudocódigo, Python, C++, HTML y JavaScript.',ing:'Aprende vocabulario, gramática y expresiones en inglés básico.'};
-var INTRO_TAIL=' Cada área tiene más de 1.000 preguntas disponibles; la figura 3D evoluciona cada 5 niveles.';
+var INTRO_TAIL=' Cada área tiene más de 500 preguntas; cada nivel desbloquea 10 nuevas, de la más fácil a la más difícil, y la figura 3D evoluciona cada 5 niveles.';
 function introDefault(a){return AREA_INTRO[a]+INTRO_TAIL}
 function introText(a){var v=ADM.intro[a];return(typeof v==='string'&&v!=='')?v:introDefault(a)}
 var ADM_TABS=[['ui','Textos'],['msg','Mensajes'],['cov','Portadas'],['bak','Respaldo']];

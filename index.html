@@ -213,6 +213,8 @@ body #menu:before{text-align:center}
 .rk-row.top{border-color:var(--acc);box-shadow:0 0 18px color-mix(in srgb,var(--acc) 22%,transparent)}
 .rk-row.me{background:var(--panel2);border-color:var(--acc)}
 .rk-row.me span:nth-child(2):after{content:' · tú';color:var(--acc);font-weight:600}
+.qtext-pre{white-space:pre-wrap}
+#qText{white-space:pre-wrap;overflow-wrap:anywhere}
 .rk-row{width:100%;font:inherit;color:inherit;cursor:pointer}
 .rk-profile{margin:14px 0;padding:14px;display:grid;gap:8px}
 .rk-profile h3{text-align:center;margin:0}
@@ -329,7 +331,7 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
   <section id="menu">
     <div>
       <h1 id="subjectTitle">Matemáticas</h1>
-      <p class="lead" id="subjectIntro">Practica con preguntas, gana puntos y haz evolucionar la figura 3D cada 5 niveles hasta llegar al nivel 1000.</p>
+      <p class="lead" id="subjectIntro">Practica con preguntas, gana puntos y haz evolucionar la figura 3D cada 5 niveles a medida que subes de nivel.</p>
     </div>
     <div>
       <div class="label" style="margin-bottom:8px">Categoría</div>
@@ -439,6 +441,7 @@ x² ∫ Δ</div><div class="mars"></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="banco.js"></script>
 <script>
 (function(){
 'use strict';
@@ -929,65 +932,8 @@ CATS.ing6={name:'Vocabulario diario',qs:[
  ['¿Cómo se dice «ojos» en inglés?','eyes',['ears','hands','nose'],['eyes'],'Eyes es el plural de eye.'],
  ['¿Cómo se dice «mano» en inglés?','hand',['foot','arm','head'],['hand'],'Hand es mano y su plural es hands.']
 ]};
-/* ---------- EXPANSIÓN AUTOMÁTICA DEL BANCO: más de 1.000 preguntas por área ---------- */
-(function expandQuestionBank(){
-  function add(cat, rows){ CATS[cat].qs=CATS[cat].qs.concat(rows); }
-  var mathRows=[], progRows=[], engRows=[];
-  // Matemáticas: ejercicios aritméticos con valores variados y solución calculada.
-  var ops=[
-    {sym:'+',fn:function(a,b){return a+b},name:'suma'},
-    {sym:'−',fn:function(a,b){return a-b},name:'resta'},
-    {sym:'×',fn:function(a,b){return a*b},name:'multiplicación'}
-  ];
-  for(var i=1;i<=1050;i++){
-    var op=ops[(i-1)%ops.length],a=2+((i*17)%97),b=1+((i*29)%43),ans=op.fn(a,b);
-    if(i%7===0){a=2+(i%18);b=2+(i%9);ans=a*b;op={sym:'×',fn:function(x,y){return x*y},name:'multiplicación'};}
-    if(i%11===0){a=2+(i%19);b=1+(i%a);ans=a-b;op={sym:'−',fn:function(x,y){return x-y},name:'resta'};}
-    var wrong=[ans+1,ans-2,ans+5].map(String); if(new Set(wrong.concat([String(ans)])).size<4)wrong=[ans+2,ans-3,ans+7].map(String);
-    mathRows.push(['Resuelve el ejercicio '+i+': ¿cuánto es '+a+' '+op.sym+' '+b+'?',String(ans),wrong, [String(ans)],'Se realiza la '+op.name+' indicada: '+a+' '+op.sym+' '+b+' = '+ans+'.']);
-  }
-  add('alg',mathRows);
-  // Programación: conceptos fundamentales, preguntados desde distintos enfoques.
-  var concepts=[
-    ['variable','Un espacio con nombre para guardar un dato'],['constante','Un valor que no debe cambiar durante su uso'],['entero','Un tipo de dato para números sin parte decimal'],['cadena','Una secuencia de caracteres de texto'],['booleano','Un dato que puede ser verdadero o falso'],['condicional','Una estructura que toma decisiones según una condición'],['bucle','Una estructura que repite instrucciones'],['función','Un bloque reutilizable que realiza una tarea'],['parámetro','Un dato que recibe una función'],['retorno','El valor que una función entrega al terminar'],['arreglo','Una colección ordenada de elementos'],['índice','La posición usada para acceder a un elemento'],['comentario','Texto del código que no se ejecuta como instrucción'],['compilador','Programa que traduce código fuente a código ejecutable'],['depuración','Proceso de encontrar y corregir errores'],['algoritmo','Una secuencia finita y ordenada de pasos'],['entrada','Datos que recibe un programa'],['salida','Información que muestra o entrega un programa'],['operador lógico','Un símbolo o palabra que combina condiciones'],['operador de comparación','Un operador que compara dos valores'],['recursividad','Cuando una función se llama a sí misma'],['clase','Una plantilla para crear objetos'],['objeto','Una instancia con datos y comportamientos'],['método','Una función asociada a un objeto o clase'],['HTML','Lenguaje de marcado que estructura páginas web'],['CSS','Lenguaje que define la presentación visual de una página'],['JavaScript','Lenguaje que añade comportamiento a páginas web'],['Python','Lenguaje de programación de sintaxis legible'],['C++','Lenguaje compilado de propósito general'],['DOM','Representación estructurada del documento HTML'],['evento','Una acción detectada por la aplicación'],['excepción','Una situación de error que puede manejarse'],['lista','Una colección de elementos que puede cambiar'],['pila','Estructura que funciona con último en entrar, primero en salir'],['cola','Estructura que funciona con primero en entrar, primero en salir'],['diccionario','Colección de pares clave y valor'],['módulo','Archivo o unidad que agrupa código reutilizable'],['biblioteca','Conjunto de herramientas listas para usar'],['prueba unitaria','Prueba de una parte pequeña del programa'],['sintaxis','Reglas de escritura válida de un lenguaje'],['tipo de dato','Clasificación del valor que almacena un dato'],['dependencia','Una librería o componente externo que el programa necesita'],['API','Interfaz para que dos programas se comuniquen'],['JSON','Formato de texto para intercambiar datos estructurados'],['HTTP','Protocolo de comunicación usado en la web'],['servidor','Sistema que responde solicitudes de clientes'],['cliente','Programa que solicita servicios a un servidor'],['base de datos','Sistema organizado para guardar y consultar información'],['consulta','Solicitud para obtener o modificar datos'],['Git','Sistema de control de versiones'],['repositorio','Lugar donde se guarda y versiona un proyecto'],['bucle while','Repetición que continúa mientras una condición sea verdadera'],['bucle for','Repetición que recorre una secuencia o rango']
-  ];
-  var progPrompts=[
-    function(n){return 'En programación, ¿qué es '+n+'?'},
-    function(n){return '¿Cuál es la función principal de '+n+'?'},
-    function(n){return '¿Qué definición describe mejor '+n+'?'},
-    function(n){return 'Si estudias programación, ¿cómo se define '+n+'?'},
-    function(n){return '¿Para qué sirve o qué representa '+n+' en informática?'},
-    function(n){return 'Selecciona el significado correcto de '+n+'.'},
-    function(n){return '¿Qué afirmación es correcta acerca de '+n+'?'},
-    function(n){return '¿Cuál opción explica correctamente el término '+n+'?'},
-    function(n){return 'En el desarrollo de software, ¿qué significa '+n+'?'},
-    function(n){return '¿Cómo se puede describir '+n+' con palabras sencillas?'}
-  ];
-  for(var j=0;j<1050;j++){
-    var c=concepts[j%concepts.length],variant=Math.floor(j/concepts.length)%progPrompts.length;
-    var distractors=[concepts[(j+7)%concepts.length][1],concepts[(j+19)%concepts.length][1],concepts[(j+31)%concepts.length][1]];
-    if(distractors.some(function(x){return x===c[1]}))distractors=[concepts[(j+11)%concepts.length][1],concepts[(j+23)%concepts.length][1],concepts[(j+37)%concepts.length][1]];
-    progRows.push([progPrompts[variant](c[0]),c[1],distractors,[c[1]],c[1]+'.']);
-  }
-  add('cpp',progRows);
-  // Inglés: vocabulario y frases frecuentes con traducción en ambas direcciones.
-  var words=[['hello','hola'],['goodbye','adiós'],['please','por favor'],['thank you','gracias'],['sorry','lo siento'],['water','agua'],['bread','pan'],['apple','manzana'],['book','libro'],['school','escuela'],['house','casa'],['dog','perro'],['cat','gato'],['bird','pájaro'],['friend','amigo'],['family','familia'],['mother','madre'],['father','padre'],['sister','hermana'],['brother','hermano'],['teacher','profesor'],['student','estudiante'],['computer','computadora'],['phone','teléfono'],['table','mesa'],['chair','silla'],['window','ventana'],['door','puerta'],['red','rojo'],['blue','azul'],['green','verde'],['yellow','amarillo'],['black','negro'],['white','blanco'],['one','uno'],['two','dos'],['three','tres'],['four','cuatro'],['five','cinco'],['six','seis'],['seven','siete'],['eight','ocho'],['nine','nueve'],['ten','diez'],['Monday','lunes'],['Tuesday','martes'],['Wednesday','miércoles'],['Thursday','jueves'],['Friday','viernes'],['Saturday','sábado'],['Sunday','domingo'],['morning','mañana'],['afternoon','tarde'],['night','noche'],['happy','feliz'],['tired','cansado'],['hungry','hambriento'],['thirsty','sediento'],['big','grande'],['small','pequeño'],['fast','rápido'],['slow','lento'],['hot','caliente'],['cold','frío'],['beautiful','hermoso'],['easy','fácil'],['difficult','difícil'],['read','leer'],['write','escribir'],['speak','hablar'],['listen','escuchar'],['learn','aprender'],['work','trabajar'],['play','jugar'],['eat','comer'],['drink','beber'],['sleep','dormir'],['walk','caminar'],['run','correr'],['open','abrir'],['close','cerrar'],['come','venir'],['go','ir'],['make','hacer'],['think','pensar'],['understand','entender'],['today','hoy'],['tomorrow','mañana'],['yesterday','ayer'],['where','dónde'],['when','cuándo'],['who','quién'],['what','qué'],['why','por qué'],['how','cómo'],['always','siempre'],['sometimes','a veces'],['never','nunca'],['because','porque'],['between','entre'],['behind','detrás de'],['under','debajo de'],['above','encima de'],['inside','dentro de'],['outside','afuera']];
-  var engPrompts=[
-    function(w){return '¿Cómo se dice «'+w[1]+'» en inglés?'},
-    function(w){return '¿Qué significa la palabra inglesa «'+w[0]+'» en español?'},
-    function(w){return 'Traduce al inglés la palabra española «'+w[1]+'».'},
-    function(w){return 'Elige la traducción correcta de «'+w[0]+'».'},
-    function(w){return 'En vocabulario básico, «'+w[0]+'» significa:'},
-    function(w){return '¿Cuál palabra en inglés corresponde a «'+w[1]+'»?'}
-  ];
-  for(var k=0;k<1050;k++){
-    var w=words[k%words.length],v=Math.floor(k/words.length)%engPrompts.length,correct=(v===0||v===2||v===5)?w[0]:w[1];
-    var bad=[words[(k+9)%words.length][(v===0||v===2||v===5)?0:1],words[(k+23)%words.length][(v===0||v===2||v===5)?0:1],words[(k+41)%words.length][(v===0||v===2||v===5)?0:1]];
-    if(bad.indexOf(correct)>=0)bad=[words[(k+13)%words.length][1],words[(k+29)%words.length][1],words[(k+53)%words.length][1]];
-    engRows.push([engPrompts[v](w),correct,bad,[correct],w[0]+' significa «'+w[1]+'».']);
-  }
-  add('ing1',engRows);
-})();
+/* ---------- BANCO DE PREGUNTAS AMPLIADO (banco.js): cada categoría suma sus preguntas nuevas, con dificultad 0-100 ---------- */
+if(typeof BANCO==='object'&&BANCO)Object.keys(BANCO).forEach(function(c){if(CATS[c])CATS[c].qs=CATS[c].qs.concat(BANCO[c])});
 
 PAIRS.ing1=[['Hello','Hola'],['Goodbye','Adiós'],['Thank you','Gracias'],['Please','Por favor'],['Sorry','Lo siento'],['Good morning','Buenos días'],['See you later','Hasta luego'],['Nice to meet you','Mucho gusto']];
 PAIRS.ing2=[['I am','Yo soy / estoy'],['You are','Tú eres / estás'],['He is','Él es / está'],['She is','Ella es / está'],['We are','Nosotros somos / estamos'],['They are','Ellos son / están'],['It is','Eso es / está'],['I am not','Yo no soy']];
@@ -1013,7 +959,7 @@ function applyBankOverrides(){
 }
 var BANNER_DEF={mat:{sym:'∑   π   √   x²',title:'LABORATORIO DE MATEMÁTICAS'},prog:{sym:'{ }   </>   01',title:'LABORATORIO DE PROGRAMACIÓN'},ing:{sym:'A B C   ✦   Hello!',title:'LABORATORIO DE INGLÉS'}};
 var AREA_INTRO={mat:'Resuelve retos de álgebra, cálculo y estadística.',prog:'Practica lógica, pseudocódigo, Python, C++, HTML y JavaScript.',ing:'Aprende vocabulario, gramática y expresiones en inglés básico.'};
-var INTRO_TAIL=' Cada área tiene más de 1.000 preguntas disponibles; la figura 3D evoluciona cada 5 niveles.';
+var INTRO_TAIL=' Cada área tiene más de 500 preguntas; cada nivel desbloquea 10 nuevas, de la más fácil a la más difícil, y la figura 3D evoluciona cada 5 niveles.';
 function introDefault(a){return AREA_INTRO[a]+INTRO_TAIL}
 function introText(a){var v=ADM.intro[a];return(typeof v==='string'&&v!=='')?v:introDefault(a)}
 function cssEsc(s){return String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/[\r\n]+/g,' ')}
@@ -1039,7 +985,7 @@ var AREAS={
 function catList(){var A=AREAS[area],k=[];A.cats.forEach(function(c){k.push([c,CATS[c].name])});return k}
 function isMix(c){return c==='mez'||c==='mez_prog'||c==='mez_ing'}
 function mixArea(c){return c==='mez_prog'?'prog':c==='mez_ing'?'ing':'mat'}
-function mk(q,name){return [q[0],q[1],q[2],q[3]||[],q[4]||'',name]}
+function mk(q,name){return [q[0],q[1],q[2],q[3]||[],q[4]||'',name,q[5]]}
 function questionDifficulty(q){
   var text=norm([q[0],q[1],q[4]||''].join(' ')),score=0;
   var advanced=[/derivad|integral|limite|logaritm|discriminante|ecuaci[oó]n cuadr[aá]tica|n[uú]mero complejo|unidad imaginaria|matriz|determinante|probabilidad condicional|desviaci[oó]n est[aá]ndar|recursi[oó]n|programaci[oó]n as[ií]ncrona|promesa|closure|prototipo|puntero|complejidad temporal|big o|consulta sql|normalizaci[oó]n|polimorfismo|herencia|encapsulamiento|dom virtual|event loop|expresi[oó]n regular|ordenamiento por|b[uú]squeda binaria|integraci[oó]n por partes|regla de l'h[oó]pital/];
@@ -1050,7 +996,8 @@ function questionDifficulty(q){
   if(String(q[1]||'').length>38)score+=1;
   return score;
 }
-function orderByDifficulty(list){return list.map(function(q,i){return {q:q,i:i,d:questionDifficulty(q)}}).sort(function(a,b){return a.d-b.d||a.i-b.i}).map(function(x){return x.q})}
+function qDiff(q){return typeof q[6]==='number'?q[6]:Math.min(90,6+questionDifficulty(q)*9)}
+function orderByDifficulty(list){return list.map(function(q,i){return {q:q,i:i,d:qDiff(q)}}).sort(function(a,b){return a.d-b.d||a.i-b.i}).map(function(x){return x.q})}
 function qsFor(c){
   if(isMix(c)){var ar=mixArea(c),all=[];AREAS[ar].cats.forEach(function(k){CATS[k].qs.forEach(function(q){all.push(mk(q,CATS[k].name))})});return all}
   return CATS[c].qs.map(function(q){return mk(q,CATS[c].name)});
