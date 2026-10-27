@@ -235,9 +235,16 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
 #hero{--u:max(calc(100vw / 1440),calc(100vh / 810));position:fixed;inset:0;z-index:2000;overflow:hidden;background:#02040D;color:#fff;font-family:'Urbanist',system-ui,sans-serif;transition:opacity .5s ease}
 #hero.out{opacity:0;pointer-events:none}
 #hero.fine,#hero.fine *{cursor:none}
-#hero .hf{position:absolute;width:calc(var(--u)*1440);height:calc(var(--u)*810);left:calc(50% - var(--u)*720);top:calc(50% - var(--u)*405);isolation:isolate;background:radial-gradient(ellipse 90% 60% at 50% 118%,#ffb347 0%,#ff7a1a 28%,#8a2f12 52%,transparent 70%),linear-gradient(#02040D,#0a1330 70%)}
+#hero .hf{position:absolute;width:calc(var(--u)*1440);height:calc(var(--u)*810);left:calc(50% - var(--u)*720);top:calc(50% - var(--u)*405);isolation:isolate;background:radial-gradient(calc(var(--u)*900) calc(var(--u)*600) at 80% 20%,#5c0a3a 0,transparent 60%),radial-gradient(calc(var(--u)*700) calc(var(--u)*500) at 10% 90%,#3a0830 0,transparent 60%),#050205}
 #hero .hf>*{position:absolute}
-#hero .plate{left:0;top:0;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none}
+#hero .stars{inset:0;background-image:radial-gradient(1.5px 1.5px at 8% 14%,#fff,transparent),radial-gradient(1px 1px at 22% 38%,#ffd0e8,transparent),radial-gradient(1.5px 1.5px at 35% 9%,#fff,transparent),radial-gradient(1px 1px at 47% 27%,#ffb3d9,transparent),radial-gradient(1.5px 1.5px at 61% 12%,#fff,transparent),radial-gradient(1px 1px at 73% 33%,#ffd0e8,transparent),radial-gradient(1.5px 1.5px at 86% 18%,#fff,transparent),radial-gradient(1px 1px at 93% 44%,#ffb3d9,transparent),radial-gradient(1px 1px at 14% 58%,#ffd0e8,transparent),radial-gradient(1.5px 1.5px at 90% 66%,#fff,transparent),radial-gradient(1px 1px at 5% 78%,#ffb3d9,transparent),radial-gradient(1px 1px at 29% 70%,#fff,transparent);opacity:.9}
+#hero .sym{left:0;right:0;top:calc(var(--u)*330);text-align:center;font:700 calc(var(--u)*46)/1.5 'Urbanist',system-ui,sans-serif;letter-spacing:.5em;color:rgba(255,140,198,.13);white-space:pre;pointer-events:none}
+#hero .mars{left:calc(50% - var(--u)*1000);top:calc(var(--u)*585);width:calc(var(--u)*2000);height:calc(var(--u)*2000);border-radius:50%;
+  background:radial-gradient(circle at 36% 3%,rgba(255,200,170,.55) 0,transparent 9%),radial-gradient(ellipse 5% 1.6% at 28% 5%,rgba(90,20,12,.55),transparent 80%),radial-gradient(ellipse 6% 1.8% at 62% 7%,rgba(90,20,12,.5),transparent 80%),radial-gradient(ellipse 3% 1% at 44% 3.6%,rgba(90,20,12,.55),transparent 80%),radial-gradient(ellipse 4% 1.2% at 78% 4%,rgba(90,20,12,.45),transparent 80%),radial-gradient(circle at 50% 0,#f06a3d 0,#c9431f 9%,#8a2514 24%,#3d0d0a 50%,#12030a 75%);
+  box-shadow:0 calc(var(--u)*-3) calc(var(--u)*30) calc(var(--u)*2) rgba(255,110,70,.55),0 calc(var(--u)*-18) calc(var(--u)*90) calc(var(--u)*6) rgba(255,45,135,.5)}
+#hero .plate{left:0;top:0;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none;
+  -webkit-mask-image:radial-gradient(ellipse 16% 32% at 50.5% 58%,#000 62%,transparent 100%),radial-gradient(ellipse 27% 40% at 50% 100%,#000 72%,transparent 100%);
+  mask-image:radial-gradient(ellipse 16% 32% at 50.5% 58%,#000 62%,transparent 100%),radial-gradient(ellipse 27% 40% at 50% 100%,#000 72%,transparent 100%)}
 #hero .logo{left:calc(var(--u)*55);top:calc(var(--u)*54);display:flex;align-items:center;gap:calc(var(--u)*10);font-weight:600;font-size:calc(var(--u)*29.5);line-height:1;white-space:nowrap}
 #hero .logo i{width:calc(var(--u)*35);height:calc(var(--u)*35);border-radius:50%;background:conic-gradient(#22d3ee,#3b82f6,#8b5cf6,#ec4899,#22d3ee)}
 #hero .menu{left:calc(var(--u)*1358);top:calc(var(--u)*55);width:calc(var(--u)*25);padding:0;border:0;background:none;display:grid;gap:calc(var(--u)*6)}
@@ -415,6 +422,8 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
 </div>
 <div id="hero" role="region" aria-label="Bienvenida a Juega y Aprende">
   <div class="hf" id="heroFrame">
+    <div class="stars"></div><div class="sym">∑ π √
+x² ∫ Δ</div><div class="mars"></div>
     <img class="plate" id="heroPlate" alt="" draggable="false" referrerpolicy="no-referrer">
     <video class="head" id="heroHead" muted playsinline preload="auto" tabindex="-1" aria-hidden="true"></video>
     <img class="helmet" id="heroHelmet" alt="" draggable="false" referrerpolicy="no-referrer">
