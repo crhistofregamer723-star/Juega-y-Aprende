@@ -1,0 +1,4168 @@
+{
+ "alg": {
+  "name": "Álgebra",
+  "qs": [
+   [
+    "¿Cuáles son las soluciones de x² − 5x + 6 = 0?",
+    "x = 2 y x = 3",
+    [
+     "x = −2 y x = −3",
+     "x = 1 y x = 6",
+     "x = 5 y x = 1"
+    ],
+    [],
+    "Se factoriza como (x − 2)(x − 3) = 0 y cada factor igualado a cero da una solución."
+   ],
+   [
+    "¿Cuál es la fórmula general para resolver ax² + bx + c = 0?",
+    "x = (−b ± √(b² − 4ac)) / 2a",
+    [
+     "x = (b ± √(b² − 4ac)) / 2a",
+     "x = (−b ± √(b² + 4ac)) / 2a",
+     "x = (−b ± √(b² − 4ac)) / a"
+    ],
+    [],
+    "Sale de completar el cuadrado en ax² + bx + c = 0. El ± da las dos raíces."
+   ],
+   [
+    "¿A qué es igual (a + b)²?",
+    "a² + 2ab + b²",
+    [
+     "a² + b²",
+     "a² + ab + b²",
+     "a² − 2ab + b²"
+    ],
+    [
+     "a2+2ab+b2",
+     "a²+2ab+b²",
+     "a^2+2ab+b^2",
+     "a² + 2ab + b²"
+    ],
+    "Es un producto notable. El doble producto 2ab no se puede omitir, por eso (a + b)² no es a² + b²."
+   ],
+   [
+    "¿Cómo se factoriza a² − b²?",
+    "(a − b)(a + b)",
+    [
+     "(a − b)²",
+     "(a + b)²",
+     "(a − b)(a² + b²)"
+    ],
+    [
+     "(a-b)(a+b)",
+     "(a+b)(a-b)",
+     "(a − b)(a + b)",
+     "(a + b)(a − b)"
+    ],
+    "Es la diferencia de cuadrados: se factoriza como la suma por la diferencia."
+   ],
+   [
+    "¿Cómo se llama b² − 4ac en una ecuación cuadrática?",
+    "Discriminante",
+    [
+     "Vértice",
+     "Pendiente",
+     "Raíz doble"
+    ],
+    [
+     "discriminante"
+    ],
+    "Su signo dice cuántas raíces reales hay: positivo dos, cero una doble y negativo ninguna."
+   ],
+   [
+    "Si el discriminante es negativo, ¿cuántas raíces reales hay?",
+    "Ninguna",
+    [
+     "Una",
+     "Dos distintas",
+     "Infinitas"
+    ],
+    [
+     "ninguna",
+     "0",
+     "cero"
+    ],
+    "La raíz cuadrada de un número negativo no es real, así que las soluciones son complejas."
+   ],
+   [
+    "¿A qué es igual log(x·y)?",
+    "log x + log y",
+    [
+     "log x · log y",
+     "log x − log y",
+     "x · log y"
+    ],
+    [],
+    "Los logaritmos convierten productos en sumas: log(xy) = log x + log y, para x, y > 0."
+   ],
+   [
+    "¿Cuánto vale 2⁵ · 2³?",
+    "256",
+    [
+     "32 768",
+     "64",
+     "1 024"
+    ],
+    [
+     "256",
+     "2^8",
+     "2⁸"
+    ],
+    "Al multiplicar potencias de igual base se suman los exponentes: 2⁵⁺³ = 2⁸ = 256."
+   ],
+   [
+    "Resuelve 3x − 7 = 11.",
+    "x = 6",
+    [
+     "x = 4",
+     "x = 18",
+     "x = 8"
+    ],
+    [
+     "6",
+     "x=6",
+     "x = 6"
+    ],
+    "Se suma 7 a ambos lados: 3x = 18. Luego se divide entre 3."
+   ],
+   [
+    "¿Cuál es la pendiente de la recta que pasa por (1, 2) y (3, 8)?",
+    "3",
+    [
+     "2",
+     "6",
+     "1/3"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "Pendiente = cambio en y entre cambio en x = (8 − 2)/(3 − 1) = 6/2 = 3."
+   ],
+   [
+    "¿Qué valores de x cumplen |x| = 5?",
+    "x = 5 o x = −5",
+    [
+     "Solo x = 5",
+     "x = 0",
+     "x = 25"
+    ],
+    [],
+    "El valor absoluto mide la distancia al cero, y hay dos números a distancia 5 del origen."
+   ],
+   [
+    "¿A qué es igual (xᵃ)ᵇ?",
+    "xᵃᵇ",
+    [
+     "xᵃ⁺ᵇ",
+     "xᵃ/ᵇ",
+     "xᵃ + xᵇ"
+    ],
+    [],
+    "Una potencia de una potencia multiplica los exponentes."
+   ],
+   [
+    "¿Cuánto suman los n primeros términos de una progresión aritmética?",
+    "n(a₁ + aₙ) / 2",
+    [
+     "n(a₁ · aₙ) / 2",
+     "n(a₁ + aₙ)",
+     "(a₁ + aₙ) / 2n"
+    ],
+    [],
+    "Se promedian el primer y el último término y se multiplica por la cantidad de términos. Es el truco de Gauss."
+   ],
+   [
+    "Factoriza x² + 5x + 6.",
+    "(x + 2)(x + 3)",
+    [
+     "(x + 1)(x + 6)",
+     "(x − 2)(x − 3)",
+     "(x + 2)(x − 3)"
+    ],
+    [
+     "(x+2)(x+3)",
+     "(x+3)(x+2)",
+     "(x + 2)(x + 3)",
+     "(x + 3)(x + 2)"
+    ],
+    "Buscas dos números que sumen 5 y multipliquen 6: son 2 y 3."
+   ],
+   [
+    "¿En qué valor de x está el vértice de y = ax² + bx + c?",
+    "x = −b / 2a",
+    [
+     "x = b / 2a",
+     "x = −b / a",
+     "x = −2a / b"
+    ],
+    [
+     "-b/2a",
+     "-b/(2a)",
+     "−b/2a",
+     "−b/(2a)",
+     "x = -b/2a",
+     "x = −b/2a"
+    ],
+    "Es el punto medio entre las dos raíces, donde la parábola cambia de dirección."
+   ],
+   [
+    "Si 2ˣ = 32, ¿cuánto vale x?",
+    "5",
+    [
+     "4",
+     "6",
+     "16"
+    ],
+    [
+     "5",
+     "cinco"
+    ],
+    "Como 32 = 2⁵, el exponente que buscas es 5."
+   ],
+   [
+    "Simplifica (x² · x³) / x⁴.",
+    "x",
+    [
+     "x²",
+     "x⁵",
+     "x⁹"
+    ],
+    [
+     "x"
+    ],
+    "El numerador es x⁵, y al dividir entre x⁴ se restan exponentes: x⁵⁻⁴ = x."
+   ],
+   [
+    "Resuelve el sistema x + y = 10, x − y = 2.",
+    "x = 6 y y = 4",
+    [
+     "x = 8 y y = 2",
+     "x = 5 y y = 5",
+     "x = 4 y y = 6"
+    ],
+    [],
+    "Al sumar las dos ecuaciones queda 2x = 12, luego x = 6 y y = 4."
+   ],
+   [
+    "¿Es cierto que √(a² + b²) = a + b?",
+    "No, en general no",
+    [
+     "Sí, siempre",
+     "Sí, si a = b",
+     "Sí, si ambos son negativos"
+    ],
+    [],
+    "La raíz no se distribuye sobre una suma. Ejemplo: √(9 + 16) = 5, pero 3 + 4 = 7."
+   ],
+   [
+    "Resuelve 2x + 3 > 11.",
+    "x > 4",
+    [
+     "x < 4",
+     "x > 7",
+     "x > 8"
+    ],
+    [
+     "x > 4",
+     "x>4"
+    ],
+    "Restas 3 para tener 2x > 8 y divides entre 2. Como 2 es positivo, el sentido no cambia."
+   ],
+   [
+    "¿Qué le pasa al sentido de una desigualdad al multiplicar por un número negativo?",
+    "Se invierte",
+    [
+     "Se mantiene",
+     "Se vuelve igualdad",
+     "Desaparece"
+    ],
+    [
+     "se invierte",
+     "se cambia"
+    ],
+    "Por ejemplo, 2 < 3 pero −2 > −3."
+   ],
+   [
+    "¿Cuánto vale log₂ 8?",
+    "3",
+    [
+     "2",
+     "4",
+     "16"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "Porque 2³ = 8: el logaritmo es el exponente al que hay que elevar la base."
+   ],
+   [
+    "¿Cuál es el máximo factor común de 6x² + 9x?",
+    "3x",
+    [
+     "6x",
+     "9x",
+     "3"
+    ],
+    [
+     "3x"
+    ],
+    "El mayor número que divide a 6 y a 9 es 3, y la mayor potencia común de x es x¹."
+   ],
+   [
+    "¿Cuánto vale i², donde i es la unidad imaginaria?",
+    "−1",
+    [
+     "1",
+     "i",
+     "−i"
+    ],
+    [
+     "-1",
+     "−1",
+     "menos 1"
+    ],
+    "La unidad imaginaria se define precisamente por la propiedad i² = −1."
+   ],
+   [
+    "¿Cuánto suman las raíces de x² − 7x + 10 = 0?",
+    "7",
+    [
+     "10",
+     "−7",
+     "3"
+    ],
+    [
+     "7",
+     "siete"
+    ],
+    "Por las fórmulas de Vieta la suma de raíces es −b/a = 7. En efecto, las raíces son 2 y 5."
+   ],
+   [
+    "¿Cuál es el término n de una progresión geométrica con razón r?",
+    "a₁ · rⁿ⁻¹",
+    [
+     "a₁ · n · r",
+     "a₁ + (n − 1)r",
+     "a₁ · rⁿ⁺¹"
+    ],
+    [
+     "a1*r^(n-1)",
+     "a1·r^(n-1)",
+     "a₁·rⁿ⁻¹",
+     "a₁ · rⁿ⁻¹"
+    ],
+    "Cada término se obtiene multiplicando el anterior por la razón r."
+   ],
+   [
+    "¿Cuánto es 1/2 + 1/3?",
+    "5/6",
+    [
+     "2/5",
+     "1/5",
+     "2/6"
+    ],
+    [
+     "5/6"
+    ],
+    "Con denominador común 6 queda 3/6 + 2/6 = 5/6."
+   ],
+   [
+    "¿Cuáles son las soluciones de x² = 49?",
+    "x = 7 o x = −7",
+    [
+     "Solo x = 7",
+     "x = 24,5",
+     "x = 49"
+    ],
+    [],
+    "Una ecuación x² = k con k > 0 tiene dos soluciones, +√k y −√k."
+   ],
+   [
+    "Racionaliza 1/√2.",
+    "√2 / 2",
+    [
+     "√2",
+     "1/2",
+     "2√2"
+    ],
+    [
+     "√2/2",
+     "sqrt(2)/2",
+     "raiz de 2 entre 2"
+    ],
+    "Se multiplica arriba y abajo por √2, y queda √2/2, que vale unos 0,707."
+   ],
+   [
+    "¿Cuál es la pendiente de la recta y = −3x + 4?",
+    "−3",
+    [
+     "4",
+     "3",
+     "−4"
+    ],
+    [
+     "-3",
+     "−3",
+     "menos 3"
+    ],
+    "En la forma y = mx + b, m es la pendiente y b la ordenada al origen."
+   ],
+   [
+    "Desarrolla (x − 3)².",
+    "x² − 6x + 9",
+    [
+     "x² − 9",
+     "x² + 9",
+     "x² − 3x + 9"
+    ],
+    [
+     "x2-6x+9",
+     "x²-6x+9",
+     "x^2-6x+9",
+     "x² − 6x + 9"
+    ],
+    "Es el cuadrado de un binomio: x² − 2·3·x + 3²."
+   ],
+   [
+    "Si f(x) = 2x + 1, ¿cuánto vale f(3)?",
+    "7",
+    [
+     "6",
+     "5",
+     "9"
+    ],
+    [
+     "7",
+     "siete"
+    ],
+    "Se sustituye x = 3: 2·3 + 1 = 7."
+   ],
+   [
+    "¿Cuál es la solución real de x³ = −8?",
+    "x = −2",
+    [
+     "x = 2",
+     "x = −4",
+     "No tiene solución real"
+    ],
+    [
+     "-2",
+     "−2",
+     "x=-2",
+     "x = -2",
+     "x = −2"
+    ],
+    "La raíz cúbica sí admite negativos, porque (−2)³ = −8."
+   ]
+  ]
+ },
+ "calc": {
+  "name": "Cálculo",
+  "qs": [
+   [
+    "¿Cuál es la derivada de x²?",
+    "2x",
+    [
+     "x",
+     "x²",
+     "2"
+    ],
+    [
+     "2x"
+    ],
+    "Regla de la potencia: la derivada de xⁿ es n·xⁿ⁻¹."
+   ],
+   [
+    "¿Cuál es la derivada de sen(x)?",
+    "cos(x)",
+    [
+     "−cos(x)",
+     "−sen(x)",
+     "tan(x)"
+    ],
+    [
+     "cos(x)",
+     "cos x",
+     "cos"
+    ],
+    "Es una derivada básica: (sen x)′ = cos x y (cos x)′ = −sen x."
+   ],
+   [
+    "¿Cuál es la integral de 2x dx?",
+    "x² + C",
+    [
+     "2x² + C",
+     "x + C",
+     "2 + C"
+    ],
+    [
+     "x2 + c",
+     "x^2 + c",
+     "x² + c",
+     "x2+c",
+     "x²+c"
+    ],
+    "La antiderivada de 2x es x². La constante C aparece porque la derivada de una constante es 0."
+   ],
+   [
+    "¿Cuál es la derivada de eˣ?",
+    "eˣ",
+    [
+     "x·eˣ⁻¹",
+     "ln x",
+     "1"
+    ],
+    [
+     "e^x",
+     "ex",
+     "eˣ"
+    ],
+    "eˣ es, salvo múltiplos constantes, la única función igual a su propia derivada."
+   ],
+   [
+    "¿Cuánto vale el límite de sen(x)/x cuando x → 0?",
+    "1",
+    [
+     "0",
+     "∞",
+     "No existe"
+    ],
+    [
+     "1",
+     "uno"
+    ],
+    "Es un límite notable que se demuestra geométricamente y sirve para derivar sen x."
+   ],
+   [
+    "¿Cuál es la derivada de ln(x)?",
+    "1/x",
+    [
+     "x",
+     "ln(x)/x",
+     "eˣ"
+    ],
+    [
+     "1/x"
+    ],
+    "La derivada del logaritmo natural es 1/x, definida para x > 0."
+   ],
+   [
+    "La regla de la cadena establece que (f∘g)′(x) =",
+    "f′(g(x))·g′(x)",
+    [
+     "f′(x)·g′(x)",
+     "f(g′(x))",
+     "f′(x) + g′(x)"
+    ],
+    [],
+    "Se deriva la función externa evaluada en la interna y se multiplica por la derivada de la interna."
+   ],
+   [
+    "¿Cuál es la integral de 1/x dx?",
+    "ln|x| + C",
+    [
+     "1/x² + C",
+     "x·ln x + C",
+     "eˣ + C"
+    ],
+    [
+     "ln|x| + c",
+     "ln|x|+c",
+     "ln x + c",
+     "ln(x) + c"
+    ],
+    "Es la excepción de la regla de la potencia (n = −1). Lleva valor absoluto porque 1/x también existe para x < 0."
+   ],
+   [
+    "¿Cuál es la derivada de una constante?",
+    "0",
+    [
+     "1",
+     "La misma constante",
+     "x"
+    ],
+    [
+     "0",
+     "cero"
+    ],
+    "Una constante no cambia, así que su tasa de cambio es cero."
+   ],
+   [
+    "¿Cuál es la derivada de x³?",
+    "3x²",
+    [
+     "x²",
+     "3x",
+     "x³/3"
+    ],
+    [
+     "3x2",
+     "3x^2",
+     "3x²"
+    ],
+    "Se baja el exponente y se resta uno: 3·x³⁻¹ = 3x²."
+   ],
+   [
+    "¿Cuál es la derivada de tan(x)?",
+    "sec²(x)",
+    [
+     "cot(x)",
+     "−csc²(x)",
+     "sec(x)·tan(x)"
+    ],
+    [
+     "sec^2(x)",
+     "sec²(x)",
+     "sec2(x)",
+     "sec^2 x",
+     "sec² x"
+    ],
+    "tan x = sen x / cos x. Con la regla del cociente queda 1/cos² x = sec² x."
+   ],
+   [
+    "¿Cuánto es (u·v)′ según la regla del producto?",
+    "u′v + uv′",
+    [
+     "u′v′",
+     "u′v − uv′",
+     "(u′v − uv′) / v²"
+    ],
+    [],
+    "No se derivan los factores por separado: se deriva uno a la vez y se suman los resultados."
+   ],
+   [
+    "¿Cuál es la integral de cos(x) dx?",
+    "sen(x) + C",
+    [
+     "−sen(x) + C",
+     "cos(x) + C",
+     "tan(x) + C"
+    ],
+    [
+     "sen x + c",
+     "sin x + c",
+     "sen(x) + c",
+     "sen x+c",
+     "sen(x)+c"
+    ],
+    "Como (sen x)′ = cos x, la antiderivada de cos x es sen x + C."
+   ],
+   [
+    "El teorema fundamental del cálculo dice que ∫ₐᵇ f(x) dx =",
+    "F(b) − F(a)",
+    [
+     "F(a) − F(b)",
+     "F(b) + F(a)",
+     "f(b) − f(a)"
+    ],
+    [
+     "f(b)-f(a)",
+     "f(b) - f(a)"
+    ],
+    "Conecta derivadas e integrales: la integral definida se evalúa con cualquier antiderivada F de f."
+   ],
+   [
+    "¿Cuál es la derivada de √x?",
+    "1 / (2√x)",
+    [
+     "2√x",
+     "1 / √x",
+     "√x / 2"
+    ],
+    [
+     "1/(2√x)",
+     "1/(2*sqrt(x))",
+     "1/(2sqrt(x))"
+    ],
+    "Como √x = x^(1/2), su derivada es (1/2)·x^(−1/2) = 1/(2√x)."
+   ],
+   [
+    "¿Cuál es la derivada de cos(x)?",
+    "−sen(x)",
+    [
+     "sen(x)",
+     "−cos(x)",
+     "tan(x)"
+    ],
+    [
+     "-sen(x)",
+     "−sen(x)",
+     "-sen x",
+     "−sen x",
+     "-sin(x)",
+     "-sin x"
+    ],
+    "Lo que más se olvida es el signo menos: (cos x)′ = −sen x."
+   ],
+   [
+    "¿Cuál es la derivada de 5x⁴?",
+    "20x³",
+    [
+     "5x³",
+     "20x⁴",
+     "4x³"
+    ],
+    [
+     "20x3",
+     "20x^3",
+     "20x³"
+    ],
+    "Se multiplica el coeficiente por el exponente (5·4 = 20) y el exponente baja a 3."
+   ],
+   [
+    "¿Cuánto vale el límite de (x² − 4)/(x − 2) cuando x → 2?",
+    "4",
+    [
+     "0",
+     "2",
+     "No existe"
+    ],
+    [
+     "4",
+     "cuatro"
+    ],
+    "Se factoriza x² − 4 = (x − 2)(x + 2), se simplifica y queda x + 2, que tiende a 4."
+   ],
+   [
+    "¿Cuánto vale ∫₀¹ x dx?",
+    "1/2",
+    [
+     "1",
+     "2",
+     "0"
+    ],
+    [
+     "1/2",
+     "0.5",
+     "0,5"
+    ],
+    "La antiderivada x²/2 evaluada entre 0 y 1 da 1/2 − 0 = 1/2."
+   ],
+   [
+    "Los puntos críticos de f se encuentran resolviendo:",
+    "f′(x) = 0",
+    [
+     "f(x) = 0",
+     "f″(x) = 0",
+     "f(x) = f′(x)"
+    ],
+    [
+     "f'(x) = 0",
+     "f′(x) = 0",
+     "f'(x)=0",
+     "f′(x)=0"
+    ],
+    "En un máximo o mínimo local la tangente es horizontal, es decir, la pendiente vale 0."
+   ],
+   [
+    "Si f′(c) = 0 y f″(c) > 0, ¿qué hay en x = c?",
+    "Un mínimo local",
+    [
+     "Un máximo local",
+     "Un punto de inflexión",
+     "No se puede saber"
+    ],
+    [
+     "minimo local",
+     "minimo",
+     "un minimo local"
+    ],
+    "Con f″ > 0 la curva abre hacia arriba, como el fondo de un valle."
+   ],
+   [
+    "¿Cuál es la derivada de e²ˣ?",
+    "2e²ˣ",
+    [
+     "e²ˣ",
+     "2x·e²ˣ⁻¹",
+     "e²"
+    ],
+    [
+     "2e^(2x)",
+     "2e2x",
+     "2e²ˣ",
+     "2*e^(2x)"
+    ],
+    "Por la regla de la cadena, la derivada del exponente (2) multiplica a e²ˣ."
+   ],
+   [
+    "¿Cuál es la integral de eˣ dx?",
+    "eˣ + C",
+    [
+     "eˣ/x + C",
+     "x·eˣ + C",
+     "ln x + C"
+    ],
+    [
+     "e^x + c",
+     "ex + c",
+     "eˣ + c",
+     "e^x+c"
+    ],
+    "Como eˣ es su propia derivada, también es su propia antiderivada."
+   ],
+   [
+    "¿Cuál es la derivada de x·ln(x)?",
+    "ln(x) + 1",
+    [
+     "1/x",
+     "ln(x)",
+     "x / ln(x)"
+    ],
+    [
+     "ln x + 1",
+     "ln(x) + 1",
+     "ln x+1",
+     "1 + ln x",
+     "1 + ln(x)"
+    ],
+    "Regla del producto: 1·ln x + x·(1/x) = ln x + 1."
+   ],
+   [
+    "¿Cuánto suma la serie 1/2 + 1/4 + 1/8 + …?",
+    "1",
+    [
+     "2",
+     "1/2",
+     "Diverge"
+    ],
+    [
+     "1",
+     "uno"
+    ],
+    "Es geométrica con razón 1/2: suma = (1/2)/(1 − 1/2) = 1."
+   ],
+   [
+    "¿Qué representa geométricamente la derivada en un punto?",
+    "La pendiente de la recta tangente",
+    [
+     "El área bajo la curva",
+     "El valor máximo de la función",
+     "La longitud de la curva"
+    ],
+    [],
+    "Es la tasa de cambio instantánea de la función en ese punto."
+   ],
+   [
+    "¿Qué representa ∫ₐᵇ f(x) dx cuando f ≥ 0?",
+    "El área bajo la curva entre a y b",
+    [
+     "La pendiente en x = a",
+     "El valor máximo de f",
+     "La longitud de la curva"
+    ],
+    [],
+    "Es el límite de las sumas de Riemann: rectángulos cada vez más finos bajo la curva."
+   ],
+   [
+    "Una función f es continua en a si:",
+    "lím f(x) cuando x → a es igual a f(a)",
+    [
+     "Existe f′(a)",
+     "f(a) existe, y nada más",
+     "El límite en a es 0"
+    ],
+    [],
+    "Deben cumplirse tres cosas: f(a) está definida, el límite existe y ambos valores coinciden."
+   ],
+   [
+    "La regla de L’Hôpital se usa en límites de la forma:",
+    "0/0 o ∞/∞",
+    [
+     "1/0",
+     "0 · 1",
+     "∞ + 1"
+    ],
+    [],
+    "Si el límite es indeterminado, se puede derivar numerador y denominador por separado y volver a calcular."
+   ],
+   [
+    "¿Cuál es la integral de x² dx?",
+    "x³/3 + C",
+    [
+     "2x + C",
+     "x³ + C",
+     "x²/2 + C"
+    ],
+    [
+     "x3/3 + c",
+     "x^3/3 + c",
+     "x³/3 + c",
+     "x³/3+c"
+    ],
+    "Se sube el exponente en uno y se divide entre el nuevo exponente: x³/3."
+   ],
+   [
+    "¿Cuál es la derivada de 1/x?",
+    "−1/x²",
+    [
+     "1/x²",
+     "ln x",
+     "−1/x"
+    ],
+    [
+     "-1/x2",
+     "-1/x^2",
+     "−1/x²",
+     "-1/x²"
+    ],
+    "Como 1/x = x⁻¹, su derivada es −1·x⁻² = −1/x²."
+   ],
+   [
+    "¿Cuánto vale el límite de 1/x cuando x → ∞?",
+    "0",
+    [
+     "1",
+     "∞",
+     "No existe"
+    ],
+    [
+     "0",
+     "cero"
+    ],
+    "Al crecer x sin límite, 1/x se acerca tanto como se quiera a 0."
+   ],
+   [
+    "¿Cuál es la derivada de sen(2x)?",
+    "2cos(2x)",
+    [
+     "cos(2x)",
+     "−2cos(2x)",
+     "2sen(2x)"
+    ],
+    [
+     "2cos(2x)",
+     "2cos 2x",
+     "2*cos(2x)"
+    ],
+    "Regla de la cadena: la derivada de sen es cos y se multiplica por la derivada de 2x, que es 2."
+   ]
+  ]
+ },
+ "lin": {
+  "name": "Álgebra lineal",
+  "qs": [
+   [
+    "¿Cuánto vale el determinante de [a b; c d]?",
+    "ad − bc",
+    [
+     "ad + bc",
+     "ab − cd",
+     "ac − bd"
+    ],
+    [
+     "ad-bc",
+     "ad − bc",
+     "ad - bc"
+    ],
+    "Es el producto de la diagonal principal menos el de la diagonal secundaria."
+   ],
+   [
+    "¿A qué es igual (AB)ᵀ?",
+    "BᵀAᵀ",
+    [
+     "AᵀBᵀ",
+     "ABᵀ",
+     "BA"
+    ],
+    [
+     "btat",
+     "bᵀaᵀ",
+     "b^t a^t"
+    ],
+    "La transpuesta invierte el orden del producto, igual que la inversa: (AB)⁻¹ = B⁻¹A⁻¹."
+   ],
+   [
+    "Una matriz cuadrada A es invertible si y solo si:",
+    "det(A) ≠ 0",
+    [
+     "det(A) = 0",
+     "A es simétrica",
+     "A es triangular"
+    ],
+    [
+     "det(a) != 0",
+     "det(a) ≠ 0",
+     "determinante distinto de cero",
+     "distinto de cero"
+    ],
+    "Si el determinante es 0, la matriz aplasta el espacio y esa operación no se puede deshacer."
+   ],
+   [
+    "¿Cuánto vale el producto escalar (1, 2, 3) · (4, 5, 6)?",
+    "32",
+    [
+     "28",
+     "21",
+     "36"
+    ],
+    [
+     "32"
+    ],
+    "1·4 + 2·5 + 3·6 = 4 + 10 + 18 = 32."
+   ],
+   [
+    "¿Qué ecuación cumple un vector propio v con valor propio λ?",
+    "Av = λv",
+    [
+     "Av = v",
+     "Av = 0",
+     "Aᵀv = λ"
+    ],
+    [
+     "av = λv",
+     "av=λv",
+     "av = lambda v",
+     "av = lv"
+    ],
+    "Al aplicarle A, el vector propio solo se estira o encoge (por λ) sin cambiar de dirección."
+   ],
+   [
+    "¿Cuál es el rango de la matriz identidad de 3 × 3?",
+    "3",
+    [
+     "1",
+     "0",
+     "9"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "Sus tres filas son linealmente independientes, así que el rango es 3."
+   ],
+   [
+    "El producto AB está definido cuando:",
+    "Las columnas de A = las filas de B",
+    [
+     "Las filas de A = las filas de B",
+     "A y B tienen el mismo tamaño",
+     "Las columnas de A = las columnas de B"
+    ],
+    [],
+    "Si A es m×n y B es n×p, el producto es m×p. El n central debe coincidir."
+   ],
+   [
+    "¿Cuál es la dimensión de ℝ⁴?",
+    "4",
+    [
+     "3",
+     "16",
+     "8"
+    ],
+    [
+     "4",
+     "cuatro"
+    ],
+    "La dimensión es el número de vectores de cualquier base, y la base canónica de ℝ⁴ tiene 4."
+   ],
+   [
+    "Dos vectores son ortogonales cuando:",
+    "Su producto escalar es 0",
+    [
+     "Su suma es 0",
+     "Son paralelos",
+     "Tienen la misma norma"
+    ],
+    [
+     "producto escalar es 0",
+     "su producto escalar es 0",
+     "producto escalar = 0",
+     "u·v = 0",
+     "u.v = 0"
+    ],
+    "Producto escalar 0 equivale a un ángulo de 90° entre dos vectores no nulos."
+   ],
+   [
+    "¿Qué es la traza de una matriz cuadrada?",
+    "La suma de su diagonal principal",
+    [
+     "El producto de su diagonal",
+     "La suma de todos sus elementos",
+     "Su determinante"
+    ],
+    [],
+    "Se escribe tr(A) y además es igual a la suma de los valores propios."
+   ],
+   [
+    "¿Cuánto vale el determinante de la matriz identidad?",
+    "1",
+    [
+     "0",
+     "n",
+     "n²"
+    ],
+    [
+     "1",
+     "uno"
+    ],
+    "La identidad no cambia ningún vector, y su determinante es 1."
+   ],
+   [
+    "Los valores propios de una matriz triangular son:",
+    "Los elementos de su diagonal",
+    [
+     "Los elementos fuera de la diagonal",
+     "Las sumas de sus filas",
+     "Su determinante"
+    ],
+    [],
+    "En una triangular, det(A − λI) es el producto de (aᵢᵢ − λ), y sus raíces son los aᵢᵢ."
+   ],
+   [
+    "Un conjunto de vectores es linealmente independiente si:",
+    "Ninguno es combinación lineal de los demás",
+    [
+     "Todos son ortogonales",
+     "Todos tienen norma 1",
+     "Suman cero"
+    ],
+    [],
+    "Si uno se puede escribir con los demás, es redundante y no aporta una dirección nueva."
+   ],
+   [
+    "¿A qué es igual det(AB)?",
+    "det(A)·det(B)",
+    [
+     "det(A) + det(B)",
+     "det(A) − det(B)",
+     "det(Aᵀ)·det(B)⁻¹"
+    ],
+    [
+     "det(a)·det(b)",
+     "det(a)*det(b)",
+     "det a det b",
+     "det(a)det(b)"
+    ],
+    "El determinante es multiplicativo. Por eso det(A⁻¹) = 1/det(A)."
+   ],
+   [
+    "Si A es 2×3 y B es 3×4, ¿de qué tamaño es AB?",
+    "2×4",
+    [
+     "3×3",
+     "2×3",
+     "4×2"
+    ],
+    [
+     "2x4",
+     "2×4"
+    ],
+    "Se conservan las filas de A y las columnas de B; el 3 central desaparece."
+   ],
+   [
+    "¿Cuál es la inversa de la matriz diagonal [2 0; 0 4]?",
+    "[1/2 0; 0 1/4]",
+    [
+     "La misma matriz",
+     "[−2 0; 0 −4]",
+     "[4 0; 0 2]"
+    ],
+    [],
+    "En una matriz diagonal basta invertir cada elemento de la diagonal."
+   ],
+   [
+    "¿Cuánto vale el determinante de [1 2; 3 4]?",
+    "−2",
+    [
+     "2",
+     "10",
+     "−10"
+    ],
+    [
+     "-2",
+     "−2"
+    ],
+    "1·4 − 2·3 = 4 − 6 = −2."
+   ],
+   [
+    "¿Cuál es la norma del vector (3, 4)?",
+    "5",
+    [
+     "7",
+     "25",
+     "12"
+    ],
+    [
+     "5",
+     "cinco"
+    ],
+    "√(3² + 4²) = √25 = 5. Es el triple pitagórico 3-4-5."
+   ],
+   [
+    "¿Qué ecuación permite hallar los valores propios de A?",
+    "det(A − λI) = 0",
+    [
+     "det(A + λI) = 1",
+     "A − λ = 0",
+     "det(A) = λ"
+    ],
+    [
+     "det(a - λi) = 0",
+     "det(a − λi) = 0",
+     "det(a-λi)=0",
+     "det(a-lambda i)=0"
+    ],
+    "Para que (A − λI)v = 0 tenga una solución no nula, A − λI debe ser singular."
+   ],
+   [
+    "Si A es cuadrada e invertible, el sistema Ax = b tiene:",
+    "Exactamente una solución",
+    [
+     "Ninguna solución",
+     "Infinitas soluciones",
+     "Depende de b"
+    ],
+    [],
+    "La solución es x = A⁻¹b y es única para cualquier b."
+   ],
+   [
+    "¿Qué es el espacio nulo (núcleo) de A?",
+    "Las soluciones de Ax = 0",
+    [
+     "Las filas de A",
+     "Las soluciones de Ax = b",
+     "Las columnas de A"
+    ],
+    [],
+    "Siempre contiene al vector cero y es un subespacio de ℝⁿ."
+   ],
+   [
+    "El teorema rango-nulidad dice que rango(A) + nulidad(A) =",
+    "El número de columnas de A",
+    [
+     "El número de filas de A",
+     "det(A)",
+     "La traza de A"
+    ],
+    [],
+    "Para A de m×n se cumple dim Im(A) + dim Ker(A) = n."
+   ],
+   [
+    "Una matriz simétrica cumple:",
+    "A = Aᵀ",
+    [
+     "A = A⁻¹",
+     "A = −Aᵀ",
+     "A² = A"
+    ],
+    [
+     "a = at",
+     "a = aᵀ",
+     "a=aᵀ",
+     "a = a^t"
+    ],
+    "Sus elementos son iguales respecto a la diagonal: aᵢⱼ = aⱼᵢ."
+   ],
+   [
+    "Una matriz ortogonal Q cumple:",
+    "QᵀQ = I",
+    [
+     "Q = Qᵀ",
+     "det Q = 0",
+     "Q² = Q"
+    ],
+    [
+     "qtq = i",
+     "qᵀq = i",
+     "qtq=i",
+     "q^t q = i"
+    ],
+    "Sus columnas son ortonormales, por lo que Q conserva longitudes y ángulos."
+   ],
+   [
+    "¿Cuál de estos conjuntos es una base de ℝ²?",
+    "{(1, 0), (0, 1)}",
+    [
+     "{(1, 2), (2, 4)}",
+     "{(1, 0), (2, 0)}",
+     "{(0, 0), (1, 1)}"
+    ],
+    [],
+    "Una base debe ser linealmente independiente y generar todo ℝ². Las otras opciones son dependientes."
+   ],
+   [
+    "El producto vectorial u × v en ℝ³ es:",
+    "Un vector perpendicular a u y a v",
+    [
+     "Un escalar",
+     "Un vector paralelo a u",
+     "Igual a u · v"
+    ],
+    [],
+    "Su magnitud es |u||v|sen θ, el área del paralelogramo formado por u y v."
+   ],
+   [
+    "¿Cuáles son los valores propios de [2 0; 0 3]?",
+    "2 y 3",
+    [
+     "0 y 5",
+     "1 y 6",
+     "−2 y −3"
+    ],
+    [
+     "2 y 3",
+     "2,3",
+     "2 3"
+    ],
+    "Es diagonal, así que los valores propios son los elementos de la diagonal."
+   ],
+   [
+    "Una matriz singular es aquella que:",
+    "No tiene inversa",
+    [
+     "Tiene determinante 1",
+     "Es simétrica",
+     "Solo tiene ceros"
+    ],
+    [
+     "no tiene inversa",
+     "no es invertible",
+     "no invertible"
+    ],
+    "Singular equivale a det(A) = 0 y a que sus columnas son linealmente dependientes."
+   ],
+   [
+    "¿Qué hace la matriz [0 −1; 1 0] al plano?",
+    "Lo rota 90° en sentido antihorario",
+    [
+     "Lo refleja respecto al eje x",
+     "Lo rota 180°",
+     "Lo escala por 2"
+    ],
+    [],
+    "Envía (1, 0) a (0, 1) y (0, 1) a (−1, 0): un giro de 90°."
+   ],
+   [
+    "¿A qué es igual (A⁻¹)⁻¹?",
+    "A",
+    [
+     "Aᵀ",
+     "A⁻¹",
+     "I"
+    ],
+    [
+     "a"
+    ],
+    "Deshacer una inversión devuelve la matriz original."
+   ],
+   [
+    "¿Cuándo cambia de signo el determinante?",
+    "Al intercambiar dos filas",
+    [
+     "Al sumar una fila a otra",
+     "Al multiplicar una fila por 1",
+     "Al transponer la matriz"
+    ],
+    [],
+    "Intercambiar filas invierte la orientación. Sumar múltiplos de una fila a otra no altera el determinante."
+   ],
+   [
+    "¿Cuántos vectores tiene una base de un subespacio de dimensión 3?",
+    "3",
+    [
+     "2",
+     "4",
+     "Infinitos"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "Por definición, la dimensión es el tamaño de cualquier base del subespacio."
+   ]
+  ]
+ },
+ "est": {
+  "name": "Estadística",
+  "qs": [
+   [
+    "¿Cuál es la media de 2, 4, 6, 8?",
+    "5",
+    [
+     "4",
+     "6",
+     "20"
+    ],
+    [
+     "5",
+     "cinco"
+    ],
+    "La suma es 20 y hay 4 datos, así que 20/4 = 5."
+   ],
+   [
+    "¿Cuál es la mediana de 2, 9, 4, 7, 3?",
+    "4",
+    [
+     "5",
+     "7",
+     "3"
+    ],
+    [
+     "4",
+     "cuatro"
+    ],
+    "Ordenados quedan 2, 3, 4, 7, 9 y el dato central es 4. La media sí sería 5."
+   ],
+   [
+    "¿Cuál es la moda de 2, 3, 3, 5, 7, 3, 9?",
+    "3",
+    [
+     "5",
+     "7",
+     "4"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "El 3 aparece tres veces, más que cualquier otro dato."
+   ],
+   [
+    "La desviación estándar es:",
+    "La raíz cuadrada de la varianza",
+    [
+     "La varianza al cuadrado",
+     "La media de las desviaciones",
+     "La diferencia entre máximo y mínimo"
+    ],
+    [
+     "raiz de la varianza",
+     "raiz cuadrada de la varianza",
+     "√varianza",
+     "raiz de varianza"
+    ],
+    "Tiene las mismas unidades que los datos, por eso se usa más que la varianza."
+   ],
+   [
+    "¿A qué es igual P(A ∪ B)?",
+    "P(A) + P(B) − P(A ∩ B)",
+    [
+     "P(A) + P(B)",
+     "P(A) · P(B)",
+     "P(A) + P(B) + P(A ∩ B)"
+    ],
+    [],
+    "Se resta P(A ∩ B) porque esa parte se contó dos veces."
+   ],
+   [
+    "Si A y B son independientes, P(A ∩ B) =",
+    "P(A) · P(B)",
+    [
+     "P(A) + P(B)",
+     "P(A) / P(B)",
+     "0"
+    ],
+    [
+     "p(a)·p(b)",
+     "p(a)*p(b)",
+     "p(a)p(b)"
+    ],
+    "Que ocurra A no cambia la probabilidad de B, así que las probabilidades se multiplican."
+   ],
+   [
+    "¿Qué probabilidad hay de sacar dos caras en 2 lanzamientos de una moneda justa?",
+    "1/4",
+    [
+     "1/2",
+     "1/3",
+     "1/8"
+    ],
+    [
+     "1/4",
+     "0.25",
+     "0,25",
+     "25%"
+    ],
+    "(1/2)·(1/2) = 1/4, porque los lanzamientos son independientes."
+   ],
+   [
+    "El teorema de Bayes dice que P(A|B) =",
+    "P(B|A)·P(A) / P(B)",
+    [
+     "P(B|A)·P(B) / P(A)",
+     "P(A)·P(B)",
+     "P(A ∩ B) / P(A)"
+    ],
+    [],
+    "Permite invertir la condición: pasar de P(B|A) a P(A|B)."
+   ],
+   [
+    "La distribución normal estándar tiene:",
+    "Media 0 y desviación 1",
+    [
+     "Media 1 y desviación 0",
+     "Media 1 y desviación 1",
+     "Media 0 y desviación 2"
+    ],
+    [],
+    "Cualquier normal se estandariza con z = (x − μ)/σ."
+   ],
+   [
+    "En una normal, ¿qué porcentaje de datos queda dentro de ±1σ de la media?",
+    "Aprox. 68 %",
+    [
+     "Aprox. 50 %",
+     "Aprox. 95 %",
+     "Aprox. 99,7 %"
+    ],
+    [
+     "68",
+     "68%",
+     "68 %"
+    ],
+    "Es la regla empírica 68–95–99,7 para distribuciones normales."
+   ],
+   [
+    "Un valor p menor que 0,05 sugiere:",
+    "Rechazar H₀",
+    [
+     "Aceptar H₀ siempre",
+     "Que H₀ es verdadera",
+     "Que la muestra está sesgada"
+    ],
+    [
+     "rechazar h0",
+     "rechazar h₀",
+     "rechazar la hipotesis nula"
+    ],
+    "Un valor p bajo indica que los datos serían muy raros si H₀ fuera cierta."
+   ],
+   [
+    "La varianza muestral divide entre:",
+    "n − 1",
+    [
+     "n",
+     "n + 1",
+     "n²"
+    ],
+    [
+     "n-1",
+     "n − 1",
+     "n−1",
+     "n - 1"
+    ],
+    "Dividir entre n − 1 (corrección de Bessel) vuelve insesgado al estimador de la varianza."
+   ],
+   [
+    "El coeficiente de correlación r toma valores entre:",
+    "−1 y 1",
+    [
+     "0 y 1",
+     "0 y 100",
+     "−∞ y ∞"
+    ],
+    [
+     "-1 y 1",
+     "−1 y 1",
+     "entre -1 y 1",
+     "entre −1 y 1",
+     "-1 a 1",
+     "−1 a 1"
+    ],
+    "r = 1 es una relación lineal perfecta positiva, r = −1 una negativa y r = 0 indica ausencia de relación lineal."
+   ],
+   [
+    "¿Cuánto vale C(5, 2), las combinaciones de 5 en 2?",
+    "10",
+    [
+     "20",
+     "25",
+     "7"
+    ],
+    [
+     "10",
+     "diez"
+    ],
+    "C(5, 2) = 5! / (2!·3!) = 10. El orden no importa."
+   ],
+   [
+    "El error tipo I consiste en:",
+    "Rechazar H₀ siendo verdadera",
+    [
+     "No rechazar H₀ siendo falsa",
+     "Calcular mal la media",
+     "Usar una muestra pequeña"
+    ],
+    [],
+    "Es un falso positivo. Su probabilidad máxima es el nivel de significancia α."
+   ],
+   [
+    "¿Cuál es la varianza muestral de 2, 4 y 6?",
+    "4",
+    [
+     "2",
+     "8/3",
+     "8"
+    ],
+    [
+     "4",
+     "cuatro"
+    ],
+    "La media es 4. Los cuadrados de las desviaciones suman 4 + 0 + 4 = 8, y 8/(3 − 1) = 4."
+   ],
+   [
+    "¿Cuál es el rango de los datos 3, 9, 12 y 5?",
+    "9",
+    [
+     "12",
+     "3",
+     "7"
+    ],
+    [
+     "9",
+     "nueve"
+    ],
+    "Rango = máximo − mínimo = 12 − 3 = 9."
+   ],
+   [
+    "Al lanzar un dado justo, ¿qué probabilidad hay de sacar un número par?",
+    "1/2",
+    [
+     "1/3",
+     "1/6",
+     "2/3"
+    ],
+    [
+     "1/2",
+     "0.5",
+     "0,5",
+     "50%"
+    ],
+    "Hay 3 resultados pares (2, 4 y 6) entre 6 posibles."
+   ],
+   [
+    "¿De cuántas formas se pueden ordenar 4 personas en una fila?",
+    "24",
+    [
+     "16",
+     "12",
+     "8"
+    ],
+    [
+     "24"
+    ],
+    "Son las permutaciones de 4: 4! = 4·3·2·1 = 24."
+   ],
+   [
+    "Si x = 70, μ = 60 y σ = 5, ¿cuánto vale z?",
+    "2",
+    [
+     "10",
+     "0,5",
+     "14"
+    ],
+    [
+     "2",
+     "dos"
+    ],
+    "z = (70 − 60)/5 = 2: el dato está a 2 desviaciones por encima de la media."
+   ],
+   [
+    "Un intervalo de confianza del 95 % significa que:",
+    "El método captura el parámetro en el 95 % de los muestreos",
+    [
+     "El 95 % de los datos está dentro del intervalo",
+     "La media muestral vale 95",
+     "El error máximo es 5 %"
+    ],
+    [],
+    "Es una afirmación sobre el procedimiento, no sobre un intervalo concreto ya calculado."
+   ],
+   [
+    "La ley de los grandes números dice que, al aumentar n, la media muestral:",
+    "Se acerca a la media poblacional",
+    [
+     "Se aleja de la media poblacional",
+     "Siempre vale 0",
+     "Se vuelve igual a la mediana"
+    ],
+    [],
+    "Por eso el promedio de muchos lanzamientos de moneda se acerca a 0,5."
+   ],
+   [
+    "El teorema del límite central dice que la media muestral tiende a distribuirse:",
+    "Normalmente",
+    [
+     "Uniformemente",
+     "Como una binomial",
+     "Exponencialmente"
+    ],
+    [
+     "normal",
+     "normalmente",
+     "una normal",
+     "gaussiana"
+    ],
+    "Ocurre con muestras grandes, casi sin importar la distribución original de los datos."
+   ],
+   [
+    "¿Cuál es la media de una binomial con n = 10 y p = 0,3?",
+    "3",
+    [
+     "0,3",
+     "7",
+     "10"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "La media de una binomial es n·p = 10·0,3 = 3."
+   ],
+   [
+    "¿Qué probabilidad hay de obtener al menos una cara en 2 lanzamientos?",
+    "3/4",
+    [
+     "1/2",
+     "1/4",
+     "2/3"
+    ],
+    [
+     "3/4",
+     "0.75",
+     "0,75",
+     "75%"
+    ],
+    "Es el complemento de «ninguna cara»: 1 − 1/4 = 3/4."
+   ],
+   [
+    "Si la media es 10 y se suma 5 a todos los datos, la nueva media es:",
+    "15",
+    [
+     "10",
+     "5",
+     "50"
+    ],
+    [
+     "15",
+     "quince"
+    ],
+    "Sumar una constante desplaza la media por esa constante, pero no cambia la desviación estándar."
+   ],
+   [
+    "Si todos los datos se multiplican por 2, la desviación estándar:",
+    "Se multiplica por 2",
+    [
+     "No cambia",
+     "Se multiplica por 4",
+     "Aumenta en 2"
+    ],
+    [],
+    "La dispersión escala igual que los datos. La varianza, en cambio, se multiplica por 4."
+   ],
+   [
+    "Con un valor atípico extremo, ¿qué medida resiste mejor?",
+    "La mediana",
+    [
+     "La media",
+     "El rango",
+     "La varianza"
+    ],
+    [
+     "mediana",
+     "la mediana"
+    ],
+    "La mediana solo depende del orden de los datos, no de lo grande que sea el extremo."
+   ],
+   [
+    "La hipótesis nula H₀ suele afirmar que:",
+    "No hay efecto ni diferencia",
+    [
+     "Existe un efecto grande",
+     "La muestra está sesgada",
+     "El valor p es 1"
+    ],
+    [],
+    "Se parte de H₀ y solo se rechaza si los datos serían muy improbables bajo ella."
+   ],
+   [
+    "Una correlación alta entre dos variables:",
+    "No implica causalidad",
+    [
+     "Prueba que una causa a la otra",
+     "Indica que son independientes",
+     "Asegura que tienen la misma media"
+    ],
+    [
+     "no implica causalidad",
+     "correlacion no es causalidad",
+     "no hay causalidad"
+    ],
+    "Puede haber una tercera variable oculta o una simple coincidencia."
+   ],
+   [
+    "En la regresión lineal y = a + bx, ¿qué representa b?",
+    "El cambio esperado en y por cada unidad de x",
+    [
+     "El valor de y cuando x = 0",
+     "El error de la medición",
+     "La correlación entre x e y"
+    ],
+    [],
+    "Es la pendiente de la recta de mínimos cuadrados."
+   ],
+   [
+    "La probabilidad de todos los resultados posibles de un experimento suma:",
+    "1",
+    [
+     "0",
+     "100",
+     "Depende del experimento"
+    ],
+    [
+     "1",
+     "uno",
+     "100%"
+    ],
+    "Es un axioma de Kolmogorov: P(Ω) = 1."
+   ],
+   [
+    "¿Cuántos grupos de 3 personas se pueden formar con 6 personas?",
+    "20",
+    [
+     "18",
+     "120",
+     "36"
+    ],
+    [
+     "20",
+     "veinte"
+    ],
+    "C(6, 3) = 6!/(3!·3!) = 20. El orden dentro del grupo no importa."
+   ]
+  ]
+ },
+ "cpp": {
+  "name": "C++",
+  "qs": [
+   [
+    "¿Qué librería se incluye para usar cout y cin en C++?",
+    "#include <iostream>",
+    [
+     "#include <stdio>",
+     "#include <print>",
+     "#include <console>"
+    ],
+    [
+     "#include <iostream>",
+     "iostream",
+     "<iostream>"
+    ],
+    "iostream (input/output stream) ofrece cout para imprimir y cin para leer del teclado."
+   ],
+   [
+    "¿Cómo se imprime «Hola» en pantalla en C++?",
+    "cout << \"Hola\";",
+    [
+     "print(\"Hola\");",
+     "echo \"Hola\";",
+     "console.log(\"Hola\");"
+    ],
+    [
+     "cout << \"Hola\";",
+     "cout<<\"Hola\";",
+     "cout << \"Hola\"",
+     "cout<<\"Hola\""
+    ],
+    "cout envía datos a la pantalla con el operador <<. La instrucción termina con punto y coma."
+   ],
+   [
+    "¿Qué tipo de dato usarías en C++ para guardar 3.14?",
+    "double",
+    [
+     "int",
+     "char",
+     "bool"
+    ],
+    [
+     "double",
+     "float"
+    ],
+    "int solo guarda enteros. Para decimales se usa double (más precisión) o float."
+   ],
+   [
+    "¿Cuál es la función por donde empieza todo programa en C++?",
+    "main",
+    [
+     "start",
+     "init",
+     "run"
+    ],
+    [
+     "main",
+     "main()",
+     "int main",
+     "int main()"
+    ],
+    "Cuando ejecutas el programa, la computadora empieza siempre por la función main."
+   ],
+   [
+    "¿Con qué símbolo termina cada instrucción en C++?",
+    "Punto y coma ;",
+    [
+     "Punto .",
+     "Dos puntos :",
+     "Coma ,"
+    ],
+    [
+     "punto y coma",
+     ";"
+    ],
+    "Si olvidas el punto y coma, el compilador marca un error de sintaxis."
+   ],
+   [
+    "¿Qué instrucción lee un número del teclado en C++?",
+    "cin >> numero;",
+    [
+     "cout << numero;",
+     "input(numero);",
+     "readln(numero);"
+    ],
+    [
+     "cin >> numero;",
+     "cin>>numero;",
+     "cin >> numero",
+     "cin>>numero"
+    ],
+    "cin lee datos del teclado y los guarda en la variable con el operador >>."
+   ],
+   [
+    "¿Cómo se declara un entero llamado edad con valor 20?",
+    "int edad = 20;",
+    [
+     "integer edad = 20;",
+     "edad int = 20;",
+     "var edad = 20;"
+    ],
+    [
+     "int edad = 20;",
+     "int edad=20;",
+     "int edad = 20",
+     "int edad=20"
+    ],
+    "Primero va el tipo de dato, luego el nombre y después el valor."
+   ],
+   [
+    "¿Para qué sirve «using namespace std;»?",
+    "Para usar cout y cin sin escribir std::",
+    [
+     "Para importar la librería math",
+     "Para declarar una función",
+     "Para iniciar el programa"
+    ],
+    [],
+    "Sin esa línea habría que escribir std::cout y std::cin cada vez."
+   ],
+   [
+    "¿Qué símbolo comenta una línea en C++?",
+    "//",
+    [
+     "#",
+     "--",
+     "%"
+    ],
+    [
+     "//"
+    ],
+    "Todo lo que va después de // en esa línea lo ignora el compilador."
+   ],
+   [
+    "¿Cuánto da 7 / 2 en C++ si ambos son int?",
+    "3",
+    [
+     "3.5",
+     "4",
+     "2"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "La división entre enteros descarta la parte decimal."
+   ],
+   [
+    "¿Qué operador da el residuo de una división en C++?",
+    "%",
+    [
+     "/",
+     "&",
+     "//"
+    ],
+    [
+     "%"
+    ],
+    "Por ejemplo, 7 % 2 da 1. Sirve para saber si un número es par o impar."
+   ],
+   [
+    "¿Qué palabra devuelve un valor desde una función en C++?",
+    "return",
+    [
+     "break",
+     "exit",
+     "output"
+    ],
+    [
+     "return"
+    ],
+    "return termina la función y entrega el resultado a quien la llamó."
+   ]
+  ]
+ },
+ "py": {
+  "name": "Python",
+  "qs": [
+   [
+    "¿Cómo se imprime «Hola» en Python?",
+    "print(\"Hola\")",
+    [
+     "cout << \"Hola\"",
+     "echo(\"Hola\")",
+     "console.log(\"Hola\")"
+    ],
+    [
+     "print(\"Hola\")",
+     "print('Hola')",
+     "print(\"hola\")"
+    ],
+    "print() muestra texto en pantalla y no necesita punto y coma."
+   ],
+   [
+    "¿Qué símbolo comenta una línea en Python?",
+    "#",
+    [
+     "//",
+     "--",
+     "/* */"
+    ],
+    [
+     "#"
+    ],
+    "Todo lo que va después de # se ignora."
+   ],
+   [
+    "¿Qué delimita los bloques de código en Python?",
+    "La indentación (sangría)",
+    [
+     "Las llaves { }",
+     "El punto y coma",
+     "Los paréntesis"
+    ],
+    [
+     "indentacion",
+     "la indentacion",
+     "sangria",
+     "la sangria"
+    ],
+    "Python usa espacios al inicio de la línea para saber qué código pertenece a un if, un for o una función."
+   ],
+   [
+    "¿Qué tipo de dato es \"Hola\" en Python?",
+    "str (texto)",
+    [
+     "int",
+     "float",
+     "list"
+    ],
+    [
+     "str",
+     "string",
+     "texto",
+     "cadena"
+    ],
+    "Cualquier texto entre comillas es un str."
+   ],
+   [
+    "¿Qué función lee texto del teclado en Python?",
+    "input()",
+    [
+     "read()",
+     "scan()",
+     "get()"
+    ],
+    [
+     "input()",
+     "input"
+    ],
+    "input() siempre devuelve texto, aunque el usuario escriba un número."
+   ],
+   [
+    "¿Cuánto da 7 // 2 en Python?",
+    "3",
+    [
+     "3.5",
+     "4",
+     "2"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "El doble slash es la división entera: descarta los decimales."
+   ],
+   [
+    "¿Cuánto da 2 ** 3 en Python?",
+    "8",
+    [
+     "6",
+     "5",
+     "9"
+    ],
+    [
+     "8",
+     "ocho"
+    ],
+    "** es el operador de potencia: 2 elevado a 3."
+   ],
+   [
+    "¿Cómo se crea una lista en Python?",
+    "[1, 2, 3]",
+    [
+     "(1, 2, 3)",
+     "{1, 2, 3}",
+     "<1, 2, 3>"
+    ],
+    [
+     "[1,2,3]",
+     "[1, 2, 3]"
+    ],
+    "Las listas usan corchetes. Los paréntesis forman una tupla y las llaves un conjunto."
+   ],
+   [
+    "¿Qué función da la cantidad de elementos de una lista?",
+    "len()",
+    [
+     "size()",
+     "length()",
+     "count()"
+    ],
+    [
+     "len()",
+     "len"
+    ],
+    "len(lista) devuelve cuántos elementos tiene."
+   ],
+   [
+    "¿Qué palabra define una función en Python?",
+    "def",
+    [
+     "function",
+     "func",
+     "fn"
+    ],
+    [
+     "def"
+    ],
+    "Se escribe def nombre(parametros): y el cuerpo va indentado."
+   ],
+   [
+    "¿Qué devuelve type(5) en Python?",
+    "int",
+    [
+     "str",
+     "float",
+     "bool"
+    ],
+    [
+     "int",
+     "<class int>"
+    ],
+    "type() dice de qué tipo es un dato. El 5 es un entero."
+   ],
+   [
+    "¿Cómo se convierte el texto \"5\" en un número entero?",
+    "int(\"5\")",
+    [
+     "str(\"5\")",
+     "float(\"5\")",
+     "number(\"5\")"
+    ],
+    [
+     "int(\"5\")",
+     "int('5')"
+    ],
+    "int() convierte a entero. Es muy usado con input()."
+   ]
+  ]
+ },
+ "html": {
+  "name": "HTML",
+  "qs": [
+   [
+    "¿Qué significa HTML?",
+    "HyperText Markup Language",
+    [
+     "High Text Machine Language",
+     "Hyper Tool Making Language",
+     "Home Text Markup Level"
+    ],
+    [
+     "hypertext markup language",
+     "hyper text markup language"
+    ],
+    "Es el lenguaje de marcado que da estructura a las páginas web."
+   ],
+   [
+    "¿Qué etiqueta crea el título más grande?",
+    "<h1>",
+    [
+     "<title>",
+     "<head>",
+     "<big>"
+    ],
+    [
+     "<h1>",
+     "h1"
+    ],
+    "Los títulos van de <h1> (el más importante) a <h6>."
+   ],
+   [
+    "¿Qué etiqueta crea un párrafo?",
+    "<p>",
+    [
+     "<para>",
+     "<text>",
+     "<br>"
+    ],
+    [
+     "<p>",
+     "p"
+    ],
+    "Cada párrafo va dentro de <p> y se cierra con la etiqueta de cierre."
+   ],
+   [
+    "¿Qué etiqueta inserta una imagen?",
+    "<img>",
+    [
+     "<image>",
+     "<picture>",
+     "<src>"
+    ],
+    [
+     "<img>",
+     "img"
+    ],
+    "<img> no necesita etiqueta de cierre y usa los atributos src y alt."
+   ],
+   [
+    "¿Qué etiqueta crea un enlace?",
+    "<a>",
+    [
+     "<link>",
+     "<href>",
+     "<url>"
+    ],
+    [
+     "<a>",
+     "a"
+    ],
+    "La a viene de «anchor» (ancla)."
+   ],
+   [
+    "¿Qué atributo indica el destino de un enlace?",
+    "href",
+    [
+     "src",
+     "link",
+     "url"
+    ],
+    [
+     "href"
+    ],
+    "Por ejemplo: <a href=\"pagina.html\">. src se usa en imágenes."
+   ],
+   [
+    "¿Qué etiqueta crea una lista con viñetas?",
+    "<ul>",
+    [
+     "<ol>",
+     "<li>",
+     "<list>"
+    ],
+    [
+     "<ul>",
+     "ul"
+    ],
+    "ul es «unordered list». Cada elemento va en un <li>."
+   ],
+   [
+    "¿Qué etiqueta crea una lista numerada?",
+    "<ol>",
+    [
+     "<ul>",
+     "<nl>",
+     "<num>"
+    ],
+    [
+     "<ol>",
+     "ol"
+    ],
+    "ol es «ordered list»."
+   ],
+   [
+    "¿Qué etiqueta contiene todo lo visible de la página?",
+    "<body>",
+    [
+     "<head>",
+     "<html>",
+     "<footer>"
+    ],
+    [
+     "<body>",
+     "body"
+    ],
+    "<head> guarda datos de la página y <body> lo que ves en pantalla."
+   ],
+   [
+    "¿Qué etiqueta hace un salto de línea?",
+    "<br>",
+    [
+     "<lb>",
+     "<break>",
+     "<hr>"
+    ],
+    [
+     "<br>",
+     "br"
+    ],
+    "<hr> dibuja una línea horizontal, no un salto."
+   ],
+   [
+    "¿Qué se escribe al inicio de un documento HTML5?",
+    "<!DOCTYPE html>",
+    [
+     "<html5>",
+     "<!HTML>",
+     "<?html>"
+    ],
+    [
+     "<!doctype html>",
+     "doctype html"
+    ],
+    "Le indica al navegador que el documento es HTML5."
+   ],
+   [
+    "¿Qué atributo da el texto alternativo de una imagen?",
+    "alt",
+    [
+     "title",
+     "name",
+     "text"
+    ],
+    [
+     "alt"
+    ],
+    "Se muestra si la imagen no carga y lo leen los lectores de pantalla."
+   ]
+  ]
+ },
+ "js": {
+  "name": "JavaScript",
+  "qs": [
+   [
+    "¿Cómo se imprime en la consola de JavaScript?",
+    "console.log(\"Hola\")",
+    [
+     "print(\"Hola\")",
+     "cout << \"Hola\"",
+     "System.out(\"Hola\")"
+    ],
+    [
+     "console.log(\"Hola\")",
+     "console.log('Hola')",
+     "console.log(\"hola\")"
+    ],
+    "console.log() muestra datos en la consola del navegador."
+   ],
+   [
+    "¿Qué palabra declara una variable que puede cambiar?",
+    "let",
+    [
+     "const",
+     "int",
+     "dim"
+    ],
+    [
+     "let",
+     "var"
+    ],
+    "let (o el antiguo var) crea una variable. const crea una que no se reasigna."
+   ],
+   [
+    "¿Qué palabra declara una constante?",
+    "const",
+    [
+     "let",
+     "final",
+     "fixed"
+    ],
+    [
+     "const"
+    ],
+    "Una variable const no se puede reasignar después."
+   ],
+   [
+    "¿Qué hace el operador === en JavaScript?",
+    "Compara valor y tipo",
+    [
+     "Asigna un valor",
+     "Compara solo el valor",
+     "Suma tres veces"
+    ],
+    [],
+    "5 === \"5\" es falso porque uno es número y el otro texto."
+   ],
+   [
+    "¿Qué devuelve typeof 42?",
+    "number",
+    [
+     "int",
+     "numeric",
+     "float"
+    ],
+    [
+     "number"
+    ],
+    "JavaScript tiene un solo tipo numérico: number."
+   ],
+   [
+    "¿Qué símbolo comenta una línea en JavaScript?",
+    "//",
+    [
+     "#",
+     "--",
+     "<!-- -->"
+    ],
+    [
+     "//"
+    ],
+    "Para varias líneas se usa /* ... */."
+   ],
+   [
+    "¿Qué palabra define una función en JavaScript?",
+    "function",
+    [
+     "def",
+     "func",
+     "method"
+    ],
+    [
+     "function"
+    ],
+    "Ejemplo: function saludar() { ... }."
+   ],
+   [
+    "¿Qué método agrega un elemento al final de un arreglo?",
+    "push()",
+    [
+     "add()",
+     "append()",
+     "insert()"
+    ],
+    [
+     "push",
+     "push()"
+    ],
+    "arr.push(5) agrega el 5 al final."
+   ],
+   [
+    "¿Qué función muestra un cuadro de aviso al usuario?",
+    "alert()",
+    [
+     "popup()",
+     "message()",
+     "print()"
+    ],
+    [
+     "alert()",
+     "alert"
+    ],
+    "alert(\"Hola\") abre una ventanita con el mensaje."
+   ],
+   [
+    "¿Qué método selecciona un elemento de la página por su id?",
+    "document.getElementById()",
+    [
+     "document.find()",
+     "document.selectId()",
+     "window.getId()"
+    ],
+    [
+     "document.getelementbyid",
+     "document.getelementbyid()"
+    ],
+    "Devuelve el elemento HTML que tiene ese id."
+   ],
+   [
+    "¿Qué resultado da \"5\" + 3 en JavaScript?",
+    "\"53\" (texto)",
+    [
+     "8",
+     "Error",
+     "NaN"
+    ],
+    [
+     "53",
+     "\"53\""
+    ],
+    "Si uno de los lados es texto, el + concatena en vez de sumar."
+   ],
+   [
+    "¿Cuánto vale \"hola\".length?",
+    "4",
+    [
+     "3",
+     "5",
+     "hola"
+    ],
+    [
+     "4",
+     "cuatro"
+    ],
+    "length cuenta los caracteres: h, o, l, a."
+   ]
+  ]
+ },
+ "pseudo": {
+  "name": "Pseudocódigo",
+  "qs": [
+   [
+    "¿Qué es el pseudocódigo?",
+    "Describir los pasos de un algoritmo en lenguaje casi humano",
+    [
+     "Un lenguaje que ejecuta la computadora",
+     "Un tipo de virus",
+     "Un compilador"
+    ],
+    [],
+    "No se ejecuta: sirve para planear la lógica antes de programar."
+   ],
+   [
+    "¿Qué es un algoritmo?",
+    "Una serie ordenada de pasos para resolver un problema",
+    [
+     "Un lenguaje de programación",
+     "Un error del programa",
+     "Un tipo de variable"
+    ],
+    [],
+    "Una receta de cocina es un buen ejemplo de algoritmo."
+   ],
+   [
+    "¿Con qué palabra suele empezar un pseudocódigo?",
+    "Inicio",
+    [
+     "Fin",
+     "Si",
+     "Mientras"
+    ],
+    [
+     "inicio"
+    ],
+    "Se marca el comienzo con Inicio y el final con Fin."
+   ],
+   [
+    "¿Con qué palabra suele terminar un pseudocódigo?",
+    "Fin",
+    [
+     "Inicio",
+     "Leer",
+     "Escribir"
+    ],
+    [
+     "fin"
+    ],
+    "Fin cierra el algoritmo."
+   ],
+   [
+    "¿Qué instrucción pide un dato al usuario?",
+    "Leer",
+    [
+     "Escribir",
+     "Calcular",
+     "Repetir"
+    ],
+    [
+     "leer"
+    ],
+    "Leer guarda lo que el usuario escribe en una variable."
+   ],
+   [
+    "¿Qué instrucción muestra un resultado?",
+    "Escribir (o Mostrar)",
+    [
+     "Leer",
+     "Guardar",
+     "Fin"
+    ],
+    [
+     "escribir",
+     "mostrar",
+     "imprimir"
+    ],
+    "Escribir, Mostrar o Imprimir sacan información por pantalla."
+   ],
+   [
+    "¿Qué estructura toma una decisión?",
+    "Condicional (Si... Entonces)",
+    [
+     "Bucle",
+     "Arreglo",
+     "Función"
+    ],
+    [
+     "condicional",
+     "si entonces",
+     "si"
+    ],
+    "Ejecuta unas instrucciones solo si la condición es verdadera."
+   ],
+   [
+    "¿Qué es una variable?",
+    "Un espacio con nombre donde se guarda un dato",
+    [
+     "Un paso del algoritmo",
+     "Un tipo de bucle",
+     "Un comentario"
+    ],
+    [],
+    "Su valor puede cambiar mientras corre el programa."
+   ],
+   [
+    "¿Qué símbolo se usa a menudo para asignar un valor en pseudocódigo?",
+    "← (flecha)",
+    [
+     "≠",
+     "≥",
+     "≈"
+    ],
+    [
+     "←",
+     "<-",
+     "flecha"
+    ],
+    "Por ejemplo, suma ← a + b guarda el resultado en suma."
+   ],
+   [
+    "¿Qué figura representa una decisión en un diagrama de flujo?",
+    "Un rombo",
+    [
+     "Un círculo",
+     "Un rectángulo",
+     "Un triángulo"
+    ],
+    [
+     "rombo",
+     "un rombo"
+    ],
+    "El rombo tiene dos salidas: verdadero y falso."
+   ],
+   [
+    "¿Cuál es el orden típico de un algoritmo?",
+    "Entrada, proceso, salida",
+    [
+     "Salida, entrada, proceso",
+     "Proceso, salida, entrada",
+     "Salida, proceso, entrada"
+    ],
+    [
+     "entrada proceso salida",
+     "entrada, proceso, salida",
+     "entrada, proceso y salida"
+    ],
+    "Primero recibes datos, luego los procesas y al final muestras el resultado."
+   ],
+   [
+    "En «Si x > 5 Entonces Escribir mayor», si x vale 3, ¿qué pasa?",
+    "No escribe nada",
+    [
+     "Escribe mayor",
+     "Da error",
+     "Escribe 3"
+    ],
+    [],
+    "3 no es mayor que 5, así que la condición es falsa y se salta la instrucción."
+   ]
+  ]
+ },
+ "func": {
+  "name": "Funciones",
+  "qs": [
+   [
+    "¿Qué es una función?",
+    "Un bloque de código con nombre que se puede reutilizar",
+    [
+     "Una variable que no cambia",
+     "Un comentario",
+     "Un tipo de dato"
+    ],
+    [],
+    "Escribes el código una vez y lo llamas cuantas veces quieras."
+   ],
+   [
+    "¿Qué es un parámetro?",
+    "Un dato que la función recibe para trabajar",
+    [
+     "El nombre del programa",
+     "El resultado final",
+     "Un error"
+    ],
+    [],
+    "Se escribe entre paréntesis en la definición de la función."
+   ],
+   [
+    "¿Qué es el valor de retorno?",
+    "El resultado que la función devuelve",
+    [
+     "Un parámetro",
+     "Un comentario",
+     "El nombre de la función"
+    ],
+    [],
+    "Se entrega con return a quien llamó la función."
+   ],
+   [
+    "¿Qué palabra devuelve un valor en la mayoría de lenguajes?",
+    "return",
+    [
+     "back",
+     "give",
+     "exit"
+    ],
+    [
+     "return"
+    ],
+    "return entrega el resultado y termina la función."
+   ],
+   [
+    "¿Qué pasa si defines una función pero nunca la llamas?",
+    "Su código nunca se ejecuta",
+    [
+     "Se ejecuta sola al final",
+     "Da error siempre",
+     "Se ejecuta dos veces"
+    ],
+    [],
+    "Definir una función solo la deja lista. Hay que llamarla."
+   ],
+   [
+    "¿Cómo se llama ejecutar una función?",
+    "Llamar (invocar) a la función",
+    [
+     "Compilar",
+     "Declarar",
+     "Comentar"
+    ],
+    [
+     "llamar",
+     "llamarla",
+     "llamar a la funcion",
+     "invocar"
+    ],
+    "Se hace escribiendo su nombre con paréntesis, por ejemplo saludar()."
+   ],
+   [
+    "En Python, si def doble(x): return x * 2, ¿cuánto vale doble(4)?",
+    "8",
+    [
+     "6",
+     "4",
+     "2"
+    ],
+    [
+     "8",
+     "ocho"
+    ],
+    "El parámetro x toma el valor 4 y la función devuelve 4 * 2."
+   ],
+   [
+    "¿Para qué sirven las funciones?",
+    "Para no repetir código y mantenerlo ordenado",
+    [
+     "Para que el programa corra más lento",
+     "Para borrar variables",
+     "Para comentar"
+    ],
+    [],
+    "Dividen un problema grande en partes pequeñas y fáciles de probar."
+   ],
+   [
+    "¿Qué es un argumento?",
+    "El valor real que se pasa al llamar la función",
+    [
+     "El nombre del parámetro",
+     "El tipo de retorno",
+     "Una librería"
+    ],
+    [],
+    "En doble(4), el 4 es el argumento y x es el parámetro."
+   ],
+   [
+    "En C++, ¿qué tipo de retorno tiene una función que no devuelve nada?",
+    "void",
+    [
+     "null",
+     "none",
+     "empty"
+    ],
+    [
+     "void"
+    ],
+    "void significa «vacío»."
+   ],
+   [
+    "¿Qué es una variable local?",
+    "Una variable que solo existe dentro de su función",
+    [
+     "La que existe en todo el programa",
+     "Una que no tiene nombre",
+     "Una constante"
+    ],
+    [],
+    "Al terminar la función, la variable local desaparece."
+   ],
+   [
+    "¿Qué es la recursividad?",
+    "Cuando una función se llama a sí misma",
+    [
+     "Cuando una función no devuelve nada",
+     "Cuando dos funciones tienen el mismo nombre",
+     "Cuando una función es muy larga"
+    ],
+    [
+     "una funcion que se llama a si misma",
+     "se llama a si misma"
+    ],
+    "Necesita un caso base que detenga las llamadas. Ejemplo: el factorial."
+   ]
+  ]
+ },
+ "bucles": {
+  "name": "Bucles",
+  "qs": [
+   [
+    "¿Qué es un bucle?",
+    "Una estructura que repite instrucciones",
+    [
+     "Una variable",
+     "Un tipo de dato",
+     "Un error del programa"
+    ],
+    [],
+    "Evita escribir la misma instrucción muchas veces."
+   ],
+   [
+    "¿Qué bucle usas cuando sabes cuántas veces repetir?",
+    "for",
+    [
+     "if",
+     "switch",
+     "return"
+    ],
+    [
+     "for",
+     "para"
+    ],
+    "for suele llevar un contador con inicio, condición y avance."
+   ],
+   [
+    "¿Qué bucle repite mientras una condición sea verdadera?",
+    "while",
+    [
+     "if",
+     "break",
+     "case"
+    ],
+    [
+     "while",
+     "mientras"
+    ],
+    "Revisa la condición antes de cada vuelta."
+   ],
+   [
+    "¿Qué es un bucle infinito?",
+    "Uno cuya condición nunca se vuelve falsa",
+    [
+     "Uno que se repite 100 veces",
+     "Uno que usa for",
+     "Uno sin cuerpo"
+    ],
+    [],
+    "Suele pasar cuando se olvida actualizar el contador."
+   ],
+   [
+    "¿Cuántas veces se ejecuta for (int i = 0; i < 5; i++)?",
+    "5",
+    [
+     "4",
+     "6",
+     "0"
+    ],
+    [
+     "5",
+     "cinco"
+    ],
+    "i toma los valores 0, 1, 2, 3 y 4."
+   ],
+   [
+    "¿Qué hace break dentro de un bucle?",
+    "Sale del bucle",
+    [
+     "Salta a la siguiente vuelta",
+     "Reinicia el bucle",
+     "Pausa el programa"
+    ],
+    [
+     "sale del bucle",
+     "salir"
+    ],
+    "El programa continúa con lo que sigue después del bucle."
+   ],
+   [
+    "¿Qué hace continue dentro de un bucle?",
+    "Salta a la siguiente vuelta",
+    [
+     "Termina el programa",
+     "Sale del bucle",
+     "Reinicia el contador"
+    ],
+    [
+     "salta a la siguiente vuelta",
+     "siguiente vuelta"
+    ],
+    "Se ignora lo que falta de esa vuelta y empieza la siguiente."
+   ],
+   [
+    "¿Qué hace i++ ?",
+    "Suma 1 a i",
+    [
+     "Multiplica i por 2",
+     "Resta 1 a i",
+     "Reinicia i a 0"
+    ],
+    [
+     "suma 1",
+     "suma 1 a i",
+     "incrementa i"
+    ],
+    "Es lo mismo que i = i + 1."
+   ],
+   [
+    "En Python, ¿cuántas vueltas da for i in range(3)?",
+    "3",
+    [
+     "2",
+     "4",
+     "1"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "range(3) genera 0, 1 y 2."
+   ],
+   [
+    "En Python, ¿qué valores toma i en for i in range(3)?",
+    "0, 1, 2",
+    [
+     "1, 2, 3",
+     "0, 1, 2, 3",
+     "1, 2"
+    ],
+    [
+     "0, 1, 2",
+     "0 1 2",
+     "0,1,2"
+    ],
+    "range empieza en 0 y llega hasta el número anterior al que indicas."
+   ],
+   [
+    "¿Qué bucle se ejecuta al menos una vez aunque la condición sea falsa?",
+    "do...while",
+    [
+     "while",
+     "for",
+     "if"
+    ],
+    [
+     "do while",
+     "do...while",
+     "do-while"
+    ],
+    "Revisa la condición al final de cada vuelta, no al inicio."
+   ],
+   [
+    "¿Cuánto vale suma al final? suma = 0; para i de 1 a 4: suma = suma + i",
+    "10",
+    [
+     "4",
+     "6",
+     "24"
+    ],
+    [
+     "10",
+     "diez"
+    ],
+    "1 + 2 + 3 + 4 = 10."
+   ]
+  ]
+ },
+ "arr": {
+  "name": "Arreglos",
+  "qs": [
+   [
+    "¿Qué es un arreglo (array)?",
+    "Una colección ordenada de elementos en una sola variable",
+    [
+     "Una función",
+     "Un tipo de bucle",
+     "Un comentario"
+    ],
+    [],
+    "Permite guardar muchos datos juntos, como las notas de un grupo."
+   ],
+   [
+    "¿En qué posición está el primer elemento de un arreglo en la mayoría de lenguajes?",
+    "0",
+    [
+     "1",
+     "-1",
+     "2"
+    ],
+    [
+     "0",
+     "cero"
+    ],
+    "Los índices empiezan en 0."
+   ],
+   [
+    "En lista = [10, 20, 30], ¿cuánto da lista[1]?",
+    "20",
+    [
+     "10",
+     "30",
+     "2"
+    ],
+    [
+     "20",
+     "veinte"
+    ],
+    "El índice 0 es 10 y el índice 1 es 20."
+   ],
+   [
+    "En lista = [10, 20, 30], ¿cuál es el último índice?",
+    "2",
+    [
+     "3",
+     "1",
+     "30"
+    ],
+    [
+     "2",
+     "dos"
+    ],
+    "Con 3 elementos los índices son 0, 1 y 2."
+   ],
+   [
+    "¿Qué pasa si accedes a un índice que no existe?",
+    "Da error o un resultado inesperado",
+    [
+     "Devuelve 0 siempre",
+     "Crea el elemento solo",
+     "Borra el arreglo"
+    ],
+    [],
+    "Por ejemplo, lista[5] en una lista de 3 elementos falla en Python."
+   ],
+   [
+    "¿Cómo se declara un arreglo de 5 enteros en C++?",
+    "int numeros[5];",
+    [
+     "array numeros(5);",
+     "int[5] numeros;",
+     "numeros = int(5);"
+    ],
+    [
+     "int numeros[5];",
+     "int numeros[5]"
+    ],
+    "El tamaño va entre corchetes después del nombre."
+   ],
+   [
+    "¿Cómo se obtiene el tamaño de una lista en Python?",
+    "len(lista)",
+    [
+     "lista.size",
+     "size(lista)",
+     "lista.length"
+    ],
+    [
+     "len(lista)"
+    ],
+    "len() funciona con listas, textos y más."
+   ],
+   [
+    "¿Cómo se agrega un elemento al final de una lista en Python?",
+    "lista.append(x)",
+    [
+     "lista.push(x)",
+     "lista.add(x)",
+     "lista + x"
+    ],
+    [
+     "lista.append(x)",
+     "append"
+    ],
+    "push es de JavaScript. En Python se usa append."
+   ],
+   [
+    "¿Qué se usa normalmente para recorrer un arreglo?",
+    "Un bucle for",
+    [
+     "Un if",
+     "Una constante",
+     "Un comentario"
+    ],
+    [
+     "for",
+     "un bucle for",
+     "bucle for"
+    ],
+    "El bucle visita cada posición, de la primera a la última."
+   ],
+   [
+    "¿Qué es un arreglo bidimensional?",
+    "Una tabla con filas y columnas",
+    [
+     "Un arreglo con dos nombres",
+     "Dos arreglos separados",
+     "Un arreglo de texto"
+    ],
+    [
+     "matriz",
+     "una matriz",
+     "tabla"
+    ],
+    "Se accede con dos índices: fila y columna."
+   ],
+   [
+    "En JavaScript, ¿qué método quita el último elemento de un arreglo?",
+    "pop()",
+    [
+     "shift()",
+     "remove()",
+     "delete()"
+    ],
+    [
+     "pop",
+     "pop()"
+    ],
+    "shift() quita el primero y pop() quita el último."
+   ],
+   [
+    "Si arr = [4, 8, 15] en JavaScript, ¿cuánto vale arr.length?",
+    "3",
+    [
+     "2",
+     "15",
+     "4"
+    ],
+    [
+     "3",
+     "tres"
+    ],
+    "Tiene tres elementos, aunque el último índice sea 2."
+   ]
+  ]
+ },
+ "ing1": {
+  "name": "Saludos",
+  "qs": [
+   [
+    "¿Cómo se dice «Hola» en inglés?",
+    "Hello",
+    [
+     "Goodbye",
+     "Thanks",
+     "Please"
+    ],
+    [
+     "hello",
+     "hi"
+    ],
+    "Hello es el saludo más común. Hi es la versión informal."
+   ],
+   [
+    "¿Cómo se dice «Adiós» en inglés?",
+    "Goodbye",
+    [
+     "Hello",
+     "Sorry",
+     "Welcome"
+    ],
+    [
+     "goodbye",
+     "bye"
+    ],
+    "Bye es la forma corta e informal."
+   ],
+   [
+    "¿Cómo se dice «Gracias» en inglés?",
+    "Thank you",
+    [
+     "Please",
+     "Sorry",
+     "Excuse me"
+    ],
+    [
+     "thank you",
+     "thanks"
+    ],
+    "Thanks es la versión corta."
+   ],
+   [
+    "¿Cómo se dice «Por favor» en inglés?",
+    "Please",
+    [
+     "Sorry",
+     "Thanks",
+     "Welcome"
+    ],
+    [
+     "please"
+    ],
+    "Please se usa al pedir algo con cortesía."
+   ],
+   [
+    "¿Cómo se dice «Lo siento» en inglés?",
+    "Sorry",
+    [
+     "Please",
+     "Thanks",
+     "Hello"
+    ],
+    [
+     "sorry",
+     "i am sorry",
+     "i'm sorry"
+    ],
+    "También puedes decir I am sorry."
+   ],
+   [
+    "¿Cómo se dice «Buenos días» en inglés?",
+    "Good morning",
+    [
+     "Good night",
+     "Good afternoon",
+     "Good evening"
+    ],
+    [
+     "good morning"
+    ],
+    "Se usa desde que amanece hasta el mediodía."
+   ],
+   [
+    "¿Cómo se dice «Buenas noches» al despedirse para dormir?",
+    "Good night",
+    [
+     "Good morning",
+     "Good afternoon",
+     "Good day"
+    ],
+    [
+     "good night"
+    ],
+    "Good evening es un saludo al llegar por la noche. Good night es para despedirse."
+   ],
+   [
+    "¿Cómo se pregunta «¿Cómo estás?» en inglés?",
+    "How are you?",
+    [
+     "Who are you?",
+     "Where are you?",
+     "What are you?"
+    ],
+    [
+     "how are you",
+     "how are you?"
+    ],
+    "La respuesta típica es I am fine, thank you."
+   ],
+   [
+    "¿Cómo se dice «Mucho gusto» en inglés?",
+    "Nice to meet you",
+    [
+     "See you later",
+     "How old are you",
+     "Good luck"
+    ],
+    [
+     "nice to meet you"
+    ],
+    "Se dice al conocer a alguien por primera vez."
+   ],
+   [
+    "¿Cómo se dice «Me llamo Ana» en inglés?",
+    "My name is Ana",
+    [
+     "I am name Ana",
+     "Name my Ana",
+     "Me call Ana"
+    ],
+    [
+     "my name is ana",
+     "i am ana",
+     "i'm ana"
+    ],
+    "También puedes decir I am Ana."
+   ],
+   [
+    "¿Cómo se dice «Hasta luego» en inglés?",
+    "See you later",
+    [
+     "Good morning",
+     "Nice to meet you",
+     "Thank you"
+    ],
+    [
+     "see you later",
+     "see you"
+    ],
+    "Se usa al despedirte de alguien que verás pronto."
+   ],
+   [
+    "¿Qué significa «You are welcome»?",
+    "De nada",
+    [
+     "Gracias",
+     "Lo siento",
+     "Hasta pronto"
+    ],
+    [
+     "de nada"
+    ],
+    "Es la respuesta a Thank you."
+   ]
+  ]
+ },
+ "ing2": {
+  "name": "Verbo to be",
+  "qs": [
+   [
+    "¿Cómo se dice «Yo» en inglés?",
+    "I",
+    [
+     "He",
+     "We",
+     "It"
+    ],
+    [
+     "i"
+    ],
+    "I siempre se escribe con mayúscula."
+   ],
+   [
+    "¿Cómo se dice «Ella» en inglés?",
+    "She",
+    [
+     "He",
+     "They",
+     "It"
+    ],
+    [
+     "she"
+    ],
+    "She es femenino y he es masculino."
+   ],
+   [
+    "¿Cómo se dice «Nosotros» en inglés?",
+    "We",
+    [
+     "You",
+     "They",
+     "He"
+    ],
+    [
+     "we"
+    ],
+    "We incluye a quien habla."
+   ],
+   [
+    "¿Cómo se dice «Ellos» en inglés?",
+    "They",
+    [
+     "We",
+     "You",
+     "She"
+    ],
+    [
+     "they"
+    ],
+    "They sirve para ellos y ellas."
+   ],
+   [
+    "Completa: I ___ a student.",
+    "am",
+    [
+     "is",
+     "are",
+     "be"
+    ],
+    [
+     "am"
+    ],
+    "Con I se usa am."
+   ],
+   [
+    "Completa: She ___ my friend.",
+    "is",
+    [
+     "am",
+     "are",
+     "be"
+    ],
+    [
+     "is"
+    ],
+    "Con he, she e it se usa is."
+   ],
+   [
+    "Completa: They ___ at home.",
+    "are",
+    [
+     "is",
+     "am",
+     "be"
+    ],
+    [
+     "are"
+    ],
+    "Con you, we y they se usa are."
+   ],
+   [
+    "Completa: He ___ tall.",
+    "is",
+    [
+     "am",
+     "are",
+     "be"
+    ],
+    [
+     "is"
+    ],
+    "He is tall significa «Él es alto»."
+   ],
+   [
+    "¿Cuál es la forma negativa de «I am happy»?",
+    "I am not happy",
+    [
+     "I not am happy",
+     "I am no happy",
+     "I do not happy"
+    ],
+    [
+     "i am not happy",
+     "i'm not happy"
+    ],
+    "En to be, el not va después del verbo."
+   ],
+   [
+    "¿Cómo se pregunta «¿Eres estudiante?» en inglés?",
+    "Are you a student?",
+    [
+     "Do you be a student?",
+     "Is you a student?",
+     "Am you a student?"
+    ],
+    [
+     "are you a student",
+     "are you a student?"
+    ],
+    "En preguntas con to be, el verbo va antes del sujeto."
+   ],
+   [
+    "¿Cuál es la contracción de «It is»?",
+    "It's",
+    [
+     "Its",
+     "I is",
+     "Is it"
+    ],
+    [
+     "it's"
+    ],
+    "El apóstrofo reemplaza la letra i. Its sin apóstrofo significa «su»."
+   ],
+   [
+    "Completa: We ___ from Costa Rica.",
+    "are",
+    [
+     "is",
+     "am",
+     "be"
+    ],
+    [
+     "are"
+    ],
+    "Con we se usa are."
+   ]
+  ]
+ },
+ "ing3": {
+  "name": "Presente simple",
+  "qs": [
+   [
+    "Completa: She ___ pizza. (like)",
+    "likes",
+    [
+     "like",
+     "liking",
+     "is like"
+    ],
+    [
+     "likes"
+    ],
+    "Con he, she e it se agrega -s al verbo."
+   ],
+   [
+    "Completa: I ___ English every day. (study)",
+    "study",
+    [
+     "studies",
+     "studying",
+     "studied"
+    ],
+    [
+     "study"
+    ],
+    "Con I no se agrega -s."
+   ],
+   [
+    "¿Qué auxiliar se usa en negativa con he, she e it?",
+    "doesn't",
+    [
+     "don't",
+     "isn't",
+     "hasn't"
+    ],
+    [
+     "doesn't",
+     "does not",
+     "doesnt"
+    ],
+    "He does not play significa «Él no juega»."
+   ],
+   [
+    "¿Qué auxiliar se usa en negativa con I, you, we y they?",
+    "don't",
+    [
+     "doesn't",
+     "isn't",
+     "aren't"
+    ],
+    [
+     "don't",
+     "do not",
+     "dont"
+    ],
+    "I do not like significa «No me gusta»."
+   ],
+   [
+    "¿Cómo se pregunta «¿Hablas inglés?» en inglés?",
+    "Do you speak English?",
+    [
+     "Does you speak English?",
+     "You speak English do?",
+     "Are you speak English?"
+    ],
+    [
+     "do you speak english",
+     "do you speak english?"
+    ],
+    "Las preguntas en presente simple empiezan con Do o Does."
+   ],
+   [
+    "Completa: He ___ to school by bus. (go)",
+    "goes",
+    [
+     "go",
+     "gos",
+     "going"
+    ],
+    [
+     "goes"
+    ],
+    "Los verbos que terminan en -o agregan -es: goes, does."
+   ],
+   [
+    "¿Qué significa «I work»?",
+    "Yo trabajo",
+    [
+     "Yo trabajé",
+     "Yo trabajaré",
+     "Él trabaja"
+    ],
+    [
+     "yo trabajo",
+     "trabajo"
+    ],
+    "Work es trabajar y el presente simple habla de rutinas."
+   ],
+   [
+    "¿Qué verbo significa «comer»?",
+    "eat",
+    [
+     "drink",
+     "cook",
+     "sleep"
+    ],
+    [
+     "eat"
+    ],
+    "Eat es comer."
+   ],
+   [
+    "¿Qué verbo significa «beber»?",
+    "drink",
+    [
+     "eat",
+     "run",
+     "read"
+    ],
+    [
+     "drink"
+    ],
+    "Drink es beber."
+   ],
+   [
+    "¿Qué verbo significa «dormir»?",
+    "sleep",
+    [
+     "sit",
+     "swim",
+     "sing"
+    ],
+    [
+     "sleep"
+    ],
+    "Sleep es dormir."
+   ],
+   [
+    "¿Qué verbo significa «leer»?",
+    "read",
+    [
+     "write",
+     "run",
+     "walk"
+    ],
+    [
+     "read"
+    ],
+    "Read es leer y write es escribir."
+   ],
+   [
+    "Completa: Does she ___ coffee? (drink)",
+    "drink",
+    [
+     "drinks",
+     "drinking",
+     "drank"
+    ],
+    [
+     "drink"
+    ],
+    "Después de does, el verbo va sin -s."
+   ]
+  ]
+ },
+ "ing4": {
+  "name": "Números y colores",
+  "qs": [
+   [
+    "¿Cómo se dice 5 en inglés?",
+    "five",
+    [
+     "four",
+     "six",
+     "fifteen"
+    ],
+    [
+     "five"
+    ],
+    "Five es cinco."
+   ],
+   [
+    "¿Cómo se dice 10 en inglés?",
+    "ten",
+    [
+     "two",
+     "twenty",
+     "nine"
+    ],
+    [
+     "ten"
+    ],
+    "Ten es diez."
+   ],
+   [
+    "¿Cómo se dice 13 en inglés?",
+    "thirteen",
+    [
+     "thirty",
+     "three",
+     "fourteen"
+    ],
+    [
+     "thirteen"
+    ],
+    "Los números del 13 al 19 terminan en -teen."
+   ],
+   [
+    "¿Cómo se dice 20 en inglés?",
+    "twenty",
+    [
+     "twelve",
+     "two",
+     "thirty"
+    ],
+    [
+     "twenty"
+    ],
+    "Las decenas terminan en -ty: twenty, thirty, forty."
+   ],
+   [
+    "¿Cómo se dice «rojo» en inglés?",
+    "red",
+    [
+     "blue",
+     "green",
+     "pink"
+    ],
+    [
+     "red"
+    ],
+    "Red es rojo."
+   ],
+   [
+    "¿Cómo se dice «azul» en inglés?",
+    "blue",
+    [
+     "black",
+     "brown",
+     "white"
+    ],
+    [
+     "blue"
+    ],
+    "Blue es azul."
+   ],
+   [
+    "¿Cómo se dice «verde» en inglés?",
+    "green",
+    [
+     "grey",
+     "yellow",
+     "red"
+    ],
+    [
+     "green"
+    ],
+    "Green es verde."
+   ],
+   [
+    "¿Cómo se dice «amarillo» en inglés?",
+    "yellow",
+    [
+     "orange",
+     "white",
+     "pink"
+    ],
+    [
+     "yellow"
+    ],
+    "Yellow es amarillo."
+   ],
+   [
+    "¿Cómo se dice «lunes» en inglés?",
+    "Monday",
+    [
+     "Tuesday",
+     "Sunday",
+     "Thursday"
+    ],
+    [
+     "monday"
+    ],
+    "Los días de la semana se escriben con mayúscula."
+   ],
+   [
+    "¿Cómo se dice «sábado» en inglés?",
+    "Saturday",
+    [
+     "Sunday",
+     "Thursday",
+     "Tuesday"
+    ],
+    [
+     "saturday"
+    ],
+    "Saturday es sábado y Sunday es domingo."
+   ],
+   [
+    "¿Cómo se dice «enero» en inglés?",
+    "January",
+    [
+     "June",
+     "July",
+     "March"
+    ],
+    [
+     "january"
+    ],
+    "Los meses también llevan mayúscula."
+   ],
+   [
+    "¿Cómo se dice «diciembre» en inglés?",
+    "December",
+    [
+     "November",
+     "September",
+     "October"
+    ],
+    [
+     "december"
+    ],
+    "December es el mes doce."
+   ]
+  ]
+ },
+ "ing5": {
+  "name": "Artículos y plurales",
+  "qs": [
+   [
+    "Completa: ___ apple.",
+    "an",
+    [
+     "a",
+     "the",
+     "any"
+    ],
+    [
+     "an"
+    ],
+    "An va antes de vocales: an apple, an egg."
+   ],
+   [
+    "Completa: ___ book.",
+    "a",
+    [
+     "an",
+     "some",
+     "of"
+    ],
+    [
+     "a"
+    ],
+    "A va antes de sonidos de consonante."
+   ],
+   [
+    "¿Cuál es el plural de «cat»?",
+    "cats",
+    [
+     "cates",
+     "cat",
+     "caties"
+    ],
+    [
+     "cats"
+    ],
+    "La mayoría de plurales solo agregan -s."
+   ],
+   [
+    "¿Cuál es el plural de «box»?",
+    "boxes",
+    [
+     "boxs",
+     "boxies",
+     "box"
+    ],
+    [
+     "boxes"
+    ],
+    "Las palabras que terminan en x, s, ch o sh agregan -es."
+   ],
+   [
+    "¿Cuál es el plural de «child»?",
+    "children",
+    [
+     "childs",
+     "childes",
+     "childen"
+    ],
+    [
+     "children"
+    ],
+    "Es un plural irregular."
+   ],
+   [
+    "¿Cuál es el plural de «person»?",
+    "people",
+    [
+     "persons",
+     "peoples",
+     "person"
+    ],
+    [
+     "people"
+    ],
+    "People es el plural usual de person."
+   ],
+   [
+    "Completa: The book is ___ the table. (encima)",
+    "on",
+    [
+     "in",
+     "at",
+     "under"
+    ],
+    [
+     "on"
+    ],
+    "On significa «sobre» o «encima de»."
+   ],
+   [
+    "Completa: The cat is ___ the box. (dentro)",
+    "in",
+    [
+     "on",
+     "under",
+     "next"
+    ],
+    [
+     "in"
+    ],
+    "In significa «dentro de» o «en»."
+   ],
+   [
+    "Completa: The ball is ___ the chair. (debajo)",
+    "under",
+    [
+     "on",
+     "in",
+     "over"
+    ],
+    [
+     "under"
+    ],
+    "Under significa «debajo de»."
+   ],
+   [
+    "¿Qué significa «this»?",
+    "Este / esto",
+    [
+     "Ese",
+     "Aquel",
+     "Aquellos"
+    ],
+    [
+     "este",
+     "esto",
+     "este / esto"
+    ],
+    "This es para algo cercano y that para algo lejano."
+   ],
+   [
+    "¿Qué significa «my»?",
+    "Mi",
+    [
+     "Tu",
+     "Su",
+     "Nuestro"
+    ],
+    [
+     "mi"
+    ],
+    "My es mi, your es tu y our es nuestro."
+   ],
+   [
+    "¿Qué significa «there is»?",
+    "Hay",
+    [
+     "Allá",
+     "Es",
+     "Tiene"
+    ],
+    [
+     "hay"
+    ],
+    "There is es para uno y there are para varios."
+   ]
+  ]
+ },
+ "ing6": {
+  "name": "Vocabulario diario",
+  "qs": [
+   [
+    "¿Cómo se dice «madre» en inglés?",
+    "mother",
+    [
+     "sister",
+     "father",
+     "aunt"
+    ],
+    [
+     "mother",
+     "mom"
+    ],
+    "Mom es la forma informal."
+   ],
+   [
+    "¿Cómo se dice «hermano» en inglés?",
+    "brother",
+    [
+     "father",
+     "uncle",
+     "cousin"
+    ],
+    [
+     "brother"
+    ],
+    "Brother es hermano y sister es hermana."
+   ],
+   [
+    "¿Cómo se dice «abuela» en inglés?",
+    "grandmother",
+    [
+     "grandfather",
+     "aunt",
+     "mother"
+    ],
+    [
+     "grandmother",
+     "grandma"
+    ],
+    "Grandma es la forma informal."
+   ],
+   [
+    "¿Cómo se dice «agua» en inglés?",
+    "water",
+    [
+     "milk",
+     "juice",
+     "tea"
+    ],
+    [
+     "water"
+    ],
+    "Water es agua."
+   ],
+   [
+    "¿Cómo se dice «pan» en inglés?",
+    "bread",
+    [
+     "rice",
+     "cheese",
+     "butter"
+    ],
+    [
+     "bread"
+    ],
+    "Bread es pan."
+   ],
+   [
+    "¿Cómo se dice «manzana» en inglés?",
+    "apple",
+    [
+     "banana",
+     "orange",
+     "grape"
+    ],
+    [
+     "apple"
+    ],
+    "Apple es manzana."
+   ],
+   [
+    "¿Cómo se dice «casa» en inglés?",
+    "house",
+    [
+     "school",
+     "hospital",
+     "store"
+    ],
+    [
+     "house",
+     "home"
+    ],
+    "House es la construcción y home es el hogar."
+   ],
+   [
+    "¿Cómo se dice «escuela» en inglés?",
+    "school",
+    [
+     "house",
+     "park",
+     "bank"
+    ],
+    [
+     "school"
+    ],
+    "School es escuela."
+   ],
+   [
+    "¿Cómo se dice «perro» en inglés?",
+    "dog",
+    [
+     "cat",
+     "bird",
+     "fish"
+    ],
+    [
+     "dog"
+    ],
+    "Dog es perro y cat es gato."
+   ],
+   [
+    "¿Cómo se dice «libro» en inglés?",
+    "book",
+    [
+     "pen",
+     "desk",
+     "door"
+    ],
+    [
+     "book"
+    ],
+    "Book es libro."
+   ],
+   [
+    "¿Cómo se dice «ojos» en inglés?",
+    "eyes",
+    [
+     "ears",
+     "hands",
+     "nose"
+    ],
+    [
+     "eyes"
+    ],
+    "Eyes es el plural de eye."
+   ],
+   [
+    "¿Cómo se dice «mano» en inglés?",
+    "hand",
+    [
+     "foot",
+     "arm",
+     "head"
+    ],
+    [
+     "hand"
+    ],
+    "Hand es mano y su plural es hands."
+   ]
+  ]
+ }
+}
