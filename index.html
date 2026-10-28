@@ -261,6 +261,8 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
 #hero .cap{top:calc(var(--u)*745);font-weight:700;font-size:calc(var(--u)*12.2);color:#fff;white-space:nowrap}
 #hero .cap.l{left:calc(var(--u)*55)}
 #hero .cap.r{right:calc(var(--u)*55)}
+#hero .hg{left:0;top:0;width:100%;height:100%;pointer-events:none;transform-origin:50% 88%;will-change:transform}
+#hero .hg>*{position:absolute}
 #hero .head{will-change:opacity;left:calc(var(--u)*510);top:calc(var(--u)*255);width:calc(var(--u)*435);height:calc(var(--u)*450);object-fit:fill;opacity:0;pointer-events:none;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 46%,#000 72%,transparent 99%);mask-image:radial-gradient(ellipse 50% 50% at 50% 46%,#000 72%,transparent 99%)}
 #hero .helmet{left:calc(var(--u)*533);top:calc(var(--u)*288);width:calc(var(--u)*360);height:calc(var(--u)*360);object-fit:fill;mix-blend-mode:screen;opacity:0;pointer-events:none;-webkit-mask-image:linear-gradient(#000 76%,transparent 92%);mask-image:linear-gradient(#000 76%,transparent 92%)}
 #hero .push{left:calc(var(--u)*675);top:calc(var(--u)*720);width:calc(var(--u)*75);height:calc(var(--u)*75);border-radius:50%;border:0;padding:0;color:#fff;font:700 calc(var(--u)*16.5)/1.05 'Urbanist',system-ui,sans-serif;text-align:center;background:radial-gradient(circle at 35% 30%,#ffc2e0 0%,#ff4fa3 45%,#a3125f 100%);box-shadow:0 0 0 calc(var(--u)*4) #2a0a1c,0 0 0 calc(var(--u)*6) rgba(255,140,198,.45),inset 0 calc(var(--u)*-4) calc(var(--u)*8) rgba(0,0,0,.35)}
@@ -428,8 +430,10 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
     <div class="stars"></div><div class="sym">∑ π √
 x² ∫ Δ</div><div class="mars"></div>
     <img class="plate" id="heroPlate" alt="" draggable="false" referrerpolicy="no-referrer">
+    <div class="hg" id="heroTilt">
     <video class="head" id="heroHead" muted playsinline preload="auto" tabindex="-1" aria-hidden="true"></video>
     <img class="helmet" id="heroHelmet" alt="" draggable="false" referrerpolicy="no-referrer">
+    </div>
     <div class="logo"><i></i><span>Juega y Aprende</span></div>
     <button class="enter" id="heroEnter" type="button">Entrar al juego →</button>
     <button class="menu" id="heroMenu" type="button" aria-label="Entrar al juego"><span></span><span></span><span></span></button>
@@ -1756,7 +1760,7 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
   }
 
   /* Cabeza: se carga el clip completo como blob para que cada seek sea instantáneo */
-  var shown=.5,target=.5,lastMove=0,shownOnce=false;
+  var shown=.5,target=.5,lastMove=0,shownOnce=false,tilt=0,tiltT=0,tg=$('heroTilt');
   function fadeHead(){if(shownOnce)return;shownOnce=true;if(vid.animate)vid.animate([{opacity:0},{opacity:1}],{duration:600,fill:'forwards'});vid.style.opacity=1}
   if(!reduce){
     var setSrc=function(u){vid.src=u;vid.load()};
@@ -1770,6 +1774,9 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
     var f=narrow?(e.clientX/window.innerWidth):((e.clientX-r.left)/r.width);
     var lo=narrow?.08:.14,hi=narrow?.92:.86;
     target=Math.max(0,Math.min(1,(f-lo)/(hi-lo)));
+    /* Mirada vertical: abajo inclina la cabeza hacia el pecho; arriba, un poco hacia atrás */
+    var fy=Math.max(0,Math.min(1,e.clientY/window.innerHeight));
+    tiltT=fy>.45?Math.min(1,(fy-.45)/.45):-Math.min(1,(.45-fy)/.45)*.45;
     if(fine){dx=e.clientX;dy=e.clientY;dot.style.transform='translate('+dx+'px,'+dy+'px)'}
   }
   var dx=-100,dy=-100,rx=-100,ry=-100;
@@ -1783,8 +1790,12 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
   function loop(now){
     if(!alive)return;raf=requestAnimationFrame(loop);
     if(fine){rx+=(dx-rx)*.55;ry+=(dy-ry)*.55;ring.style.transform='translate('+rx+'px,'+ry+'px)'}
-    if(reduce||!vid.duration||!isFinite(vid.duration))return;
-    var t=target;if(now-lastMove>3500)t=.5+.32*Math.sin(now/1800);
+    if(reduce)return;
+    var idle=now-lastMove>3500,ty=idle?.12+.12*Math.sin(now/2300):tiltT;
+    tilt+=(ty-tilt)*.14;
+    if(Math.abs(tilt-(tg._t||0))>.003){tg._t=tilt;var k=tilt>0?tilt:tilt*1;tg.style.transform='perspective('+(900*(parseFloat(getComputedStyle(hero).getPropertyValue('--u'))||1))+'px) rotateX('+(-9*k)+'deg) translateY('+(7*k*(parseFloat(getComputedStyle(hero).getPropertyValue('--u'))||1))+'px) scaleY('+(1-.03*Math.max(0,k))+')'}
+    if(!vid.duration||!isFinite(vid.duration))return;
+    var t=target;if(idle)t=.5+.32*Math.sin(now/1800);
     shown+=(t-shown)*.18;
     if(!vid.seeking){var ct=Math.max(0,Math.min(vid.duration-.01,shown*vid.duration));if(Math.abs(vid.currentTime-ct)>.03)vid.currentTime=ct}
   }
