@@ -284,7 +284,7 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
   #hero .cap{position:fixed;top:auto;bottom:14px;font-size:11px}
   #hero .cap.l{left:16px}#hero .cap.r{right:16px}
 }
-@media (prefers-reduced-motion:reduce){#hero .head{display:none}}
+
 </style>
 
 </head><body>
@@ -1762,7 +1762,7 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
   /* Cabeza: se carga el clip completo como blob para que cada seek sea instantáneo */
   var shown=.5,target=.5,lastMove=0,shownOnce=false,tilt=0,tiltT=0,tg=$('heroTilt');
   function fadeHead(){if(shownOnce)return;shownOnce=true;if(vid.animate)vid.animate([{opacity:0},{opacity:1}],{duration:600,fill:'forwards'});vid.style.opacity=1}
-  if(!reduce){
+  {
     var setSrc=function(u){vid.src=u;vid.load()};
     try{fetch(CLIP).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){objUrl=URL.createObjectURL(b);setSrc(objUrl)}).catch(function(){setSrc(CLIP)})}catch(e){setSrc(CLIP)}
     vid.addEventListener('seeked',fadeHead);vid.addEventListener('error',function(){vid.style.display='none'});
@@ -1790,8 +1790,7 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
   function loop(now){
     if(!alive)return;raf=requestAnimationFrame(loop);
     if(fine){rx+=(dx-rx)*.55;ry+=(dy-ry)*.55;ring.style.transform='translate('+rx+'px,'+ry+'px)'}
-    if(reduce)return;
-    var idle=now-lastMove>3500,ty=idle?.12+.12*Math.sin(now/2300):tiltT;
+    var idle=!reduce&&now-lastMove>3500,ty=idle?.12+.12*Math.sin(now/2300):tiltT;
     tilt+=(ty-tilt)*.14;
     if(Math.abs(tilt-(tg._t||0))>.003){tg._t=tilt;var k=tilt>0?tilt:tilt*1;tg.style.transform='perspective('+(900*(parseFloat(getComputedStyle(hero).getPropertyValue('--u'))||1))+'px) rotateX('+(-9*k)+'deg) translateY('+(7*k*(parseFloat(getComputedStyle(hero).getPropertyValue('--u'))||1))+'px) scaleY('+(1-.03*Math.max(0,k))+')'}
     if(!vid.duration||!isFinite(vid.duration))return;
