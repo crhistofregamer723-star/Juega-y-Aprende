@@ -236,6 +236,7 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
 /* ---------- Portada interactiva "Cadete" ---------- */
 #hero{--u:max(calc(100vw / 1440),calc(100vh / 810));position:fixed;inset:0;z-index:2000;overflow:hidden;background:#02040D;color:#fff;font-family:'Urbanist',system-ui,sans-serif;transition:opacity .5s ease}
 #hero.out{opacity:0;pointer-events:none}
+#hero{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #hero.fine,#hero.fine *{cursor:none}
 #hero .hf{position:absolute;width:calc(var(--u)*1440);height:calc(var(--u)*810);left:calc(50% - var(--u)*720);top:calc(50% - var(--u)*405);isolation:isolate;background:radial-gradient(calc(var(--u)*900) calc(var(--u)*600) at 80% 20%,#5c0a3a 0,transparent 60%),radial-gradient(calc(var(--u)*700) calc(var(--u)*500) at 10% 90%,#3a0830 0,transparent 60%),#050205}
 #hero .hf>*{position:absolute}
@@ -1764,12 +1765,21 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
   }
   function onMove(e){
     lastMove=performance.now();
-    var r=frame.getBoundingClientRect(),f=(e.clientX-r.left)/r.width;
-    target=Math.max(0,Math.min(1,(f-.14)/(.86-.14)));
+    /* En celulares el marco es más ancho que la pantalla: se usa todo el ancho visible */
+    var narrow=window.innerWidth<=820,r=frame.getBoundingClientRect();
+    var f=narrow?(e.clientX/window.innerWidth):((e.clientX-r.left)/r.width);
+    var lo=narrow?.08:.14,hi=narrow?.92:.86;
+    target=Math.max(0,Math.min(1,(f-lo)/(hi-lo)));
     if(fine){dx=e.clientX;dy=e.clientY;dot.style.transform='translate('+dx+'px,'+dy+'px)'}
   }
   var dx=-100,dy=-100,rx=-100,ry=-100;
-  hero.addEventListener('pointermove',onMove);
+  hero.addEventListener('pointermove',onMove);hero.addEventListener('pointerdown',onMove);
+  hero.addEventListener('touchmove',function(e){var t=e.touches&&e.touches[0];if(t)onMove({clientX:t.clientX,clientY:t.clientY})},{passive:true});
+  hero.addEventListener('touchstart',function(e){var t=e.touches&&e.touches[0];if(t)onMove({clientX:t.clientX,clientY:t.clientY})},{passive:true});
+  /* iOS/Android: el video necesita un primer "play" tras un toque para poder mostrar los fotogramas al moverlo */
+  var primed=false;
+  function prime(){if(primed||!vid.src)return;primed=true;try{var pr=vid.play();if(pr&&pr.then)pr.then(function(){vid.pause()}).catch(function(){});else vid.pause()}catch(e){}}
+  hero.addEventListener('pointerdown',prime,{passive:true});hero.addEventListener('touchstart',prime,{passive:true});
   function loop(now){
     if(!alive)return;raf=requestAnimationFrame(loop);
     if(fine){rx+=(dx-rx)*.55;ry+=(dy-ry)*.55;ring.style.transform='translate('+rx+'px,'+ry+'px)'}
