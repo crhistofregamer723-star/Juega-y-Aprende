@@ -1740,7 +1740,7 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
   var PLATE=BASE+'a194141a-44ba-44bb-8372-e6720af994ca.jpg',CLIP=BASE+'e1b48476-24ab-456a-bb12-13e63bc60973.mp4',HELM=BASE+'e8c78660-4497-41b9-82ae-a4738a5edd11.jpg';
   var $=function(i){return document.getElementById(i)};
   var frame=$('heroFrame'),plate=$('heroPlate'),vid=$('heroHead'),helm=$('heroHelmet'),push=$('heroPush'),ring=$('heroRing'),dot=$('heroDot');
-  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches,fine=matchMedia('(pointer:fine)').matches;
+  var reduce=false,fine=matchMedia('(pointer:fine)').matches;
   var alive=true,raf=0,objUrl=null;
   if(fine)hero.classList.add('fine');
   plate.onerror=function(){plate.style.display='none'};
@@ -1799,6 +1799,20 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
     if(!vid.seeking){var ct=Math.max(0,Math.min(vid.duration-.01,shown*vid.duration));if(Math.abs(vid.currentTime-ct)>.03)vid.currentTime=ct}
   }
   raf=requestAnimationFrame(loop);
+
+  /* Diagnóstico: abre la página con ?debug para ver qué recibe el celular */
+  if(/[?&]debug/.test(location.search)){
+    var ev={p:0,t:0},box=document.createElement('pre');
+    box.style.cssText='position:fixed;left:6px;right:6px;bottom:6px;z-index:3000;margin:0;padding:8px;background:rgba(0,0,0,.8);color:#7CFC9A;font:11px/1.35 monospace;white-space:pre-wrap;border-radius:8px;pointer-events:none';
+    hero.appendChild(box);
+    hero.addEventListener('pointermove',function(){ev.p++},true);hero.addEventListener('touchmove',function(){ev.t++},true);
+    window.addEventListener('error',function(e){box.dataset.err=String(e.message||e)});
+    setInterval(function(){var h=window.__h?window.__h():[];
+      box.textContent='ancho '+innerWidth+'x'+innerHeight+' · reducir='+matchMedia('(prefers-reduced-motion:reduce)').matches+' · fino='+fine+'\n'+
+      'eventos pointer='+ev.p+' touch='+ev.t+'\n'+
+      'video: ready='+vid.readyState+' net='+vid.networkState+' err='+(vid.error?vid.error.code:'no')+' dur='+(vid.duration||0).toFixed(2)+' t='+(vid.currentTime||0).toFixed(2)+'\n'+
+      'src='+(vid.src?vid.src.slice(0,5):'ninguno')+' · objeto='+(objUrl?'sí':'no')+' · destino='+target.toFixed(2)+' mostrado='+shown.toFixed(2)+'\n'+(box.dataset.err||'')},300);
+  }
 
   /* Casco */
   var on=false,ha=null;
