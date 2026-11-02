@@ -320,6 +320,7 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
       <span class="stat">Nivel<b id="hLevel">1</b></span>
       <span class="stat">Respondidas<b id="hAns">0</b></span>
       <span class="stat" id="hLivesW" hidden>Vidas<b id="hLives">3</b></span>
+      <button class="btn" id="bHomeTop" type="button" aria-label="Ir al inicio"><span aria-hidden="true">🏠</span> Ir al inicio</button>
       <button class="btn" id="bMenuActions" type="button" aria-expanded="false" aria-controls="menuActions">☰ Menú</button>
       <div class="action-menu" id="menuActions" hidden>
         <button class="btn" id="bSound" type="button" aria-pressed="true">Efectos: sí</button>
@@ -1707,6 +1708,7 @@ $('#bRank').onclick=function(){
   if(G&&!G.over&&(!$('#game').hidden||!$('#pairs').hidden))saveAndExit();
   openRanking(area);
 };
+$('#bHomeTop').onclick=function(){$('#bHome').onclick()};
 $('#bHome').onclick=function(){
   $('#menuActions').hidden=true;$('#bMenuActions').setAttribute('aria-expanded','false');
   if(G&&!G.over&&(!$('#game').hidden||!$('#pairs').hidden))saveAndExit();
