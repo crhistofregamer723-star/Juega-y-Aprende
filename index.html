@@ -233,6 +233,7 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
   .btn,.chip,.opt,.mode,.pcard,.subject-pick{min-height:44px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#bHomeTop{position:fixed;left:12px;bottom:12px;z-index:1500;padding:9px 14px;font-weight:700;background:var(--panel2);border-color:var(--acc);box-shadow:0 0 18px color-mix(in srgb,var(--acc) 35%,transparent)}
 /* ---------- Portada interactiva "Cadete" ---------- */
 #hero{--u:max(calc(100vw / 1440),calc(100vh / 810));position:fixed;inset:0;z-index:2000;overflow:hidden;background:#02040D;color:#fff;font-family:'Urbanist',system-ui,sans-serif;transition:opacity .5s ease}
 #hero.out{opacity:0;pointer-events:none}
@@ -320,7 +321,6 @@ button,.btn,.chip,.opt,.mode,.pcard,.subject-pick,.stat,input{touch-action:manip
       <span class="stat">Nivel<b id="hLevel">1</b></span>
       <span class="stat">Respondidas<b id="hAns">0</b></span>
       <span class="stat" id="hLivesW" hidden>Vidas<b id="hLives">3</b></span>
-      <button class="btn" id="bHomeTop" type="button" aria-label="Ir al inicio"><span aria-hidden="true">🏠</span> Ir al inicio</button>
       <button class="btn" id="bMenuActions" type="button" aria-expanded="false" aria-controls="menuActions">☰ Menú</button>
       <div class="action-menu" id="menuActions" hidden>
         <button class="btn" id="bSound" type="button" aria-pressed="true">Efectos: sí</button>
@@ -444,6 +444,7 @@ x² ∫ Δ</div><div class="mars"></div>
   </div>
   <div class="rc ring" id="heroRing"></div><div class="rc dot" id="heroDot"></div>
 </div>
+<button class="btn" id="bHomeTop" type="button" hidden aria-label="Ir al inicio"><span aria-hidden="true">🏠</span> Ir al inicio</button>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1834,13 +1835,13 @@ try{currentLang=JSON.parse(localStorage.getItem('q3d_language')||'"es"')}catch(e
   var hideT=0;
   function enter(){
     if(!alive)return;alive=false;cancelAnimationFrame(raf);window.__heroOn=false;
-    hero.classList.add('out');
+    hero.classList.add('out');document.getElementById('bHomeTop').hidden=false;
     hideT=setTimeout(function(){hero.hidden=true;
       var li=document.getElementById('loginUser');if(li&&!document.getElementById('login').hidden){try{li.focus({preventScroll:true})}catch(e){}}},520);
   }
   function open(){
     if(alive)return;clearTimeout(hideT);alive=true;window.__heroOn=true;
-    hero.hidden=false;void hero.offsetWidth;hero.classList.remove('out');
+    hero.hidden=false;document.getElementById('bHomeTop').hidden=true;void hero.offsetWidth;hero.classList.remove('out');
     lastMove=performance.now()-4000;if(on)toggle();
     cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
     try{push.focus({preventScroll:true})}catch(e){}
